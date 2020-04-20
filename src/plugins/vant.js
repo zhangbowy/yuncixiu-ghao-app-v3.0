@@ -13,7 +13,8 @@ import {
   Button,
   Checkbox,
   Grid,
-  GridItem
+  GridItem,
+  ActionSheet
 } from 'vant'
 
 Vue.use(
@@ -46,4 +47,6 @@ Vue.use(
   Grid
 ).use(
   GridItem
+).use(
+  ActionSheet
 )
