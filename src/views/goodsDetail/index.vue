@@ -1,9 +1,11 @@
 <template>
   <div class="goods-detail">
     <div class="navbar">
-      <top-bar :title="goodDetail.good_name" />
+      <!-- tab标题栏 -->
+      <top-bar />
     </div>
     <div class="good-content">
+      <!-- 商品图片 -->
       <div class="good-images">
         <van-swipe @change="onChange">
           <van-swipe-item v-for="(item, index) in goodDetail.imageList" :key="index">
@@ -16,11 +18,13 @@
           </template>
         </van-swipe>
       </div>
+      <!-- 基础信息 -->
       <div class="good-info">
         <div class="good-name">
           <p>{{ goodDetail.good_name }}</p>
           <span>{{ goodDetail.real_sale }}人付款</span>
         </div>
+        <div class="share-btn" @click="showShare = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
         <div class="good-price">
           ￥ <span class="current-price">{{ goodDetail.currentPrice }}</span>
           <span class="old-price">￥{{ goodDetail.price }}</span>
@@ -34,29 +38,56 @@
           <span class="right-arrow"><svg-icon icon-class="right-arrow" /></span>
         </div>
       </div>
+      <!-- sku容器 -->
       <div class="sku-box">
-        <van-action-sheet v-model="showSku">
+        <van-action-sheet v-model="showSku" title="选择规格">
           <div class="content">
             <div v-if="skuItem" class="sku-info">
               <img :src="skuItem.images[0]?skuItem.images[0]:goodDetail.img" width="96" height="96" alt="">
               <div class="right-info">
-                <p>￥{{ skuItem.current_price }}</p>
+                <p class="price">￥{{ skuItem.current_price }}</p>
                 <p>剩余{{ skuItem.num }}</p>
-                <p>已选：{{ skuItem.checked }}</p>
+                <p>已选：<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
               </div>
             </div>
             <div class="sku-list">
               <div v-for="(item,index) in skudata" :key="item.id + '_id'" class="sku-item">
                 <span class="sku-item-name">{{ item.value }}:</span>
-                <div class="sku-item-attr">
-                  <span v-for="attr in item.leaf" :key="attr.id" :class="{'active':activeSku[index].option.id === attr.id}" class="attr-name" @click="selectSku(index, attr)">{{ attr.value }}</span>
+                <div v-if="showSku" class="sku-item-attr">
+                  <span v-for="attr in item.leaf" :key="attr.id" :class="{'active':activeSku[index].option&&activeSku[index].option.id === attr.id}" class="attr-name" @click="selectSku(index, attr)">{{ attr.value }}</span>
                 </div>
               </div>
             </div>
           </div>
         </van-action-sheet>
       </div>
-      <!-- 商品id: {{ id }} -->
+      <!-- 商品详 -->
+      <div class="goods-detail">
+        <div class="title">商品详情</div>
+        <div v-html="goodDetail.detail" />
+      </div>
+      <div class="good-adction">
+        <van-goods-action>
+          <van-goods-action-icon icon="wap-home-o" text="首页" @click="pathTo('/')" />
+          <van-goods-action-icon icon="cart-o" text="购物车" @click="pathTo('/cart')" />
+          <van-goods-action-button
+            type="warning"
+            text="加入购物车"
+            @click="onClickButton"
+          />
+          <van-goods-action-button
+            type="danger"
+            text="立即购买"
+            @click="onClickButton"
+          />
+        </van-goods-action>
+      </div>
+      <van-share-sheet
+        v-model="showShare"
+        title="立即分享给好友"
+        :options="options"
+        @select="onSelect"
+      />
     </div>
   </div>
 </template>
@@ -75,6 +106,14 @@ export default {
       current: 0,
       checkedSku: '请选择规格',
       showSku: false,
+      showShare: false,
+      options: [
+        { name: '微信', icon: 'wechat' },
+        { name: '微博', icon: 'weibo' },
+        { name: '复制链接', icon: 'link' },
+        { name: '分享海报', icon: 'poster' },
+        { name: '二维码', icon: 'qrcode' }
+      ],
       goodDetail: {
         id: 1,
         real_sale: 0,
@@ -86,18 +125,17 @@ export default {
         good_name: '测试商品',
         currentPrice: 0.1,
         price: 1,
-        content: ''
-      },
-      skuItem: {
-        images: ['https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg'],
-        num: 100,
-        current_price: 0.1
+        detail: '<h3>商品详情的内容富文本</h3>'
       },
       skuList: [],
       skudata: [],
       activeSku: [],
+      skuItem: {
+        current_price: 0.1,
+        num: 9999,
+        images: ['https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg']
+      },
       checkedSkuIds: '',
-      title: this.$route.meta.title,
       id: this.$route.query.good_id
     }
   },
@@ -111,18 +149,52 @@ export default {
           option: {}
         }))
       }
+    },
+    // 监听选中的sku数组
+    activeSku: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        this.checkedSkuIds = this.activeSku.reduce(
+          (total, prev, index) =>
+            // console.log('prev', prev)
+            `${total}${prev.spec.id}-${prev.option.id}${index === this.activeSku.length - 1 ? '' : '_'}`, ''
+        )
+      }
+    },
+    // 监听选中的skuids
+    checkedSkuIds: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const arr = []
+        this.skuList.map(item => {
+          if (item.sku_id === this.checkedSkuIds) {
+            this.skuItem = item
+            this.checkedSku = item.skus.reduce((total, prev, index) =>
+              `${total}"${prev.v}" `, ''
+            )
+          }
+          arr.push(item.sku_id)
+          if (arr.indexOf(this.checkedSkuIds) < 0) {
+            this.checkedSku = '请选择规格'
+            this.skuItem = {
+              current_price: 0.1,
+              num: 9999,
+              images: ['https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg']
+            }
+          }
+        })
+      }
     }
   },
   created() {
+    // 加载skulist和skudata
     this.skuList = sku_list
     this.skudata = skudata
-    this.activeSku = skudata.map(item => ({
-      spec: { value: item.value, id: item.id },
-      option: {}
-    }))
   },
-
   methods: {
+    // 轮播切换
     onChange(index) {
       this.current = index
     },
@@ -135,135 +207,184 @@ export default {
         }
       )
     },
+    // 显示sku列表
     changeSkuShow() {
       this.showSku = !this.showSku
     },
+    // 选择skuitem
     selectSku(index, option) {
-      if (this.activeSku[index].option && this.activeSku[index].option.id === option.id) return this.activeSku[index].option = {}
+      if (this.activeSku[index].option && this.activeSku[index].option.id === option.id) {
+        this.activeSku[index].option = {}
+        return
+      }
       this.activeSku[index].option = option
+    },
+    // 页面路由跳转
+    pathTo(path) {
+      this.$router.push({ path: path })
+    },
+    // 加入购物车/立即购买按钮点击
+    onClickButton() {
+      if (!this.skuItem.sku_id) {
+        this.changeSkuShow(0)
+      }
+    },
+    // 分享按钮选中
+    onSelect(option) {
+      console.log(option.name)
+      this.showShare = false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.good-content{
-  .good-images{
-    img{
-      width: 100%;
-      height: 260px;
-    }
+.goods-detail{
+  .navbar{
+    position: fixed;
+    top: 0;
+    z-index: 999;
   }
-  .good-info{
-    padding: 5px 10px;
-    border-bottom: 10px solid #f5f5f5;
-    .good-name{
-      color: #333;
-      font-weight: bold;
-      font-size: 22px;
+
+  .good-content{
+    .good-images{
+      img{
+        width: 100%;
+        height: 335px;
+      }
+    }
+    .good-info{
       position: relative;
-      p{
-        width: 65%;
-        margin: 0;
-        overflow: hidden;
-      }
-      span{
-        position: absolute;
-        right: 5px;
-        top: 5px;
-        color: #999;
-        font-size: 14px;
-      }
-    }
-    .good-price{
-      margin-top: 10px;
-      color: #ff0a0a;
-      font-size: 12px;
-      span.current-price{
-        font-size: 18px;
+      padding: 5px 10px;
+      border-bottom: 10px solid #f5f5f5;
+      .good-name{
+        color: #333;
         font-weight: bold;
-      }
-      span.old-price{
-        padding-left: 10px;
-        text-decoration: line-through;
-        color: #999;
-      }
-    }
-  }
-  // sku部分样式
-  .good-cell{
-    border-bottom: 10px solid #f5f5f5;
-    .cell-item{
-      font-size: 16px;
-      padding: 10px;
-      span{
-        display: inline-block;
-        vertical-align: middle;
-      }
-      span.cell-title{
-        width: 20%;
-      }
-      span.cell-content{
-      width: 60%;
-      }
-      span.right-arrow{
-        width: 20%;
-        text-align: right;
-      }
-    }
-  }
-  .sku-box{
-    .content{
-      padding: 20px;
-      .sku-info{
-        .right-info{
-          display: inline-block;
-          font-size: 18px;
-          padding-left: 10px;
-          vertical-align: top;
-          p{
-            margin: 0;
-            padding-bottom: 10px;
-          }
+        font-size: 22px;
+        position: relative;
+        p{
+          width: 65%;
+          margin: 0;
+          overflow: hidden;
+        }
+        span{
+          position: absolute;
+          right: 5px;
+          top: 0px;
+          color: #666;
+          font-size: 12px;
         }
       }
-      .sku-list{
+      .share-btn{
+        position: absolute;
+        color: #666;
+        right: 0;
+        top: 30px;
+        font-size: 12px;
+        padding: 4px 6px;
+        border-radius: 20px 0 0 20px;
+        background: rgba(65, 65, 65, 0.1);
+      }
+      .good-price{
         margin-top: 10px;
+        color: #ff0a0a;
+        font-size: 12px;
+        span.current-price{
+          font-size: 18px;
+          font-weight: bold;
+        }
+        span.old-price{
+          padding-left: 10px;
+          text-decoration: line-through;
+          color: #999;
+        }
+      }
+    }
+    // sku部分样式
+    .good-cell{
+      border-bottom: 10px solid #f5f5f5;
+      .cell-item{
         font-size: 16px;
-        .sku-item{
-          margin-bottom: 20px;
-          .sku-item-name{
-            display: block;
-            padding-bottom: 10px;
-          }
-          .sku-item-attr{
-            .attr-name{
-              background: #f5f5f5;
-              color: #333;
-              border-radius: 10px;
-              padding: 5px 10px;
-              margin-right: 10px;
-              font-size: 14px;
+        padding: 10px;
+        span{
+          display: inline-block;
+          vertical-align: middle;
+        }
+        span.cell-title{
+          width: 20%;
+        }
+        span.cell-content{
+        width: 60%;
+        }
+        span.right-arrow{
+          width: 20%;
+          text-align: right;
+        }
+      }
+    }
+    .sku-box{
+      .content{
+        padding: 20px;
+        .sku-info{
+          .right-info{
+            display: inline-block;
+            font-size: 16px;
+            padding-left: 10px;
+            vertical-align: top;
+            p{
+              margin: 0;
+              padding-bottom: 10px;
             }
-            .attr-name.active{
-              background: rgba(255, 0, 0, 0.164);
-              color: rgb(252, 29, 29);
+            p.price{
+              color: #ff0a0a;
+            }
+          }
+        }
+        .sku-list{
+          margin-top: 10px;
+          font-size: 16px;
+          .sku-item{
+            margin-bottom: 20px;
+            .sku-item-name{
+              display: block;
+              padding-bottom: 10px;
+            }
+            .sku-item-attr{
+              .attr-name{
+                background: #f5f5f5;
+                color: #333;
+                border-radius: 10px;
+                padding: 5px 10px;
+                margin-right: 10px;
+                font-size: 14px;
+              }
+              .attr-name.active{
+                background: rgba(255, 0, 0, 0.164);
+                color: rgb(252, 29, 29);
+              }
             }
           }
         }
       }
     }
+    .goods-detail{
+      padding: 10px;
+      .title{
+        font-size: 18px;
+        color: #333
+      }
+    }
   }
-}
-.custom-indicator {
-  position: absolute;
-  right: 5px;
-  bottom: 15px;
-  padding: 2px 5px;
-  font-size: 12px;
-  background: rgba(0, 0, 0, 0.1);
-  color: #fff;
-  border-radius: 20px;
+  .custom-indicator {
+    position: absolute;
+    right: 5px;
+    bottom: 15px;
+    padding: 2px 5px;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    color: #fff;
+    border-radius: 20px;
+  }
 }
 </style>
 

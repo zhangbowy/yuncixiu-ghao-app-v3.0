@@ -1,5 +1,5 @@
 <template>
-  <div class="cell-item">
+  <div class="cell-item" @click="pathTo">
     <div class="left-box">
       <svg-icon :icon-class="iconName" />
       <span>{{ leftText }}</span>
@@ -29,6 +29,17 @@ export default {
     rightText: {
       type: String,
       default: ''
+    },
+    path: {
+      type: String,
+      default: ''
+    }
+  },
+  methods: {
+    pathTo() {
+      if (this.path !== '') {
+        this.$router.push({ path: this.path })
+      }
     }
   }
 }

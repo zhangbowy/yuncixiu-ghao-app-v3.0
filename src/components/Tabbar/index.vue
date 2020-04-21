@@ -33,7 +33,7 @@ export default {
         },
         {
           txt: '分类',
-          page: '/thesaurus',
+          page: '/classify',
           normalImg: require('../../assets/tabbar/fenlei.png'),
           activeImg: require('../../assets/tabbar/fenlei-active.png')
         },

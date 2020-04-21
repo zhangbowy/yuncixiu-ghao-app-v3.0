@@ -1,6 +1,7 @@
 <template>
   <div>
     <van-nav-bar
+      style="color:#333"
       :title="title"
       :left-text="leftText"
       :right-text="rightText"
@@ -19,7 +20,7 @@ export default {
     },
     leftText: {
       type: String,
-      default: '返回'
+      default: ''
     },
     rightText: {
       type: String,

@@ -23,7 +23,7 @@
         left-icon="volume-o"
         :scrollable="true"
       >
-        欢迎来到刺绣商城，快去定制您的专属
+        欢迎来到云刺绣商城，快去定制您的专属
       </van-notice-bar>
     </div>
     <!-- 推荐种类 -->

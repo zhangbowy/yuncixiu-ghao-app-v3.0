@@ -37,8 +37,8 @@
       </div>
 
       <div class="cell-box">
-        <cell-item icon-name="site-icon" left-text="地址管理" />
-        <cell-item icon-name="about" left-text="关于我们" />
+        <cell-item icon-name="site-icon" left-text="地址管理" path="/addressList" />
+        <cell-item icon-name="about" left-text="关于我们" path="/about" />
       </div>
     </div>
   </div>
@@ -137,6 +137,7 @@ export default {
     box-shadow: 0px 10px 20px #f3f4f3;
     border-radius: 10px;
     margin-top: 20px;
+    background: #fff;
     .cell-item:last-child{
       border: none;
     }

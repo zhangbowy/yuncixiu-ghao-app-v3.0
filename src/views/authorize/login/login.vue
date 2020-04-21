@@ -11,7 +11,7 @@
               <van-form label-width="60px" @submit="onSubmit" @resetValidation="resetForm">
                 <van-field
                   v-model="username"
-                  name="账号"
+                  name="username"
                   label="账号"
                   placeholder="请输入账号"
                   :rules="[{ required: true, message: '请输入账号' }]"
@@ -19,7 +19,7 @@
                 <van-field
                   v-model="password"
                   type="password"
-                  name="密码"
+                  name="password"
                   label="密码"
                   placeholder="请输入密码"
                   :rules="[{ required: true, message: '请输入密码' }]"
@@ -53,7 +53,7 @@
                   placeholder="请输入短信验证码"
                 >
                   <template #button>
-                    <van-button size="small" round type="primary" @click="sendMessage">{{ smsText }}</van-button>
+                    <van-button size="small" round type="primary" :disabled="codeDisaled" @click="sendMessage">{{ smsText }}</van-button>
                   </template>
                 </van-field>
                 <div class="empower">
@@ -95,6 +95,7 @@ export default {
       sms: '',
       smsText: '发送验证码',
       checked: false,
+      codeDisaled: false,
       title: this.$route.meta.title
     }
   },
@@ -112,17 +113,25 @@ export default {
     // 表单提交
     onSubmit(values) {
       console.log('submit', values)
+      // 提交登录
+      this.$store.dispatch('user/login', values).then(() => {
+        this.$router.push({ path: this.redirect || '/' })
+      }).catch((error) => {
+        console.log(error)
+      })
     },
     // 发送验证码
     sendMessage() {
       let time = 10
       this.smsText = time + 's'
+      this.codeDisaled = true
       const timer = setInterval(() => {
         time -= 1
         this.smsText = time + 's'
         if (time === 0) {
           clearInterval(timer)
           this.smsText = '发送验证码'
+          this.codeDisaled = false
         }
       }, 1000)
     },

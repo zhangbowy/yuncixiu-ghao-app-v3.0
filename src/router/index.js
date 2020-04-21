@@ -8,35 +8,52 @@ const constantRoutes = [
     path: '/',
     name: 'Index',
     component: () => import('@/views/index'),
-    meta: { title: '首页', icon: 'home', showTabbar: true }
+    meta: { title: '首页', showTabbar: true }
   }, {
     path: '/user',
     name: 'User',
-    component: () => import('@/views/user/index.vue'),
-    meta: { title: '个人中心', icon: 'user', showTabbar: true }
+    component: () => import('@/views/user/index'),
+    meta: { title: '个人中心', showTabbar: true }
+  }, {
+    path: '/classify',
+    name: 'Classify',
+    component: () => import('@/views/classification/index'),
+    meta: { title: '分类', showTabbar: true }
   }, {
     path: '/cart',
     name: 'ShopCart',
-    component: () => import('@/views/shopCart/index.vue'),
-    meta: { title: '购物车', icon: 'cart', showTabbar: true }
+    component: () => import('@/views/shopCart/index'),
+    meta: { title: '购物车', showTabbar: true }
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/authorize/login/login.vue'),
-    meta: { title: '用户登录', icon: 'login' }
+    component: () => import('@/views/authorize/login/login'),
+    meta: { title: '用户登录' }
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('@/views/authorize/register/index.vue'),
+    component: () => import('@/views/authorize/register/index'),
     meta: { title: '用户注册', icon: 'register' }
   },
   {
     path: '/goodsDetail',
     name: 'GoodsDetail',
-    component: () => import('@/views/goodsDetail/index.vue'),
+    component: () => import('@/views/goodsDetail/index'),
     meta: { title: '商品详情' }
+  },
+  {
+    path: '/addressList',
+    name: 'AddressList',
+    component: () => import('@/views/address/addressList/index'),
+    meta: { title: '地址列表' }
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('@/views/article/detail/about'),
+    meta: { title: '' }
   },
   {
     path: '/404',

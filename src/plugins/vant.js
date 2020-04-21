@@ -14,7 +14,13 @@ import {
   Checkbox,
   Grid,
   GridItem,
-  ActionSheet
+  ActionSheet,
+  TreeSelect, GoodsAction, GoodsActionIcon, GoodsActionButton,
+  AddressList, AddressEdit,
+  ShareSheet,
+  Area,
+  SubmitBar,
+  Col, Row
 } from 'vant'
 
 Vue.use(
@@ -49,4 +55,22 @@ Vue.use(
   GridItem
 ).use(
   ActionSheet
-)
+).use(
+  TreeSelect
+).use(
+  GoodsAction
+).use(
+  GoodsActionIcon
+).use(
+  GoodsActionButton
+).use(
+  AddressList
+).use(
+  AddressEdit
+).use(
+  ShareSheet
+).use(
+  Area
+).use(
+  SubmitBar
+).use(Col).use(Row)
