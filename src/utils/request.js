@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+// import { getToken } from '@/utils/auth'
 
 // 创建axios实例
 const service = axios.create({
@@ -17,7 +17,7 @@ service.interceptors.request.use(
     // 让每个请求携带令牌
     // ['X-Token']是自定义头密钥
     // 请根据实际情况修改
-      config.headers['X-Token'] = getToken()
+      // config.headers['X-Token'] = getToken()
     }
     return config
   },
@@ -40,11 +40,11 @@ service.interceptors.response.use(
   */
   response => {
     const res = response.data
-    // 如果自定义代码不是20000，则判断为错误。
-    if (res.code !== 20000) {
+    // 如果自定义代码不是0，则判断为错误。
+    if (res.code !== 0) {
       console.log('err' + res.message) // for debug
       // 50008: 非法令牌；50012:其他客户端登录；50014:令牌过期；
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.code === 402 || res.code === 50012 || res.code === 50014) {
         store.dispatch('user/resetToken').then(() => {
           location.reload()
         })

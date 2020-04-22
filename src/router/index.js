@@ -38,6 +38,12 @@ const constantRoutes = [
     meta: { title: '用户注册', icon: 'register' }
   },
   {
+    path: '/goodsList',
+    name: 'GoodsList',
+    component: () => import('@/views/goodsList/index'),
+    meta: { title: '商品列表', showTabbar: true }
+  },
+  {
     path: '/goodsDetail',
     name: 'GoodsDetail',
     component: () => import('@/views/goodsDetail/index'),

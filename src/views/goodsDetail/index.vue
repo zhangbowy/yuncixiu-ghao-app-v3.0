@@ -8,12 +8,12 @@
       <!-- 商品图片 -->
       <div class="good-images">
         <van-swipe @change="onChange">
-          <van-swipe-item v-for="(item, index) in goodDetail.imageList" :key="index">
+          <van-swipe-item v-for="(item, index) in goodDetail.images" :key="item">
             <img :src="item" alt="" @click="preview(index)">
           </van-swipe-item>
           <template #indicator>
             <div class="custom-indicator">
-              {{ current + 1 }}/{{ goodDetail.imageList.length }}
+              {{ current + 1 }}/{{ goodDetail.images.length }}
             </div>
           </template>
         </van-swipe>
@@ -21,13 +21,13 @@
       <!-- 基础信息 -->
       <div class="good-info">
         <div class="good-name">
-          <p>{{ goodDetail.good_name }}</p>
+          <p>{{ goodDetail.name }}</p>
           <span>{{ goodDetail.real_sale }}人付款</span>
         </div>
         <div class="share-btn" @click="showShare = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
         <div class="good-price">
-          ￥ <span class="current-price">{{ goodDetail.currentPrice }}</span>
-          <span class="old-price">￥{{ goodDetail.price }}</span>
+          ￥ <span class="current-price">{{ goodDetail.current_price }}</span>
+          <span class="old-price">￥{{ goodDetail.old_price }}</span>
         </div>
       </div>
       <!-- 商品规格选择 -->
@@ -43,7 +43,7 @@
         <van-action-sheet v-model="showSku" title="选择规格">
           <div class="content">
             <div v-if="skuItem" class="sku-info">
-              <img :src="skuItem.images[0]?skuItem.images[0]:goodDetail.img" width="96" height="96" alt="">
+              <img :src="skuItem.images?skuItem.images:goodDetail.thumb_image_path" width="96" height="96" alt="">
               <div class="right-info">
                 <p class="price">￥{{ skuItem.current_price }}</p>
                 <p>剩余{{ skuItem.num }}</p>
@@ -94,9 +94,8 @@
 
 <script>
 import TopBar from '@/components/TopBar'
+import { goodsApi } from '@/api/goods'
 import { ImagePreview } from 'vant'
-import { sku_list } from './skulist'
-import { skudata } from './skudata'
 export default {
   components: {
     TopBar
@@ -115,25 +114,12 @@ export default {
         { name: '二维码', icon: 'qrcode' }
       ],
       goodDetail: {
-        id: 1,
-        real_sale: 0,
-        img: 'https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg',
-        imageList: [
-          'https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg',
-          'https://ftp.bmp.ovh/imgs/2020/04/9718b5327cadf643.jpg'
-        ],
-        good_name: '测试商品',
-        currentPrice: 0.1,
-        price: 1,
-        detail: '<h3>商品详情的内容富文本</h3>'
+        images: []
       },
       skuList: [],
       skudata: [],
       activeSku: [],
       skuItem: {
-        current_price: 0.1,
-        num: 9999,
-        images: ['https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg']
       },
       checkedSkuIds: '',
       id: this.$route.query.good_id
@@ -179,9 +165,9 @@ export default {
           if (arr.indexOf(this.checkedSkuIds) < 0) {
             this.checkedSku = '请选择规格'
             this.skuItem = {
-              current_price: 0.1,
-              num: 9999,
-              images: ['https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg']
+              current_price: this.goodDetail.current_price,
+              num: this.goodDetail.sum_stock,
+              images: this.goodDetail.thumb_image_path
             }
           }
         })
@@ -189,11 +175,24 @@ export default {
     }
   },
   created() {
+    this.goodsId = this.$route.query.good_id
+    this.fetchData(this.goodsId)
     // 加载skulist和skudata
-    this.skuList = sku_list
-    this.skudata = skudata
   },
   methods: {
+    fetchData(id) {
+      goodsApi.getGoodsDetail({
+        id: id
+      }).then(res => {
+        this.goodDetail = res.data
+        this.goodDetail.images = JSON.parse(res.data.images)
+        this.skuList = JSON.parse(res.data.sku_list)
+        this.skudata = JSON.parse(res.data.sku_show)
+        this.skuItem.current_price = res.data.current_price
+        this.skuItem.num = res.data.sum_stock
+        this.skuItem.images = res.data.thumb_image_path
+      })
+    },
     // 轮播切换
     onChange(index) {
       this.current = index
@@ -202,7 +201,7 @@ export default {
     preview(i) {
       ImagePreview(
         {
-          images: this.goodDetail.imageList,
+          images: this.goodDetail.images,
           startPosition: i
         }
       )

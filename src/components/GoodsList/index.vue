@@ -1,0 +1,84 @@
+<template>
+  <div class="hot-goods">
+    <div class="recommend-goods">
+      <div class="goods-content">
+        <div v-for="(item,index) in data" :key="`${index}-${item.id}`" class="goods-item" @click="toDetail(item.id)">
+          <img :src="item.thumb_image_path" alt="">
+          <p class="goods-name">{{ item.name }}</p>
+          <p class="goods-price"><span>￥{{ item.current_price }}</span> <span class="old-price">￥{{ item.old_price }}</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    data: {
+      type: Array,
+      default: () => []
+    },
+    title: {
+      type: String,
+      default: ''
+    }
+  },
+  methods: {
+    toDetail(id) {
+      this.$router.push({ path: 'goodsDetail', query: { good_id: id }})
+    }
+  }
+}
+</script>
+<style lang="scss" scope>
+  .recommend-goods{
+    padding: 10px;
+    background: #fff;
+    .recommend-title{
+      font-size: 18px;
+      color: #000;
+      padding: 10px 0 20px;
+      span{
+        padding-left: 10px;
+        border-left: 5px solid #000;
+      }
+    }
+    .goods-content{
+      display: flex;
+      flex-flow: wrap;
+      align-items: center;
+      justify-content: space-between;
+      .goods-item{
+        width: 48%;
+        border: 1px solid #f5f5f5;
+        box-shadow: 0px 10px 20px #f3f3f3;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        img{
+          width: 100%;
+          height: 159px;
+          border-radius: 6px;
+        }
+        p{
+          font-size: 14px;
+          margin: 8px 0;
+          overflow: hidden;
+          padding: 0 10px;
+        }
+        p.goods-name{
+          color: #000;
+        }
+        p.goods-price{
+          color: #df2525;
+          .old-price{
+            color: #999;
+            font-size: 12px;
+            text-decoration: line-through;
+          }
+        }
+      }
+    }
+  }
+</style>
+

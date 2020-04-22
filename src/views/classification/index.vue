@@ -12,14 +12,18 @@
       <van-tree-select height="89vh" :items="items" :main-active-index.sync="active" @click-nav="onNavClick">
         <template #content>
           <div class="right-content">
-            <img src="https://img.yzcdn.cn/vant/apple-1.jpg" alt="" width="100%">
+            <a :href="`/goodsList?category_id=${currentId}`">
+              <img src="https://img.yzcdn.cn/vant/apple-1.jpg" alt="" width="100%">
+            </a>
             <div v-for="(item,index) in subCategary" :key="index" class="sub-categary">
               <div class="sub-name">{{ item.name }}</div>
               <div class="sub-child">
                 <ul>
                   <li v-for="(child,i) in item.children" :key="i">
-                    <img :src="child.img" alt="">
-                    <p>{{ child.name }}</p>
+                    <a :href="`/goodsList?category_id=${child.id}`">
+                      <img :src="child.img" alt="">
+                      <p>{{ child.name }}</p>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -32,10 +36,12 @@
 </template>
 
 <script>
+import { categaryApi } from '@/api/goods'
 export default {
   data() {
     return {
       active: 0,
+      currentId: '',
       items: [{ text: '分类1' }, { text: '分类2' }],
       subCategary: [
         {
@@ -74,9 +80,21 @@ export default {
       ]
     }
   },
+  created() {
+    this.active = this.$route.query.category_id
+  },
   methods: {
     onNavClick(e) {
       console.log(e)
+      this.currentId = e
+    },
+    // 获取分类列表
+    getCategoryList() {
+      categaryApi.getCategory({
+
+      }).then(res => {
+
+      })
     }
   }
 }
@@ -96,7 +114,7 @@ export default {
       .sub-name{
         padding: 10px 0;
         color: #333;
-        font-size: 16px;
+        font-size: 14px;
       }
       .sub-child{
         ul{
@@ -104,14 +122,17 @@ export default {
           justify-content: space-between;
           align-items: center;
           li{
-            width: 22%;
+            width: 28%;
+            a{
+              color: #333;
+            }
             img{
               width: 100%;
-              height: 50px;
+              height: 70px;
             }
             p{
               margin: 0;
-              font-size: 14px;
+              font-size: 12px;
               text-align: center;
             }
           }

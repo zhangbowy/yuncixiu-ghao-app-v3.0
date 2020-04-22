@@ -3,9 +3,11 @@
     <div class="kind-title"><span>{{ title }}</span></div>
     <div ref="wrapper" class="wrapper">
       <ul ref="cont" class="content">
-        <li v-for="(item,index) in data" :key="item.name+index" class="cont-item">
-          <img :src="item.icon" class="cont-img" alt="">
-          <p>{{ item.name }}</p>
+        <li v-for="(item,index) in data" :key="item.category_name+index" class="cont-item">
+          <a :href="`/classify?category_id=${item.id}`">
+            <img :src="item.logo" class="cont-img" alt="">
+            <p>{{ item.category_name }}</p>
+          </a>
         </li>
       </ul>
     </div>
@@ -32,7 +34,7 @@ export default {
           clearTimeout(timer)
           this.verScroll()
         }
-      }, 0)
+      }, 1000)
     })
   },
   methods: {
@@ -85,6 +87,9 @@ export default {
         margin: 0 10px;
         font-size: 12px;
         text-align: center;
+        a{
+          color: #333;
+        }
         .cont-img {
           overflow: hidden;
           width: 60px;

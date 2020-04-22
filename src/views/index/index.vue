@@ -11,8 +11,8 @@
     <!-- 轮播 -->
     <div class="index-banner">
       <van-swipe class="my-swipe" :autoplay="3000" :indicator-color="indicatorColor">
-        <van-swipe-item v-for="(image, index) in images" :key="index">
-          <img v-lazy="image">
+        <van-swipe-item v-for="(image, index) in indexData.slider" :key="index">
+          <img v-lazy="image.image_path">
         </van-swipe-item>
       </van-swipe>
     </div>
@@ -27,7 +27,7 @@
       </van-notice-bar>
     </div>
     <!-- 推荐种类 -->
-    <ver-scroll :data="kinds" title="种类推荐" />
+    <ver-scroll :data="indexData.category" title="种类推荐" />
     <!-- 样本 -->
     <div class="sample-box">
       <div v-for="(item,index) in samples" :key="index+item.src" class="sample-box-item">
@@ -43,6 +43,7 @@
 
 import HotGoods from '@/components/Home/HotGoods'
 import VerScroll from '@/components/Home/VerScroll'
+import { indexApi } from '@/api/home'
 export default {
   components: {
     HotGoods,
@@ -51,29 +52,7 @@ export default {
   data() {
     return {
       value: '',
-      kinds: [
-        {
-          id: 1,
-          name: '拎包',
-          icon: 'http://img10.360buyimg.com/n1/jfs/t1144/221/780030540/153183/9cbd453e/5548385fN1fc13cc9.jpg'
-        }, {
-          id: 2,
-          name: '雨伞',
-          icon: 'http://img3.imgtn.bdimg.com/it/u=2443114238,4148804533&fm=214&gp=0.jpg'
-        }, {
-          id: 3,
-          name: '鸭舌帽',
-          icon: 'http://ec4.images-amazon.com/images/I/71gfm0gcb0L._UL1500_.jpg'
-        }, {
-          id: 4,
-          name: '电脑包',
-          icon: 'http://img3.imgtn.bdimg.com/it/u=1918815643,3089648412&fm=26&gp=0.jpg'
-        }, {
-          id: 5,
-          name: '双肩包',
-          icon: 'http://img4.imgtn.bdimg.com/it/u=3555418247,60757103&fm=26&gp=0.jpg'
-        }
-      ],
+      indexData: {},
       samples: [
         {
           id: 1,
@@ -118,11 +97,17 @@ export default {
           price: '34'
         }
       ],
-      indicatorColor: '#000',
-      images: [
-        'https://ftp.bmp.ovh/imgs/2020/04/a4688e477c7d0d1f.jpg',
-        'https://ftp.bmp.ovh/imgs/2020/04/9718b5327cadf643.jpg'
-      ]
+      indicatorColor: '#000'
+    }
+  },
+  created() {
+    this.getIndex()
+  },
+  methods: {
+    getIndex() {
+      indexApi.getIndex().then(res => {
+        this.indexData = res.data
+      })
     }
   }
 }

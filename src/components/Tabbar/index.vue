@@ -21,6 +21,12 @@ export default {
   components: {
     Item
   },
+  props: {
+    path: {
+      type: String,
+      default: '/'
+    }
+  },
   data() {
     return {
       selected: '/',
@@ -50,6 +56,11 @@ export default {
           activeImg: require('../../assets/tabbar/user-active.png')
         }
       ]
+    }
+  },
+  created() {
+    if (this.path) {
+      this.selected = this.path
     }
   },
   methods: {

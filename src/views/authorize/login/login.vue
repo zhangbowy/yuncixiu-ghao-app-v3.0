@@ -90,8 +90,8 @@ export default {
   data() {
     return {
       loginType: 1,
-      username: '',
-      password: '',
+      username: '18895364554',
+      password: '123456',
       sms: '',
       smsText: '发送验证码',
       checked: false,
