@@ -82,6 +82,7 @@
 import { Toast } from 'vant'
 import SvgIcon from '@/components/SvgIcon'
 import TopBar from '@/components/TopBar'
+import { wxLogin } from '@/api/wxApi'
 export default {
   components: {
     TopBar,
@@ -137,9 +138,10 @@ export default {
     },
     wxLogin() {
       Toast.loading({
-        message: '微信登录...',
+        message: '微信登录中...',
         forbidClick: true
       })
+      wxLogin('wx8d8e2dd3ce250894', 'http://wxc2aa75454bb032f6.wfx.tecqm.cn')
     }
   }
 }

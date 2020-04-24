@@ -1,10 +1,10 @@
 <template>
   <div class="user-view">
     <div class="top-info">
-      <img class="user-avator" :src="userinfo.avator" alt="">
+      <img class="user-avator" :src="userInfo.avator" alt="">
       <div class="accout-info">
-        <p class="user-name">{{ userinfo.username }}</p>
-        <p class="user-phone">账号：{{ userinfo.phone }}</p>
+        <p class="user-name">{{ userInfo.username }}</p>
+        <p v-if="userInfo.phone " class="user-phone">账号：{{ userInfo.phone }}</p>
       </div>
     </div>
     <div class="content-view">
@@ -47,6 +47,7 @@
 <script>
 import SvgIcon from '@/components/SvgIcon'
 import CellItem from '@/components/Cell/CellItem'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     SvgIcon,
@@ -60,6 +61,16 @@ export default {
         phone: '18895364445'
       }
     }
+  },
+  computed: {
+    ...mapGetters([
+      'name',
+      'avatar',
+      'userInfo'
+    ])
+    // name() {
+    //   return this.data
+    // }
   }
 }
 </script>

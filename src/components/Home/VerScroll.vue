@@ -4,10 +4,8 @@
     <div ref="wrapper" class="wrapper">
       <ul ref="cont" class="content">
         <li v-for="(item,index) in data" :key="item.category_name+index" class="cont-item">
-          <a :href="`/classify?category_id=${item.id}`">
-            <img :src="item.logo" class="cont-img" alt="">
-            <p>{{ item.category_name }}</p>
-          </a>
+          <img :src="item.logo" class="cont-img" alt="" @click="toCategory(item.id)">
+          <p>{{ item.category_name }}</p>
         </li>
       </ul>
     </div>
@@ -55,6 +53,9 @@ export default {
           this.scroll.refresh() // 如果dom结构发生改变调用该方法
         }
       })
+    },
+    toCategory(id) {
+      this.$router.push({ path: `/classify?category_id=${id}` })
     }
   }
 }
@@ -87,9 +88,6 @@ export default {
         margin: 0 10px;
         font-size: 12px;
         text-align: center;
-        a{
-          color: #333;
-        }
         .cont-img {
           overflow: hidden;
           width: 60px;

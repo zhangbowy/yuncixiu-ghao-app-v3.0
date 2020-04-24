@@ -20,6 +20,9 @@
           <span slot="no-more">没有更多了～</span>
         </infinite-loading>
       </div>
+      <div v-if="goodsList.length==0">
+        <no-data text="暂无商品" icon="no-data" :font-size="64" />
+      </div>
     </div>
   </div>
 </template>
@@ -28,10 +31,12 @@
 import InfiniteLoading from 'vue-infinite-loading' // 上拉加载
 import GoodsList from '@/components/GoodsList'
 import { goodsApi } from '@/api/goods'
+import NoData from '@/components/NoData'
 export default {
   components: {
     GoodsList,
-    InfiniteLoading
+    InfiniteLoading,
+    NoData
   },
   data() {
     return {
@@ -83,6 +88,7 @@ export default {
         }
       })
     },
+    // 搜索事件
     onSearch(val) {
       this.keyWords = val
       this.fetchData()

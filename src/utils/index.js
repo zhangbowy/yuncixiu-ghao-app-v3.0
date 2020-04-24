@@ -85,3 +85,25 @@ export function isEqual(prevSKU, nextSKU, options) {
   )
 }
 
+// 获取url上的参数
+export const getUrlParams = () => {
+  var url = location.search // 获取url携带的参数
+  var urlParams = {}
+  if (url.indexOf('?') !== -1) {
+    var str = url.substr(1)
+    var strs = str.split('&')
+    for (var i = 0; i < strs.length; i++) {
+      urlParams[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1])
+    }
+  }
+  return urlParams
+}
+
+export const isWeiXin = () => {
+  var ua = window.navigator.userAgent.toLowerCase()
+  if (ua.match(/MicroMessenger/i) && ua.match(/MicroMessenger/i)[0] === 'micromessenger') {
+    return true // 是微信端
+  } else {
+    return false
+  }
+}

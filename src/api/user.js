@@ -8,6 +8,14 @@ export function login(data) {
   })
 }
 
+export function loginDev(data) {
+  return request({
+    url: '/user/loginDev',
+    method: 'post',
+    data
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/user/info',
@@ -19,6 +27,13 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: '/user/logout',
+    method: 'post'
+  })
+}
+
+export function checkLogin() {
+  return request({
+    url: '/user/checkLogin',
     method: 'post'
   })
 }

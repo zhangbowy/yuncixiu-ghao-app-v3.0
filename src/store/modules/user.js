@@ -1,12 +1,13 @@
-import { logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout, getInfo, checkLogin, loginDev } from '@/api/user'
+import { getStatus, setStatus, removeStatus } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    userInfo: {},
+    isLogin: false
   }
 }
 
@@ -16,51 +17,61 @@ const mutations = {
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
   },
-  SET_TOKEN: (state, token) => {
-    state.token = token
-  },
   SET_NAME: (state, name) => {
     state.name = name
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_USERINFO: (state, userInfo) => {
+    state.userInfo = userInfo
+  },
+  SET_LOGIN_STATUS: (state, status) => {
+    state.isLogin = status
   }
 }
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
+  login({ commit }) {
     return new Promise((resolve, reject) => {
-      if (username === '18895364554' && password === '123456') {
-        commit('SET_TOKEN', 'test_token')
-        setToken('test_token')
+      login().then(response => {
+        // const { data } = response
+        setStatus(true)
+        commit('SET_LOGIN_STATUS', true)
+        window.location.href = response.data
         resolve()
-      } else {
-        reject()
-      }
-      // login({ username: username.trim(), password: password }).then(response => {
-      //   const { data } = response
-      //   commit('SET_TOKEN', data.token)
-      //   setToken(data.token)
-      //   resolve()
-      // }).catch(error => {
-      //   reject(error)
-      // })
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  loginDev({ commit }) {
+    return new Promise((resolve, reject) => {
+      loginDev().then(response => {
+        // const { data } = response
+        setStatus(true)
+        commit('SET_LOGIN_STATUS', true)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
     })
   },
 
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo().then(response => {
         const { data } = response
         if (!data) {
           reject('验证失败，请重新登录！')
         }
-        const { name, avatar } = data
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
+        const { nickname, headimgurl } = data
+        commit('SET_NAME', nickname)
+        commit('SET_AVATAR', headimgurl)
+        commit('SET_USERINFO', data)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -68,14 +79,26 @@ const actions = {
     })
   },
 
-  // user logout
+  // logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
-        removeToken() // 必须先移除token
         resetRouter()
+        removeStatus()
         commit('RESET_STATE')
         resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // check login
+  checkLogin({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      checkLogin().then((response) => {
+        commit('SET_LOGIN_STATUS', true)
+        resolve(true)
       }).catch(error => {
         reject(error)
       })
@@ -85,7 +108,8 @@ const actions = {
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
-      removeToken()
+      commit('SET_LOGIN_STATUS', '')
+      removeStatus()
       commit('RESET_STATE')
       resolve()
     })

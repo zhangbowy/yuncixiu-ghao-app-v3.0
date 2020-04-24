@@ -12,18 +12,14 @@
       <van-tree-select height="89vh" :items="items" :main-active-index.sync="active" @click-nav="onNavClick">
         <template #content>
           <div class="right-content">
-            <a :href="`/goodsList?category_id=${currentId}`">
-              <img src="https://img.yzcdn.cn/vant/apple-1.jpg" alt="" width="100%">
-            </a>
-            <div v-for="(item,index) in subCategary" :key="index" class="sub-categary">
+            <img src="https://img.yzcdn.cn/vant/apple-1.jpg" alt="" width="100%" @click="toGoodsList(currentId)">
+            <div v-for="(item,index) in subCategary" :key="index" class="sub-categary" @click="toGoodsList(item.id)">
               <div class="sub-name">{{ item.name }}</div>
               <div class="sub-child">
                 <ul>
                   <li v-for="(child,i) in item.children" :key="i">
-                    <a :href="`/goodsList?category_id=${child.id}`">
-                      <img :src="child.img" alt="">
-                      <p>{{ child.name }}</p>
-                    </a>
+                    <img :src="child.img" alt="">
+                    <p>{{ child.name }}</p>
                   </li>
                 </ul>
               </div>
@@ -95,6 +91,9 @@ export default {
       }).then(res => {
 
       })
+    },
+    toGoodsList(id) {
+      this.$router.push({ path: `/goodsList?category_id=${id}` })
     }
   }
 }
@@ -123,9 +122,6 @@ export default {
           align-items: center;
           li{
             width: 28%;
-            a{
-              color: #333;
-            }
             img{
               width: 100%;
               height: 70px;

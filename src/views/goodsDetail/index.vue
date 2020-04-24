@@ -24,7 +24,7 @@
           <p>{{ goodDetail.name }}</p>
           <span>{{ goodDetail.real_sale }}人付款</span>
         </div>
-        <div class="share-btn" @click="showShare = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
+        <div class="share-btn" @click="share = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
         <div class="good-price">
           ￥ <span class="current-price">{{ goodDetail.current_price }}</span>
           <span class="old-price">￥{{ goodDetail.old_price }}</span>
@@ -50,6 +50,14 @@
                 <p>已选：<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
               </div>
             </div>
+            <div class="good-number">
+              <van-cell title="选择数量">
+                <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+                <template>
+                  <van-stepper v-model="goodNumber" :min="goodDetail.min_buy" :max="goodDetail.max_buy" input-width="30px" button-size="22px" />
+                </template>
+              </van-cell>
+            </div>
             <div class="sku-list">
               <div v-for="(item,index) in skudata" :key="item.id + '_id'" class="sku-item">
                 <span class="sku-item-name">{{ item.value }}:</span>
@@ -58,13 +66,27 @@
                 </div>
               </div>
             </div>
+            <div class="good-adction">
+              <van-goods-action>
+                <van-goods-action-button
+                  type="warning"
+                  text="加入购物车"
+                  @click="skuAddCart"
+                />
+                <van-goods-action-button
+                  type="danger"
+                  text="立即购买"
+                  @click="skuBuy"
+                />
+              </van-goods-action>
+            </div>
           </div>
         </van-action-sheet>
       </div>
       <!-- 商品详 -->
-      <div class="goods-detail">
+      <div class="detail">
         <div class="title">商品详情</div>
-        <div v-html="goodDetail.detail" />
+        <div class="content" v-html="goodDetail.detail" />
       </div>
       <div class="good-adction">
         <van-goods-action>
@@ -82,8 +104,9 @@
           />
         </van-goods-action>
       </div>
+      <!-- 分享组件 -->
       <van-share-sheet
-        v-model="showShare"
+        v-model="share"
         title="立即分享给好友"
         :options="options"
         @select="onSelect"
@@ -95,33 +118,33 @@
 <script>
 import TopBar from '@/components/TopBar'
 import { goodsApi } from '@/api/goods'
-import { ImagePreview } from 'vant'
+import { ImagePreview, Toast } from 'vant'
 export default {
   components: {
     TopBar
   },
   data() {
     return {
-      current: 0,
-      checkedSku: '请选择规格',
-      showSku: false,
-      showShare: false,
-      options: [
-        { name: '微信', icon: 'wechat' },
-        { name: '微博', icon: 'weibo' },
-        { name: '复制链接', icon: 'link' },
-        { name: '分享海报', icon: 'poster' },
-        { name: '二维码', icon: 'qrcode' }
-      ],
+      current: 0, // 轮播图当前位
+      checkedSku: '请选择规格', // sku-cell文字
+      showSku: false, // 是否显示sku
+      share: false, // 是否显示分享
       goodDetail: {
         images: []
-      },
-      skuList: [],
-      skudata: [],
-      activeSku: [],
-      skuItem: {
-      },
-      checkedSkuIds: '',
+      }, // 商品详情
+      skuList: [], // sku列表-
+      skudata: [], // sku选项
+      activeSku: [], // 选中的sku
+      skuItem: {}, // 选中sku详细
+      options: [
+        { name: '微信', icon: 'wechat' }
+        // { name: '微博', icon: 'weibo' },
+        // { name: '复制链接', icon: 'link' },
+        // { name: '分享海报', icon: 'poster' },
+        // { name: '二维码', icon: 'qrcode' }
+      ], // 分享选项
+      goodNumber: 0, // 购买数量
+      checkedSkuIds: '', // 选中sku组合id
       id: this.$route.query.good_id
     }
   },
@@ -141,10 +164,9 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
-        this.checkedSkuIds = this.activeSku.reduce(
-          (total, prev, index) =>
-            // console.log('prev', prev)
-            `${total}${prev.spec.id}-${prev.option.id}${index === this.activeSku.length - 1 ? '' : '_'}`, ''
+        this.checkedSkuIds = this.activeSku.reduce((total, prev, index) =>
+        // console.log('prev', prev)
+          `${total}${prev.spec.id}-${prev.option.id}${index === this.activeSku.length - 1 ? '' : '_'}`, ''
         )
       }
     },
@@ -180,6 +202,7 @@ export default {
     // 加载skulist和skudata
   },
   methods: {
+    // 获取商品详情
     fetchData(id) {
       goodsApi.getGoodsDetail({
         id: id
@@ -225,13 +248,39 @@ export default {
     // 加入购物车/立即购买按钮点击
     onClickButton() {
       if (!this.skuItem.sku_id) {
-        this.changeSkuShow(0)
+        this.changeSkuShow()
       }
+    },
+    // 分享面板是否显示
+    shareIsShow(val) {
+      console.log(val)
+      this.share = val
+    },
+    // sku添加购物车按钮
+    skuAddCart() {
+      console.log(1)
+      Toast('您点击了添加购物车')
+    },
+    skuBuy() {
+      console.log(2)
+      Toast('您点击了购买')
     },
     // 分享按钮选中
     onSelect(option) {
-      console.log(option.name)
-      this.showShare = false
+      switch (option.name) {
+        case '微信':
+          this.bindShareTimeLine()
+          break
+        case '朋友圈':
+          this.bindShareAppMessage()
+          break
+        case 'QQ':
+          this.bindShareQQ()
+          break
+        case 'QQ空间':
+          this.bindShareQzone()
+          break
+      }
     }
   }
 }
@@ -286,7 +335,7 @@ export default {
       }
       .good-price{
         margin-top: 10px;
-        color: #ff0a0a;
+        color: #ee0a24;
         font-size: 12px;
         span.current-price{
           font-size: 18px;
@@ -303,7 +352,7 @@ export default {
     .good-cell{
       border-bottom: 10px solid #f5f5f5;
       .cell-item{
-        font-size: 16px;
+        font-size: 14px;
         padding: 10px;
         span{
           display: inline-block;
@@ -324,24 +373,29 @@ export default {
     .sku-box{
       .content{
         padding: 20px;
+        padding-bottom: 60px;
         .sku-info{
           .right-info{
             display: inline-block;
-            font-size: 16px;
+            font-size: 14px;
             padding-left: 10px;
             vertical-align: top;
+            padding-top: 20px;
             p{
               margin: 0;
-              padding-bottom: 10px;
+              padding-bottom: 5px;
             }
             p.price{
-              color: #ff0a0a;
+              color: #ee0a24;
             }
           }
         }
+        .good-number{
+          font-size: 14px;
+        }
         .sku-list{
           margin-top: 10px;
-          font-size: 16px;
+          font-size: 14px;
           .sku-item{
             margin-bottom: 20px;
             .sku-item-name{
@@ -355,24 +409,18 @@ export default {
                 border-radius: 10px;
                 padding: 5px 10px;
                 margin-right: 10px;
-                font-size: 14px;
+                font-size: 12px;
               }
               .attr-name.active{
                 background: rgba(255, 0, 0, 0.164);
-                color: rgb(252, 29, 29);
+                color: #fc1d1d;
               }
             }
           }
         }
       }
     }
-    .goods-detail{
-      padding: 10px;
-      .title{
-        font-size: 18px;
-        color: #333
-      }
-    }
+
   }
   .custom-indicator {
     position: absolute;
@@ -387,3 +435,23 @@ export default {
 }
 </style>
 
+<style lang="scss">
+.goods-detail{
+  .detail{
+    padding: 10px;
+    .title{
+      font-size: 16px;
+      color: #333
+    }
+    .content{
+      font-size: 12pt;
+      p{
+        margin: 5px 0;
+      }
+      img{
+        width: 100%;
+      }
+    }
+  }
+}
+</style>

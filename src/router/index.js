@@ -23,14 +23,14 @@ const constantRoutes = [
     path: '/cart',
     name: 'ShopCart',
     component: () => import('@/views/shopCart/index'),
-    meta: { title: '购物车', showTabbar: true }
+    meta: { title: '购物车' }
   },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/authorize/login/login'),
-    meta: { title: '用户登录' }
-  },
+  // {
+  //   path: '/login',
+  //   name: 'Login',
+  //   component: () => import('@/views/authorize/login/login'),
+  //   meta: { title: '用户登录' }
+  // },
   {
     path: '/register',
     name: 'Register',
@@ -50,6 +50,12 @@ const constantRoutes = [
     meta: { title: '商品详情' }
   },
   {
+    path: '/orderConfirm',
+    name: 'OrderConfirm',
+    component: () => import('@/views/orderManage/orderConfirm'),
+    meta: { title: '确认订单' }
+  },
+  {
     path: '/addressList',
     name: 'AddressList',
     component: () => import('@/views/address/addressList/index'),
@@ -60,6 +66,11 @@ const constantRoutes = [
     name: 'About',
     component: () => import('@/views/article/detail/about'),
     meta: { title: '' }
+  }, {
+    path: '/authorize',
+    name: 'Authorize',
+    component: () => import('@/views/authorize/login/authorize'),
+    meta: { title: '用户授权' }
   },
   {
     path: '/404',
@@ -71,7 +82,7 @@ const constantRoutes = [
 ]
 
 const createRouter = () => new VueRouter({
-  mode: 'history', // require service support
+  // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

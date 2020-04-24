@@ -1,15 +1,15 @@
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 
-const TokenKey = 'cixiu_token'
+const isLogin = 'is_login'
 
-export function getToken() {
-  return Cookies.get(TokenKey)
+export function getStatus() {
+  return localStorage.getItem(isLogin)
 }
 
-export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+export function setStatus(status) {
+  return localStorage.setItem(isLogin, status)
 }
 
-export function removeToken() {
-  return Cookies.remove(TokenKey)
+export function removeStatus() {
+  return localStorage.removeItem(isLogin)
 }

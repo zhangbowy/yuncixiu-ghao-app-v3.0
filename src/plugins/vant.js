@@ -11,6 +11,7 @@ import {
   Form,
   Field,
   Button,
+  CheckboxGroup,
   Checkbox,
   Grid,
   GridItem,
@@ -20,7 +21,10 @@ import {
   ShareSheet,
   Area,
   SubmitBar,
-  Col, Row
+  Col, Row,
+  Cell, CellGroup,
+  Stepper,
+  Dialog
 } from 'vant'
 
 Vue.use(
@@ -73,4 +77,14 @@ Vue.use(
   Area
 ).use(
   SubmitBar
-).use(Col).use(Row)
+).use(Col).use(Row).use(
+  Cell
+).use(
+  CellGroup
+).use(
+  Stepper
+).use(
+  CheckboxGroup
+).use(
+  Dialog
+)

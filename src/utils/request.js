@@ -1,11 +1,12 @@
 import axios from 'axios'
 import store from '@/store'
-// import { getToken } from '@/utils/auth'
+import { isWeiXin } from '@/utils'
+import router from '@/router'
 
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // withCredentials: true, // 跨域请求时发送cookies
+  withCredentials: true, // 跨域请求时发送cookies
   timeout: 20000 // 请求超时
 })
 
@@ -43,13 +44,21 @@ service.interceptors.response.use(
     // 如果自定义代码不是0，则判断为错误。
     if (res.code !== 0) {
       console.log('err' + res.message) // for debug
-      // 50008: 非法令牌；50012:其他客户端登录；50014:令牌过期；
-      if (res.code === 402 || res.code === 50012 || res.code === 50014) {
-        store.dispatch('user/resetToken').then(() => {
-          location.reload()
-        })
+      // 402: 未授权
+      if (res.code === 402) {
+        if (isWeiXin()) {
+          // 生产环境
+          store.dispatch('user/login').then(res => {
+            router.push({ path: '/' })
+          })
+        } else {
+          // 开发环境
+          store.dispatch('user/loginDev').then(res => {
+            router.push({ path: '/' })
+          })
+        }
       }
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error('Error'))
     } else {
       return res
     }
