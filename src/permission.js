@@ -19,7 +19,8 @@ router.beforeEach(async(to, from, next) => {
   // 确定用户是否已登录
   const isLogin = getStatus()
 
-  if (isLogin) {
+  if (isLogin===true) {
+    console.log(isLogin)
     const hasGetUserInfo = store.getters.name
     if (hasGetUserInfo) {
       next()
@@ -35,16 +36,16 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    await store.dispatch('user/checkLogin').then(async(res) => {
+    await store.dispatch('user/checkLogin').then((res) => {
       if (!res) {
         if (isWeiXin()) {
           // 生产环境
-          await store.dispatch('user/login').then(res => {
+         store.dispatch('user/login').then(res => {
             next(`${to.path}`)
           })
         } else {
           // 开发环境
-          await store.dispatch('user/loginDev').then(res => {
+           store.dispatch('user/loginDev').then(res => {
             next(`${to.path}`)
           })
         }

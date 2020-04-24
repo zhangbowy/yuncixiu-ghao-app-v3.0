@@ -37,8 +37,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       login().then(response => {
         // const { data } = response
-        setStatus(true)
-        commit('SET_LOGIN_STATUS', true)
         window.location.href = response.data
         resolve()
       }).catch(error => {
@@ -51,8 +49,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       loginDev().then(response => {
         // const { data } = response
-        setStatus(true)
-        commit('SET_LOGIN_STATUS', true)
         resolve()
       }).catch(error => {
         reject(error)
@@ -97,8 +93,15 @@ const actions = {
   checkLogin({ commit, state }) {
     return new Promise((resolve, reject) => {
       checkLogin().then((response) => {
-        commit('SET_LOGIN_STATUS', true)
-        resolve(true)
+        if(response.code==402){
+          setStatus(false)
+          commit('SET_LOGIN_STATUS', false)
+          resolve(false)
+        }else{
+          setStatus(true)
+          commit('SET_LOGIN_STATUS', true)
+          resolve(true)
+        }
       }).catch(error => {
         reject(error)
       })

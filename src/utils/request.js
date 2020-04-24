@@ -46,17 +46,18 @@ service.interceptors.response.use(
       console.log('err' + res.message) // for debug
       // 402: 未授权
       if (res.code === 402) {
-        if (isWeiXin()) {
-          // 生产环境
-          store.dispatch('user/login').then(res => {
-            router.push({ path: '/' })
-          })
-        } else {
-          // 开发环境
-          store.dispatch('user/loginDev').then(res => {
-            router.push({ path: '/' })
-          })
-        }
+        // if (isWeiXin()) {
+        //   // 生产环境
+        //   store.dispatch('user/login').then(res => {
+        //     router.push({ path: '/' })
+        //   })
+        // } else {
+        //   // 开发环境
+        //   store.dispatch('user/loginDev').then(res => {
+        //     router.push({ path: '/' })
+        //   })
+        // }
+        return res
       }
       return Promise.reject(new Error('Error'))
     } else {
