@@ -16,11 +16,11 @@ export function loginDev(data) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo(params) {
   return request({
     url: '/user/info',
     method: 'get',
-    params: { token }
+    params
   })
 }
 
@@ -31,9 +31,45 @@ export function logout() {
   })
 }
 
-export function checkLogin() {
+export function checkLogin(data) {
   return request({
     url: '/user/checkLogin',
-    method: 'post'
+    method: 'post',
+    data
   })
+}
+
+// 地址管理
+export const addressApi = {
+  // 地址列表
+  getAddressList(params) {
+    return request({
+      url: '/user/address',
+      method: 'get',
+      params
+    })
+  },
+  // 新增地址
+  addAddress(data) {
+    return request({
+      url: '/user/addAddress',
+      method: 'post',
+      data
+    })
+  },
+  // 编辑地址
+  editAddress(data) {
+    return request({
+      url: '/user/editAddress',
+      method: 'post',
+      data
+    })
+  },
+  deleteAddress(data) {
+    return request({
+      url: '/user/delAddress',
+      method: 'post',
+      data
+    })
+  }
 }

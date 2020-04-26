@@ -29,7 +29,7 @@
 
 <script>
 import InfiniteLoading from 'vue-infinite-loading' // 上拉加载
-import GoodsList from '@/components/GoodsList'
+import GoodsList from '@/components/Goods/GoodsList'
 import { goodsApi } from '@/api/goods'
 import NoData from '@/components/NoData'
 export default {

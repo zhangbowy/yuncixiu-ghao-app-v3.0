@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     toDetail(id) {
-      this.$router.push({ path: 'goodsDetail', query: { good_id: id }})
+      this.$router.push({ path: 'goodsDetail', query: { goods_id: id }})
     }
   }
 }

@@ -24,7 +24,7 @@ export default {
 <style lang="scss" scoped>
 .wscn-http404-container{
   padding: 50px 0;
-  font-size: 24px;
+  font-size: 18px;
   text-align: center;
 }
 .bullshit__headline{

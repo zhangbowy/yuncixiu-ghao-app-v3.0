@@ -4,34 +4,34 @@
       <!-- tab标题栏 -->
       <top-bar />
     </div>
-    <div class="good-content">
+    <div class="goods-content">
       <!-- 商品图片 -->
-      <div class="good-images">
+      <div class="goods-images">
         <van-swipe @change="onChange">
-          <van-swipe-item v-for="(item, index) in goodDetail.images" :key="item">
+          <van-swipe-item v-for="(item, index) in goodsDetail.images" :key="item">
             <img :src="item" alt="" @click="preview(index)">
           </van-swipe-item>
           <template #indicator>
             <div class="custom-indicator">
-              {{ current + 1 }}/{{ goodDetail.images.length }}
+              {{ current + 1 }}/{{ goodsDetail.images.length }}
             </div>
           </template>
         </van-swipe>
       </div>
       <!-- 基础信息 -->
-      <div class="good-info">
-        <div class="good-name">
-          <p>{{ goodDetail.name }}</p>
-          <span>{{ goodDetail.real_sale }}人付款</span>
+      <div class="goods-info">
+        <div class="goods-name">
+          <p>{{ goodsDetail.name }}</p>
+          <span>{{ goodsDetail.real_sale }}人付款</span>
         </div>
         <div class="share-btn" @click="share = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
-        <div class="good-price">
-          ￥ <span class="current-price">{{ goodDetail.current_price }}</span>
-          <span class="old-price">￥{{ goodDetail.old_price }}</span>
+        <div class="goods-price">
+          ￥ <span class="current-price">{{ goodsDetail.current_price }}</span>
+          <span class="old-price">￥{{ goodsDetail.old_price }}</span>
         </div>
       </div>
       <!-- 商品规格选择 -->
-      <div class="good-cell">
+      <div class="goods-cell">
         <div class="cell-item" @click="changeSkuShow">
           <span class="cell-title">已选</span>
           <span class="cell-content">{{ checkedSku }}</span>
@@ -43,18 +43,18 @@
         <van-action-sheet v-model="showSku" title="选择规格">
           <div class="content">
             <div v-if="skuItem" class="sku-info">
-              <img :src="skuItem.images?skuItem.images:goodDetail.thumb_image_path" width="96" height="96" alt="">
+              <img :src="skuItem.images?skuItem.images:goodsDetail.thumb_image_path" width="96" height="96" alt="">
               <div class="right-info">
                 <p class="price">￥{{ skuItem.current_price }}</p>
                 <p>剩余{{ skuItem.num }}</p>
                 <p>已选：<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
               </div>
             </div>
-            <div class="good-number">
+            <div class="goods-number">
               <van-cell title="选择数量">
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template>
-                  <van-stepper v-model="goodNumber" :min="goodDetail.min_buy" :max="goodDetail.max_buy" input-width="30px" button-size="22px" />
+                  <van-stepper v-model="goodsNumber" :min="goodsDetail.min_buy" :max="goodsDetail.max_buy" input-width="30px" button-size="22px" />
                 </template>
               </van-cell>
             </div>
@@ -66,7 +66,7 @@
                 </div>
               </div>
             </div>
-            <div class="good-adction">
+            <div class="goods-adction">
               <van-goods-action>
                 <van-goods-action-button
                   type="warning"
@@ -83,24 +83,25 @@
           </div>
         </van-action-sheet>
       </div>
-      <!-- 商品详 -->
+      <!-- 商品详情 -->
       <div class="detail">
         <div class="title">商品详情</div>
-        <div class="content" v-html="goodDetail.detail" />
+        <div class="content" v-html="goodsDetail.detail" />
       </div>
-      <div class="good-adction">
+      <!-- 底部操作 -->
+      <div class="goods-adction">
         <van-goods-action>
           <van-goods-action-icon icon="wap-home-o" text="首页" @click="pathTo('/')" />
           <van-goods-action-icon icon="cart-o" text="购物车" @click="pathTo('/cart')" />
           <van-goods-action-button
             type="warning"
             text="加入购物车"
-            @click="onClickButton"
+            @click="addCart"
           />
           <van-goods-action-button
             type="danger"
             text="立即购买"
-            @click="onClickButton"
+            @click="buyNow"
           />
         </van-goods-action>
       </div>
@@ -119,6 +120,7 @@
 import TopBar from '@/components/TopBar'
 import { goodsApi } from '@/api/goods'
 import { ImagePreview, Toast } from 'vant'
+import store from '@/store'
 export default {
   components: {
     TopBar
@@ -129,7 +131,7 @@ export default {
       checkedSku: '请选择规格', // sku-cell文字
       showSku: false, // 是否显示sku
       share: false, // 是否显示分享
-      goodDetail: {
+      goodsDetail: {
         images: []
       }, // 商品详情
       skuList: [], // sku列表-
@@ -143,9 +145,9 @@ export default {
         // { name: '分享海报', icon: 'poster' },
         // { name: '二维码', icon: 'qrcode' }
       ], // 分享选项
-      goodNumber: 0, // 购买数量
+      goodsNumber: 0, // 购买数量
       checkedSkuIds: '', // 选中sku组合id
-      id: this.$route.query.good_id
+      id: this.$route.query.goods_id
     }
   },
   watch: {
@@ -187,9 +189,9 @@ export default {
           if (arr.indexOf(this.checkedSkuIds) < 0) {
             this.checkedSku = '请选择规格'
             this.skuItem = {
-              current_price: this.goodDetail.current_price,
-              num: this.goodDetail.sum_stock,
-              images: this.goodDetail.thumb_image_path
+              current_price: this.goodsDetail.current_price,
+              num: this.goodsDetail.sum_stock,
+              images: this.goodsDetail.thumb_image_path
             }
           }
         })
@@ -197,7 +199,7 @@ export default {
     }
   },
   created() {
-    this.goodsId = this.$route.query.good_id
+    this.goodsId = this.$route.query.goods_id
     this.fetchData(this.goodsId)
     // 加载skulist和skudata
   },
@@ -207,8 +209,8 @@ export default {
       goodsApi.getGoodsDetail({
         id: id
       }).then(res => {
-        this.goodDetail = res.data
-        this.goodDetail.images = JSON.parse(res.data.images)
+        this.goodsDetail = res.data
+        this.goodsDetail.images = JSON.parse(res.data.images)
         this.skuList = JSON.parse(res.data.sku_list)
         this.skudata = JSON.parse(res.data.sku_show)
         this.skuItem.current_price = res.data.current_price
@@ -224,7 +226,7 @@ export default {
     preview(i) {
       ImagePreview(
         {
-          images: this.goodDetail.images,
+          images: this.goodsDetail.images,
           startPosition: i
         }
       )
@@ -246,24 +248,47 @@ export default {
       this.$router.push({ path: path })
     },
     // 加入购物车/立即购买按钮点击
-    onClickButton() {
+    addCart() {
       if (!this.skuItem.sku_id) {
         this.changeSkuShow()
+      } else {
+        this.skuItem.number = this.goodsNumber
+        this.skuItem.goods_name = this.goodsDetail.name
+        store.dispatch('shopCart/setCartList', this.skuItem).then(res => {
+          Toast('添加成功')
+        })
+      }
+    },
+    buyNow() {
+      if (!this.skuItem.sku_id) {
+        this.changeSkuShow()
+      } else {
+        this.$router.push({ path: '/orderConfirm' })
       }
     },
     // 分享面板是否显示
     shareIsShow(val) {
-      console.log(val)
       this.share = val
     },
     // sku添加购物车按钮
     skuAddCart() {
-      console.log(1)
-      Toast('您点击了添加购物车')
+      if (!this.skuItem.sku_id) {
+        this.changeSkuShow()
+      } else {
+        this.skuItem.number = this.goodsNumber
+        this.skuItem.goods_name = this.goodsDetail.name
+        store.dispatch('shopCart/setCartList', this.skuItem).then(res => {
+          Toast('添加成功')
+        })
+      }
     },
+    // sku购买按钮
     skuBuy() {
-      console.log(2)
-      Toast('您点击了购买')
+      if (!this.skuItem.sku_id) {
+        this.changeSkuShow()
+      } else {
+        this.$router.push({ path: '/orderConfirm' })
+      }
     },
     // 分享按钮选中
     onSelect(option) {
@@ -288,24 +313,25 @@ export default {
 
 <style lang="scss" scoped>
 .goods-detail{
+  padding-bottom: 40px;
   .navbar{
     position: fixed;
     top: 0;
     z-index: 999;
   }
 
-  .good-content{
-    .good-images{
+  .goods-content{
+    .goods-images{
       img{
         width: 100%;
         height: 335px;
       }
     }
-    .good-info{
+    .goods-info{
       position: relative;
       padding: 5px 10px;
       border-bottom: 10px solid #f5f5f5;
-      .good-name{
+      .goods-name{
         color: #333;
         font-weight: bold;
         font-size: 22px;
@@ -333,7 +359,7 @@ export default {
         border-radius: 20px 0 0 20px;
         background: rgba(65, 65, 65, 0.1);
       }
-      .good-price{
+      .goods-price{
         margin-top: 10px;
         color: #ee0a24;
         font-size: 12px;
@@ -349,7 +375,7 @@ export default {
       }
     }
     // sku部分样式
-    .good-cell{
+    .goods-cell{
       border-bottom: 10px solid #f5f5f5;
       .cell-item{
         font-size: 14px;
@@ -390,7 +416,7 @@ export default {
             }
           }
         }
-        .good-number{
+        .goods-number{
           font-size: 14px;
         }
         .sku-list{

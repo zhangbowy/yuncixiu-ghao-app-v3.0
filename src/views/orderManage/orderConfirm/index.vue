@@ -1,6 +1,19 @@
 <template>
   <div class="order-confirm">
-    <div class="order-address" @click="toAddress">
+    <div class="navbar">
+      <!-- tab标题栏 -->
+      <top-bar title="确认订单" />
+    </div>
+    <div class="order-type">
+      <van-cell title="配送方式" @click="show = true">
+        <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+        <template #right-icon>
+          <span style="background: #ee0a24; color: #fff;border-radius: 8px;padding: 0 5px 0;font-size: 10px">{{ orderType.name }}</span>
+        </template>
+      </van-cell>
+      <van-action-sheet v-model="show" :actions="actions" @select="onSelect" />
+    </div>
+    <div v-if="orderType.type==2" class="order-address" @click="toAddress">
       <div class="user-info">
         <span>张三</span>
         <span>18895364554</span>
@@ -25,7 +38,7 @@
     </div>
     <div class="statistical">
       <van-cell title="小计" :value="`￥${subtotal}`" />
-      <van-cell title="运费" :value="`￥${orderInfo.yunfei}`" />
+      <van-cell v-if="orderType.type==2" title="运费" :value="`￥${orderInfo.yunfei}`" />
     </div>
     <div class="order-mask">
       <van-field
@@ -47,9 +60,21 @@
 </template>
 
 <script>
+import TopBar from '@/components/TopBar'
 export default {
+  components: {
+    TopBar
+  },
   data() {
     return {
+      show: false,
+      actions: [
+        { name: '实体店铺', type: 1 },
+        { name: '快递', type: 2 }
+      ],
+      orderType: {
+        name: '快递', type: 2
+      },
       orderInfo: {
         yunfei: 5,
         goodsInfo: [
@@ -88,6 +113,13 @@ export default {
     },
     toAddress() {
       this.$router.push({ path: `/addressList?redirect=${'/orderConfirm'}` })
+    },
+    onSelect(item) {
+      // 默认情况下点击选项时不会自动收起
+      // 可以通过 close-on-click-action 属性开启自动收起
+      this.show = false
+      console.log(item)
+      this.orderType = item
     }
   }
 }

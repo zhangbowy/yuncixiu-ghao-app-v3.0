@@ -1,7 +1,5 @@
 import axios from 'axios'
 import store from '@/store'
-import { isWeiXin } from '@/utils'
-import router from '@/router'
 
 // 创建axios实例
 const service = axios.create({
@@ -43,20 +41,11 @@ service.interceptors.response.use(
     const res = response.data
     // 如果自定义代码不是0，则判断为错误。
     if (res.code !== 0) {
-      console.log('err' + res.message) // for debug
-      // 402: 未授权
+      // console.log('err' + res.message) // for debug
+      // 402: 未授权/未登录
       if (res.code === 402) {
-        // if (isWeiXin()) {
-        //   // 生产环境
-        //   store.dispatch('user/login').then(res => {
-        //     router.push({ path: '/' })
-        //   })
-        // } else {
-        //   // 开发环境
-        //   store.dispatch('user/loginDev').then(res => {
-        //     router.push({ path: '/' })
-        //   })
-        // }
+        // 清除缓存登录状态
+        store.dispatch('user/resetToken')
         return res
       }
       return Promise.reject(new Error('Error'))

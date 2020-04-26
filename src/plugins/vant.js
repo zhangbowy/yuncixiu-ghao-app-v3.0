@@ -24,7 +24,9 @@ import {
   Col, Row,
   Cell, CellGroup,
   Stepper,
-  Dialog
+  Picker,
+  Popup,
+  Switch
 } from 'vant'
 
 Vue.use(
@@ -86,5 +88,9 @@ Vue.use(
 ).use(
   CheckboxGroup
 ).use(
-  Dialog
+  Picker
+).use(
+  Popup
+).use(
+  Switch
 )

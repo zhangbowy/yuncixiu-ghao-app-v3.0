@@ -18,9 +18,7 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
   // 确定用户是否已登录
   const isLogin = getStatus()
-
-  if (isLogin===true) {
-    console.log(isLogin)
+  if (isLogin) {
     const hasGetUserInfo = store.getters.name
     if (hasGetUserInfo) {
       next()
@@ -40,45 +38,19 @@ router.beforeEach(async(to, from, next) => {
       if (!res) {
         if (isWeiXin()) {
           // 生产环境
-         store.dispatch('user/login').then(res => {
-            next(`${to.path}`)
-          })
+          store.dispatch('user/login')
         } else {
           // 开发环境
-           store.dispatch('user/loginDev').then(res => {
+          store.dispatch('user/loginDev').then(res => {
             next(`${to.path}`)
           })
         }
+      } else {
+        next()
       }
     })
     NProgress.done()
   }
-  // if (!isLogin) {
-  //   if (isWeiXin()) {
-  //     // 生产环境
-  //     await store.dispatch('user/login')
-  //   } else {
-  //     // 开发环境
-  //     await store.dispatch('user/loginDev')
-  //   }
-  //   next()
-  // } else {
-  //   const hasGetUserInfo = store.getters.name
-  //   if (hasGetUserInfo) {
-  //     next()
-  //   } else {
-  //     try {
-  //       // 获取用户信息
-  //       await store.dispatch('user/getInfo')
-  //       next()
-  //     } catch (error) {
-  //       // 获取用户信息失败
-  //       console.log('error', error)
-  //       NProgress.done()
-  //     }
-  //   }
-  // }
-  next()
   NProgress.done()
 })
 

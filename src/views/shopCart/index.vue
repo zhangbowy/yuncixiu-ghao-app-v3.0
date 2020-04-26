@@ -16,12 +16,12 @@
           <div v-for="(item,index) in cartList" :key="index" class="goods-item">
             <van-checkbox :name="item.id" checked-color="#ff6034" />
             <div class="good-info">
-              <img :src="item.goods_img" alt="" width="100">
+              <img :src="item.images" alt="" width="100">
               <div class="good-info-right">
                 <div class="good-name">{{ item.goods_name }}</div>
                 <div class="good-sku">规格：<span v-for="sku in item.skus" :key="sku.k">{{ sku.v }} </span></div>
                 <div class="good-price">
-                  <span class="price">￥{{ item.price }}</span>
+                  <span class="price">￥{{ item.current_price }}</span>
                   <span class="number">x{{ item.number }}</span>
                 </div>
               </div>
@@ -53,50 +53,27 @@
 
 <script>
 import { Dialog, Toast } from 'vant'
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       checkedArr: [],
       checkedItem: [],
       checked: false,
-      isEdit: false,
-      cartList: [{
-        id: 1,
-        goods_img: 'http://ec4.images-amazon.com/images/I/71gfm0gcb0L._UL1500_.jpg',
-        goods_name: '鸭舌帽黑色 促销中',
-        skus: [{
-          k: '颜色',
-          v: '红色'
-        }, {
-          k: '尺寸',
-          v: '大'
-        }],
-        price: 0.01,
-        number: 1
-      },
-      {
-        id: 2,
-        goods_img: 'http://ec4.images-amazon.com/images/I/71gfm0gcb0L._UL1500_.jpg',
-        goods_name: '鸭舌帽 促销中',
-        skus: [{
-          k: '颜色',
-          v: '黑色'
-        }, {
-          k: '尺寸',
-          v: '中'
-        }],
-        price: 0.02,
-        number: 1
-      }]
+      isEdit: false
+
     }
   },
   computed: {
     // 返回总价
     total() {
       return this.checkedItem.reduce((prev, cur) => {
-        return cur.price * cur.number + prev
+        return cur.current_price * cur.number + prev
       }, 0)
-    }
+    },
+    ...mapGetters([
+      'cartList'
+    ])
   },
   watch: {
     checked: {

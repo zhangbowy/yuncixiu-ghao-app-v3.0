@@ -1,9 +1,9 @@
 <template>
   <div class="user-view">
     <div class="top-info">
-      <img class="user-avator" :src="userInfo.avator" alt="">
+      <img class="user-avator" :src="avatar" alt="">
       <div class="accout-info">
-        <p class="user-name">{{ userInfo.username }}</p>
+        <p class="user-name">{{ name }}</p>
         <p v-if="userInfo.phone " class="user-phone">账号：{{ userInfo.phone }}</p>
       </div>
     </div>
@@ -55,11 +55,11 @@ export default {
   },
   data() {
     return {
-      userinfo: {
-        avator: 'https://s1.ax1x.com/2020/04/14/GxfLaq.jpg',
-        username: '可达鸭压',
-        phone: '18895364445'
-      }
+      // userinfo: {
+      //   avator: 'https://s1.ax1x.com/2020/04/14/GxfLaq.jpg',
+      //   username: '可达鸭压',
+      //   phone: '18895364445'
+      // }
     }
   },
   computed: {
@@ -71,6 +71,9 @@ export default {
     // name() {
     //   return this.data
     // }
+  },
+  created() {
+
   }
 }
 </script>

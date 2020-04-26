@@ -1,32 +1,21 @@
 <template>
-  <div class="address-list">
+  <div class="address-manage">
     <top-bar :title="'地址列表'" />
     <div class="addrss-content">
-      <van-address-list
-        v-model="chosenAddressId"
+      <address-list
         :list="list"
         default-tag-text="默认"
         @add="onAdd"
         @edit="onEdit"
-      >
-        <!-- <div slot="item-bottom">
-          <div class="delete-item" @click.stop="deleteAddress()">
-            <svg-icon icon-class="delete" /><span>删除</span>
-          </div>
-        </div> -->
-      </van-address-list>
+      />
     </div>
     <div class="">
       <van-action-sheet v-model="show" :title="actionTitle">
         <div class="content">
-          <van-address-edit
-            :area-list="areaList"
-            :show-postal="false"
-            show-delete
-            show-set-default
-            show-search-result
+          <address-edit
+            :type="actionTitle"
+            :area-list="cityList"
             :address-info="addressInfo"
-            :area-columns-placeholder="['请选择', '请选择', '请选择']"
             @save="onSave"
             @delete="onDelete"
           />
@@ -38,72 +27,118 @@
 
 <script>
 import TopBar from '@/components/TopBar'
-import areaList from './area'
+import { Dialog, Toast } from 'vant'
+import cityList from './city'
+import { addressApi } from '@/api/user'
+import AddressList from '@/components/Address/AddressList'
+import AddressEdit from '@/components/Address/AddressEdit'
 export default {
   components: {
-    TopBar
+    TopBar,
+    AddressList,
+    AddressEdit
   },
   data() {
     return {
       show: false,
-      areaList: areaList,
+      cityList: cityList,
       chosenAddressId: '1',
       actionTitle: '',
       addressInfo: {},
-      list: [
-        {
-          id: '1',
-          name: '张三',
-          tel: '13000000000',
-          province: '',
-          city: '',
-          county: '',
-          areaCode: '',
-          addressDetail: '文三路 138 号东方通信大厦 7 楼 501 室',
-          address: '浙江省杭州市西湖区文三路 138 号东方通信大厦 7 楼 501 室',
-          isDefault: true
-        },
-        {
-          id: '2',
-          name: '李四',
-          tel: '1310000000',
-          addressDetail: '莫干山路 50 号',
-          province: '',
-          city: '',
-          county: '',
-          areaCode: '',
-          address: '浙江省杭州市拱墅区莫干山路 50 号',
-          isDefault: false
-        }
-      ]
+      list: []
     }
   },
+  created() {
+    this.fetchData()
+  },
   methods: {
+    fetchData() {
+      addressApi.getAddressList().then(res => {
+        this.list = res.data
+      })
+    },
     onAdd() {
-      console.log('新增地址')
       this.actionTitle = '新增地址'
+      this.addressInfo = {}
       this.show = true
     },
+
     onEdit(item, index) {
       this.actionTitle = '编辑地址'
-      console.log('编辑地址:' + index)
       this.addressInfo = item
       this.show = true
     },
-    onSave(e) {
-      console.log(e)
-      console.log('save')
+    onSave(form) {
+      if (form.address_id && form.address_id !== '') {
+        // 编辑
+        addressApi.editAddress({
+          address_id: form.address_id,
+          name: form.name,
+          phone: form.phone,
+          province: form.province,
+          province_code: form.province_code,
+          city: form.city,
+          city_code: form.city_code,
+          area: form.area,
+          area_code: form.area_code,
+          address: form.address,
+          is_default: form.is_default,
+          post_code: form.post_code
+        }).then(res => {
+          Toast(res.msg)
+          if (res.code === 0) {
+            this.show = false
+            this.fetchData()
+          }
+        })
+      } else {
+        // 新增
+        addressApi.addAddress({
+          name: form.name,
+          phone: form.phone,
+          province: form.province,
+          province_code: form.province_code,
+          city: form.city,
+          city_code: form.city_code,
+          area: form.area,
+          area_code: form.area_code,
+          address: form.address,
+          is_default: form.is_default,
+          post_code: form.post_code
+        }).then(res => {
+          Toast(res.msg)
+          if (res.code === 0) {
+            this.show = false
+            this.fetchData()
+          }
+        })
+      }
     },
-    onDelete(e) {
-      console.log(e)
-      console.log('delete')
+    onDelete(id) {
+      Dialog.confirm({
+        title: '提示',
+        message: '是否删除当前地址'
+      })
+        .then(() => {
+          addressApi.deleteAddress({
+            address_id: id
+          }).then(res => {
+            Toast(res.msg)
+            if (res.code === 0) {
+              this.show = false
+              this.fetchData()
+            }
+          })
+        })
+        .catch(() => {
+        })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.address-list{
+.address-manage{
   background: #f5f5f5;
   min-height: 100vh;
   .delete-item{

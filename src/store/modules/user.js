@@ -1,5 +1,5 @@
 import { login, logout, getInfo, checkLogin, loginDev } from '@/api/user'
-import { getStatus, setStatus, removeStatus } from '@/utils/auth'
+import { setStatus, removeStatus } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -32,11 +32,10 @@ const mutations = {
 }
 
 const actions = {
-  // user login
+  // Wechat login
   login({ commit }) {
     return new Promise((resolve, reject) => {
       login().then(response => {
-        // const { data } = response
         window.location.href = response.data
         resolve()
       }).catch(error => {
@@ -44,11 +43,10 @@ const actions = {
       })
     })
   },
-
+  // General browser debugging login
   loginDev({ commit }) {
     return new Promise((resolve, reject) => {
       loginDev().then(response => {
-        // const { data } = response
         resolve()
       }).catch(error => {
         reject(error)
@@ -62,6 +60,7 @@ const actions = {
       getInfo().then(response => {
         const { data } = response
         if (!data) {
+          location.reload()
           reject('验证失败，请重新登录！')
         }
         const { nickname, headimgurl } = data
@@ -93,11 +92,9 @@ const actions = {
   checkLogin({ commit, state }) {
     return new Promise((resolve, reject) => {
       checkLogin().then((response) => {
-        if(response.code==402){
-          setStatus(false)
-          commit('SET_LOGIN_STATUS', false)
+        if (response.code === 402) {
           resolve(false)
-        }else{
+        } else {
           setStatus(true)
           commit('SET_LOGIN_STATUS', true)
           resolve(true)

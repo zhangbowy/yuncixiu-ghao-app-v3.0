@@ -1,7 +1,7 @@
 <template>
-  <div class="hot-goods">
+  <div class="goods-lists">
     <div class="recommend-goods">
-      <div class="goods-content">
+      <div class="goods-list-content">
         <div v-for="(item,index) in data" :key="`${index}-${item.id}`" class="goods-item" @click="toDetail(item.id)">
           <img :src="item.thumb_image_path" alt="">
           <p class="goods-name">{{ item.name }}</p>
@@ -26,25 +26,17 @@ export default {
   },
   methods: {
     toDetail(id) {
-      this.$router.push({ path: 'goodsDetail', query: { good_id: id }})
+      this.$router.push({ path: 'goodsDetail', query: { goods_id: id }})
     }
   }
 }
 </script>
 <style lang="scss" scope>
+.goods-lists{
   .recommend-goods{
     padding: 10px;
     background: #fff;
-    .recommend-title{
-      font-size: 18px;
-      color: #000;
-      padding: 10px 0 20px;
-      span{
-        padding-left: 10px;
-        border-left: 5px solid #000;
-      }
-    }
-    .goods-content{
+    .goods-list-content{
       display: flex;
       flex-flow: wrap;
       align-items: center;
@@ -80,5 +72,7 @@ export default {
       }
     }
   }
+}
+
 </style>
 
