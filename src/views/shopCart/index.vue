@@ -1,10 +1,9 @@
 <template>
   <div class="cart-view">
-
     <div class="cart-header">
       <van-nav-bar
         title="购物车"
-        :right-text="isEdit==true?'编辑':'管理'"
+        :right-text="isEdit==true?'完成':'管理'"
         left-arrow
         @click-right="onClickRight"
         @click-left="back"
@@ -14,21 +13,26 @@
       <div class="goods-list">
         <van-checkbox-group v-model="checkedArr">
           <div v-for="(item,index) in cartList" :key="index" class="goods-item">
-            <van-checkbox :name="item.id" checked-color="#ff6034" />
+            <van-checkbox :name="item.sku_id" checked-color="#ff6034" />
             <div class="good-info">
               <img :src="item.images" alt="" width="100">
               <div class="good-info-right">
-                <div class="good-name">{{ item.goods_name }}</div>
+                <div class="good-name">{{ item.goods_info.name }}</div>
                 <div class="good-sku">规格：<span v-for="sku in item.skus" :key="sku.k">{{ sku.v }} </span></div>
                 <div class="good-price">
                   <span class="price">￥{{ item.current_price }}</span>
                   <span class="number">x{{ item.number }}</span>
+                  <!-- <span v-else class="number">
+                    <van-stepper v-model="item.number" input-width="30px" button-size="22px" />
+                  </span> -->
                 </div>
               </div>
             </div>
           </div>
         </van-checkbox-group>
       </div>
+      <div v-if="cartList.length==0" class="no-data">
+        <no-data text="购物车无商品" icon="cart-no-data" :font-size="64" /></div>
     </div>
     <div class="cart-footer">
       <div v-if="!isEdit" class="footer-operation">
@@ -53,15 +57,19 @@
 
 <script>
 import { Dialog, Toast } from 'vant'
-import { mapGetters } from 'vuex'
+import { shopCart } from '@/utils/shopCart'
+import NoData from '@/components/NoData'
 export default {
+  components: {
+    NoData
+  },
   data() {
     return {
       checkedArr: [],
       checkedItem: [],
       checked: false,
-      isEdit: false
-
+      isEdit: false,
+      cartList: []
     }
   },
   computed: {
@@ -70,10 +78,7 @@ export default {
       return this.checkedItem.reduce((prev, cur) => {
         return cur.current_price * cur.number + prev
       }, 0)
-    },
-    ...mapGetters([
-      'cartList'
-    ])
+    }
   },
   watch: {
     checked: {
@@ -82,7 +87,7 @@ export default {
           const arr = []
           const arrItem = []
           this.cartList.map(item => {
-            arr.push(item.id)
+            arr.push(item.sku_id)
             arrItem.push(item)
           })
           this.checkedArr = arr
@@ -100,13 +105,12 @@ export default {
         const arr = []
         this.cartList.map(item => {
           newValue.map(i => {
-            if (item.id === i) {
+            if (item.sku_id === i) {
               arr.push(item)
             }
           })
         })
         this.checkedItem = arr
-
         if (newValue.length === this.cartList.length) {
           this.checked = true
         } else {
@@ -117,12 +121,18 @@ export default {
       }
     }
   },
+  created() {
+    this.cartList = JSON.parse(shopCart.getItem())
+  },
   methods: {
     onSubmit() {
 
     },
     onClickRight() {
       this.isEdit = !this.isEdit
+      if (this.isEdit === false) {
+        shopCart.setItem(JSON.stringify(this.cartList))
+      }
     },
     back() {
       this.$router.go(-1)
@@ -137,7 +147,15 @@ export default {
         })
           .then(() => {
           // on confirm
-            console.log('你点击了确认')
+            for (var i = this.cartList.length - 1; i >= 0; i--) {
+              if (this.checkedArr.indexOf(this.cartList[i].sku_id) !== -1) {
+                // 从checkedArr数组中也需要删除
+                var index = this.checkedArr.indexOf(this.cartList[i].sku_id)
+                this.checkedArr.splice(index, 1)
+                this.cartList.splice(i, 1)
+              }
+            }
+            shopCart.setItem(JSON.stringify(this.cartList))
           })
           .catch(() => {
           // on cancel
@@ -151,6 +169,9 @@ export default {
 
 <style lang="scss" scoped>
 .cart-content{
+  .no-data{
+    padding: 50px 0;
+  }
   .goods-list{
     .goods-item{
       display: flex;
@@ -184,6 +205,7 @@ export default {
             span{
               width: 50%;
               display: inline-block;
+              vertical-align: bottom;
             }
             .price{
               color: #ee0a24;

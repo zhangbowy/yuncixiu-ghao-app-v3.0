@@ -13,32 +13,35 @@
       </van-cell>
       <van-action-sheet v-model="show" :actions="actions" @select="onSelect" />
     </div>
-    <div v-if="orderType.type==2" class="order-address" @click="toAddress">
+    <div v-if="orderType.type==2 && orderInfo.address" class="order-address" @click="toAddress">
       <div class="user-info">
-        <span>张三</span>
-        <span>18895364554</span>
+        <span>{{ orderInfo.address.name }}</span>
+        <span>{{ orderInfo.address.phone }}</span>
+        <span v-if="orderInfo.address.is_default==1" class="is-default">默认</span>
       </div>
       <div class="address-detail">
-        收货地址：<span>浙江省杭州市余杭区利尔达物联网1号楼703</span>
+        收货地址：<span>{{ orderInfo.address.province }}{{ orderInfo.address.city }}{{ orderInfo.address.area }}{{ orderInfo.address.address }}</span>
       </div>
       <span class="right-arrow">
         <svg-icon icon-class="right-arrow" />
       </span>
     </div>
     <div class="good-info">
-      <div class="good-img"><img src="http://ec4.images-amazon.com/images/I/71gfm0gcb0L._UL1500_.jpg" alt=""></div>
-      <div class="good-right">
-        <div class="good-name">商品名果水果称</div>
-        <div class="good-sku">已选："黑色","大" </div>
-        <div class="good-bottom">
-          <span class="price">￥0.01</span>
-          <span class="number">x1</span>
+      <div v-for="(item,index) in orderInfo.item_list" :key="index" class="goods-item">
+        <div class="good-img"><img :src="item.images" alt=""></div>
+        <div class="good-right">
+          <div class="good-name">{{ item.name }}</div>
+          <div class="good-sku">已选：{{ item.sku_name }} </div>
+          <div class="good-bottom">
+            <span class="price">￥{{ item.current_price }}</span>
+            <span class="number">x{{ item.buy_num }}</span>
+          </div>
         </div>
       </div>
     </div>
     <div class="statistical">
-      <van-cell title="小计" :value="`￥${subtotal}`" />
-      <van-cell v-if="orderType.type==2" title="运费" :value="`￥${orderInfo.yunfei}`" />
+      <van-cell title="小计" :value="`￥${orderInfo.item_price}`" />
+      <van-cell v-if="orderType.type==2" title="运费" :value="`￥${orderInfo.express_amount}`" />
     </div>
     <div class="order-mask">
       <van-field
@@ -54,13 +57,15 @@
       />
     </div>
     <div class="submit-order">
-      <van-submit-bar :price="totalPrice" button-text="提交订单" @submit="onSubmit" />
+      <van-submit-bar :price="orderInfo.total_price*100" button-text="提交订单" @submit="onSubmit" />
     </div>
   </div>
 </template>
 
 <script>
 import TopBar from '@/components/TopBar'
+import { orderApi } from '@/api/order'
+import { mapState } from 'vuex'
 export default {
   components: {
     TopBar
@@ -76,43 +81,36 @@ export default {
         name: '快递', type: 2
       },
       orderInfo: {
-        yunfei: 5,
-        goodsInfo: [
-          {
-            img: '',
-            price: 0.01,
-            number: 1,
-            skus: [
-              {
-                k: '颜色',
-                v: '红色'
-              }, {
-                k: '尺寸',
-                v: '大'
-              }
-            ]
-          }
-        ]
       },
       message: ''
     }
   },
   computed: {
-    subtotal() {
-      return this.orderInfo.goodsInfo.reduce((prev, cur) => {
-        return cur.price * cur.number + prev
-      }, 0)
-    },
-    totalPrice() {
-      return parseFloat(this.orderInfo.yunfei) * 100 + parseFloat(this.subtotal) * 100
+    ...mapState([
+      'order'
+    ])
+  },
+  created() {
+    if (this.$route.query.address_id) {
+      this.getConfirmData(this.$route.query.address_id)
+    } else {
+      this.getConfirmData()
     }
   },
   methods: {
+    getConfirmData(address_id) {
+      orderApi.calculation({
+        address_id: address_id,
+        cart_list: JSON.parse(this.order.cartList)
+      }).then(res => {
+        this.orderInfo = res.data
+      })
+    },
     onSubmit() {
       console.log('提交按钮点击')
     },
     toAddress() {
-      this.$router.push({ path: `/addressList?redirect=${'/orderConfirm'}` })
+      this.$router.replace({ path: `/addressList?redirect=${'/orderConfirm'}` })
     },
     onSelect(item) {
       // 默认情况下点击选项时不会自动收起
@@ -129,7 +127,7 @@ export default {
 .order-confirm{
   background: #f5f5f5;
   .order-address{
-    padding: 10px;
+    padding: 0 10px 20px;
     margin-bottom: 10px;
     position: relative;
     background:#fff url('../../../assets/images/address-bottom-line.png') no-repeat left bottom/100%;;
@@ -138,6 +136,16 @@ export default {
       color: #000;
       font-size: 16px;
       width: 90%;
+      .is-default{
+        margin-left: 10px;
+        background: crimson;
+        border-radius: 20px;
+        padding: 2px 5px 0;
+        color: #fff;
+        font-size: 10px;
+        display: inline-block;
+        vertical-align: top;
+      }
       span{
         margin-right: 10px;
       }
@@ -157,47 +165,50 @@ export default {
     }
   }
   .good-info{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #fff;
-    padding: 10px;
-    margin-bottom: 10px;
-    .good-img{
-      width: 25%;
-      img{
-        width: 100%;
-        height: 86px;
+    .goods-item{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      background: #fff;
+      padding: 10px;
+      .good-img{
+        width: 25%;
+        img{
+          width: 100%;
+          height: 86px;
+        }
       }
-    }
-    .good-right{
-      width: 75%;
-      font-size: 16px;
-      padding-left: 10px;
-      .good-name{
-        height: 40px;
-      }
-      .good-sku{
-        padding: 5px 0;
-        color: #666;
-        font-size: 14px;
-      }
-    }
-    .good-bottom{
-      span{
-        width: 50%;
-        display: inline-block;
-      }
-      span.price{
-        color: #df2525;
+      .good-right{
+        width: 75%;
         font-size: 16px;
+        padding-left: 10px;
+        .good-name{
+          height: 40px;
+        }
+        .good-sku{
+          padding: 5px 0;
+          color: #666;
+          font-size: 14px;
+        }
       }
-      span.number{
-        color: #666;
-        font-size: 14px;
-        text-align: right;
+      .good-bottom{
+        span{
+          width: 50%;
+          display: inline-block;
+        }
+        span.price{
+          color: #df2525;
+          font-size: 16px;
+        }
+        span.number{
+          color: #666;
+          font-size: 14px;
+          text-align: right;
+        }
       }
     }
+
   }
   .statistical{
     margin-bottom: 10px;

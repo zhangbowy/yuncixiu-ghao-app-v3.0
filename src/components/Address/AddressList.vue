@@ -1,6 +1,6 @@
 <template>
   <div class="address-list">
-    <div v-for="(item,index) in list" :key="`${index}-${item.id}`" class="address-list-item">
+    <div v-for="(item,index) in list" :key="`${index}-${item.address_id}`" class="address-list-item" @click="checkAddress(item.address_id)">
       <div class="address-left-box">
         <div class="user-info">
           <span class="user-name">{{ item.name }}</span>
@@ -40,6 +40,11 @@ export default {
     },
     editAddress(item) {
       this.$emit('edit', item)
+    },
+    checkAddress(id) {
+      if (this.$route.query.redirect === '/orderConfirm') {
+        this.$router.replace({ path: `/orderConfirm?address_id=${id}` })
+      }
     }
   }
 }

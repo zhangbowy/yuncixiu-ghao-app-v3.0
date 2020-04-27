@@ -120,7 +120,8 @@
 import TopBar from '@/components/TopBar'
 import { goodsApi } from '@/api/goods'
 import { ImagePreview, Toast } from 'vant'
-import store from '@/store'
+import { shopCart } from '@/utils/shopCart'
+import store from '../../store'
 export default {
   components: {
     TopBar
@@ -140,10 +141,6 @@ export default {
       skuItem: {}, // 选中sku详细
       options: [
         { name: '微信', icon: 'wechat' }
-        // { name: '微博', icon: 'weibo' },
-        // { name: '复制链接', icon: 'link' },
-        // { name: '分享海报', icon: 'poster' },
-        // { name: '二维码', icon: 'qrcode' }
       ], // 分享选项
       goodsNumber: 0, // 购买数量
       checkedSkuIds: '', // 选中sku组合id
@@ -253,10 +250,23 @@ export default {
         this.changeSkuShow()
       } else {
         this.skuItem.number = this.goodsNumber
-        this.skuItem.goods_name = this.goodsDetail.name
-        store.dispatch('shopCart/setCartList', this.skuItem).then(res => {
-          Toast('添加成功')
+        this.skuItem.goods_info = this.goodsDetail
+        const cartList = shopCart.getItem() ? JSON.parse(shopCart.getItem()) : []
+        const arr = []
+        // 获取当前购物车的sku_id数组
+        cartList.map(item => {
+          arr.push(item.sku_id)
         })
+        // 判断选中的sku是否已村子购物车数组中
+        const index = arr.indexOf(this.skuItem.sku_id)
+        if (index < 0) {
+          cartList.push(this.skuItem)
+        } else {
+          cartList[index].number += this.goodsNumber
+        }
+        shopCart.setItem(JSON.stringify(cartList))
+        Toast('添加成功！')
+        this.changeSkuShow()
       }
     },
     buyNow() {
@@ -272,22 +282,43 @@ export default {
     },
     // sku添加购物车按钮
     skuAddCart() {
-      if (!this.skuItem.sku_id) {
+      if (!this.skuItem.sku_id && this.skuList.length > 0) {
         this.changeSkuShow()
       } else {
         this.skuItem.number = this.goodsNumber
-        this.skuItem.goods_name = this.goodsDetail.name
-        store.dispatch('shopCart/setCartList', this.skuItem).then(res => {
-          Toast('添加成功')
+        this.skuItem.goods_info = this.goodsDetail
+        const cartList = shopCart.getItem() ? JSON.parse(shopCart.getItem()) : []
+        const arr = []
+        // 获取当前购物车的sku_id数组
+        cartList.map(item => {
+          arr.push(item.sku_id)
         })
+        // 判断选中的sku是否已村子购物车数组中
+        const index = arr.indexOf(this.skuItem.sku_id)
+        if (index < 0) {
+          cartList.push(this.skuItem)
+        } else {
+          cartList[index].number += this.goodsNumber
+        }
+        shopCart.setItem(JSON.stringify(cartList))
+        Toast('添加成功！')
+        this.changeSkuShow()
       }
     },
     // sku购买按钮
     skuBuy() {
-      if (!this.skuItem.sku_id) {
+      if (!this.skuItem.sku_id && this.skuList.length > 0) {
         this.changeSkuShow()
       } else {
-        this.$router.push({ path: '/orderConfirm' })
+        const cartList = []
+        cartList.push({
+          sku_id: this.skuItem.sku_id,
+          id: this.goodsDetail.id,
+          buy_num: this.goodsNumber
+        })
+        store.dispatch('order/setCartList', JSON.stringify(cartList)).then(() => {
+          this.$router.push({ path: '/orderConfirm' })
+        })
       }
     },
     // 分享按钮选中
