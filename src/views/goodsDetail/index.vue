@@ -273,7 +273,15 @@ export default {
       if (!this.skuItem.sku_id) {
         this.changeSkuShow()
       } else {
-        this.$router.push({ path: '/orderConfirm' })
+        const cartList = []
+        cartList.push({
+          sku_id: this.skuItem.sku_id,
+          id: this.goodsDetail.id,
+          buy_num: this.goodsNumber
+        })
+        store.dispatch('order/setCartList', JSON.stringify(cartList)).then(() => {
+          this.$router.push({ path: '/orderConfirm' })
+        })
       }
     },
     // 分享面板是否显示
