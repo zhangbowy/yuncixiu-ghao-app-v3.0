@@ -40,13 +40,13 @@ const constantRoutes = [
   {
     path: '/goodsList',
     name: 'GoodsList',
-    component: () => import('@/views/goodsList/index'),
+    component: () => import('@/views/goods/goodsList/index'),
     meta: { title: '商品列表', showTabbar: true }
   },
   {
     path: '/goodsDetail',
     name: 'GoodsDetail',
-    component: () => import('@/views/goodsDetail/index'),
+    component: () => import('@/views/goods/goodsDetail/index'),
     meta: { title: '商品详情' }
   },
   {
@@ -54,6 +54,18 @@ const constantRoutes = [
     name: 'OrderConfirm',
     component: () => import('@/views/orderManage/orderConfirm'),
     meta: { title: '确认订单' }
+  },
+  {
+    path: '/orderList',
+    name: 'OrderList',
+    component: () => import('@/views/orderManage/orderList'),
+    meta: { title: '订单列表' }
+  },
+  {
+    path: '/orderDetail',
+    name: 'OrderDetail',
+    component: () => import('@/views/orderManage/orderDetail'),
+    meta: { title: '订单详情' }
   },
   {
     path: '/addressList',

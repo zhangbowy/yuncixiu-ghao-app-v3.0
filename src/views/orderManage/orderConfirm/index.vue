@@ -28,7 +28,7 @@
     </div>
     <div class="good-info">
       <div v-for="(item,index) in orderInfo.item_list" :key="index" class="goods-item">
-        <div class="good-img"><img :src="item.images" alt=""></div>
+        <div class="good-img"><img :src="item.image" alt=""></div>
         <div class="good-right">
           <div class="good-name">{{ item.name }}</div>
           <div class="good-sku">已选：{{ item.sku_name }} </div>
@@ -66,6 +66,7 @@
 import TopBar from '@/components/TopBar'
 import { orderApi } from '@/api/order'
 import { mapState } from 'vuex'
+import store from '@/store'
 export default {
   components: {
     TopBar
@@ -107,7 +108,17 @@ export default {
       })
     },
     onSubmit() {
-      console.log('提交按钮点击')
+      orderApi.orderPay({
+        cart_list: this.orderInfo.item_list,
+        address_id: this.orderInfo.address.address_id,
+        buyer_message: this.message
+      }).then(res => {
+        console.log(res)
+        if (this.$route.query.from === 'shop_cart') {
+          store.dispatch('shopCart/removeCartList')
+        }
+        store.dispatch('order/resetState')
+      })
     },
     toAddress() {
       this.$router.replace({ path: `/addressList?redirect=${'/orderConfirm'}` })
@@ -116,7 +127,6 @@ export default {
       // 默认情况下点击选项时不会自动收起
       // 可以通过 close-on-click-action 属性开启自动收起
       this.show = false
-      console.log(item)
       this.orderType = item
     }
   }

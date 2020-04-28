@@ -11,25 +11,25 @@
       <div class="order-cell">
         <div class="order-cell-title">
           <div class="left-text">我的订单</div>
-          <div class="right-text">
+          <div class="right-text" @click="toOrderList(0)">
             <span>查看全部订单</span>
             <svg-icon icon-class="right-arrow" />
           </div>
         </div>
         <div class="cell-item-box">
-          <div class="cell-item">
+          <div class="cell-item" @click="toOrderList(1)">
             <svg-icon icon-class="wait-confirm" />
-            <p>待确认</p>
-          </div>
-          <div class="cell-item">
-            <svg-icon icon-class="wait-defray" />
             <p>待支付</p>
           </div>
-          <div class="cell-item">
+          <div class="cell-item" @click="toOrderList(4)">
+            <svg-icon icon-class="wait-defray" />
+            <p>待发货</p>
+          </div>
+          <div class="cell-item" @click="toOrderList(5)">
             <svg-icon icon-class="wait-receive" />
             <p>待收货</p>
           </div>
-          <div class="cell-item">
+          <div class="cell-item" @click="toOrderList(6)">
             <svg-icon icon-class="isok" />
             <p>已完成</p>
           </div>
@@ -55,11 +55,6 @@ export default {
   },
   data() {
     return {
-      // userinfo: {
-      //   avator: 'https://s1.ax1x.com/2020/04/14/GxfLaq.jpg',
-      //   username: '可达鸭压',
-      //   phone: '18895364445'
-      // }
     }
   },
   computed: {
@@ -74,6 +69,15 @@ export default {
   },
   created() {
 
+  },
+  methods: {
+    toOrderList(type) {
+      if (type) {
+        this.$router.push({ path: `/orderList?current_type=${type}` })
+      } else {
+        this.$router.push({ path: '/orderList' })
+      }
+    }
   }
 }
 </script>

@@ -76,7 +76,7 @@ export default {
       ],
       goodsList: [
         {
-          id: 1,
+          id: 88,
           src: 'http://img10.360buyimg.com/n1/jfs/t1144/221/780030540/153183/9cbd453e/5548385fN1fc13cc9.jpg',
           name: '印花拎包',
           price: '45'

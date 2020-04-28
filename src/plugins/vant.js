@@ -26,7 +26,8 @@ import {
   Stepper,
   Picker,
   Popup,
-  Switch
+  Switch,
+  PullRefresh
 } from 'vant'
 
 Vue.use(
@@ -93,4 +94,10 @@ Vue.use(
   Popup
 ).use(
   Switch
+).use(
+  Tab
+).use(
+  Tabs
+).use(
+  PullRefresh
 )

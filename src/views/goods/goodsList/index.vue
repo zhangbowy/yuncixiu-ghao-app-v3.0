@@ -49,12 +49,12 @@ export default {
   },
   created() {
     this.category_id = this.$route.query.category_id
-    this.fetchData()
+    this.fetchData(this.category_id)
   },
   methods: {
-    fetchData() {
+    fetchData(id) {
       goodsApi.getGoodsList({
-        category_id: '',
+        category_id: id || '',
         name: this.keyWords,
         page: 1,
         pagesize: this.pagesize
@@ -75,8 +75,8 @@ export default {
           if (res.data) {
             this.goodsList = this.goodsList.concat(res.data.data)
             this.page++
-            if (res.data.agentareausers.length === 10) {
-              $state.loaded() // 不再加载了
+            if (res.data.data.length === 10) {
+              $state.loaded() // 加载完成
             } else {
               $state.complete()
             }

@@ -71,11 +71,13 @@
                 <van-goods-action-button
                   type="warning"
                   text="加入购物车"
+                  :disabled="skuItem.num==0"
                   @click="skuAddCart"
                 />
                 <van-goods-action-button
                   type="danger"
                   text="立即购买"
+                  :disabled="skuItem.num==0"
                   @click="skuBuy"
                 />
               </van-goods-action>
@@ -96,11 +98,13 @@
           <van-goods-action-button
             type="warning"
             text="加入购物车"
+            :disabled="skuItem.num==0"
             @click="addCart"
           />
           <van-goods-action-button
             type="danger"
             text="立即购买"
+            :disabled="skuItem.num==0"
             @click="buyNow"
           />
         </van-goods-action>
@@ -121,7 +125,7 @@ import TopBar from '@/components/TopBar'
 import { goodsApi } from '@/api/goods'
 import { ImagePreview, Toast } from 'vant'
 import { shopCart } from '@/utils/shopCart'
-import store from '../../store'
+import store from '@/store'
 export default {
   components: {
     TopBar
@@ -135,15 +139,15 @@ export default {
       goodsDetail: {
         images: []
       }, // 商品详情
-      skuList: [], // sku列表-
-      skudata: [], // sku选项
+      skuList: [], // sku值列表-
+      skudata: [], // sku选项列表
       activeSku: [], // 选中的sku
       skuItem: {}, // 选中sku详细
+      checkedSkuIds: '', // 选中sku组合id
       options: [
         { name: '微信', icon: 'wechat' }
       ], // 分享选项
       goodsNumber: 0, // 购买数量
-      checkedSkuIds: '', // 选中sku组合id
       id: this.$route.query.goods_id
     }
   },
@@ -163,8 +167,8 @@ export default {
       deep: true,
       immediate: true,
       handler(val) {
+        // 组合选中的skuid
         this.checkedSkuIds = this.activeSku.reduce((total, prev, index) =>
-        // console.log('prev', prev)
           `${total}${prev.spec.id}-${prev.option.id}${index === this.activeSku.length - 1 ? '' : '_'}`, ''
         )
       }
@@ -183,15 +187,15 @@ export default {
             )
           }
           arr.push(item.sku_id)
-          if (arr.indexOf(this.checkedSkuIds) < 0) {
-            this.checkedSku = '请选择规格'
-            this.skuItem = {
-              current_price: this.goodsDetail.current_price,
-              num: this.goodsDetail.sum_stock,
-              images: this.goodsDetail.thumb_image_path
-            }
-          }
         })
+        if (arr.indexOf(this.checkedSkuIds) < 0) {
+          this.checkedSku = '请选择规格'
+          this.skuItem = {
+            current_price: this.goodsDetail.current_price,
+            num: this.goodsDetail.sum_stock,
+            images: this.goodsDetail.thumb_image_path
+          }
+        }
       }
     }
   },
@@ -275,8 +279,8 @@ export default {
       } else {
         const cartList = []
         cartList.push({
-          sku_id: this.skuItem.sku_id,
-          id: this.goodsDetail.id,
+          sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
+          item_id: this.goodsDetail.id,
           buy_num: this.goodsNumber
         })
         store.dispatch('order/setCartList', JSON.stringify(cartList)).then(() => {
@@ -320,8 +324,8 @@ export default {
       } else {
         const cartList = []
         cartList.push({
-          sku_id: this.skuItem.sku_id,
-          id: this.goodsDetail.id,
+          sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
+          item_id: this.goodsDetail.id,
           buy_num: this.goodsNumber
         })
         store.dispatch('order/setCartList', JSON.stringify(cartList)).then(() => {

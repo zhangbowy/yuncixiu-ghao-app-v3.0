@@ -30,7 +30,7 @@ export const goodsApi = {
 export const categoryApi = {
   getCategory(params) {
     return request({
-      url: '/index',
+      url: '/goods/getCategory',
       method: 'get',
       params
     })

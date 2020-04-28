@@ -9,17 +9,17 @@
       />
     </div>
     <div class="classify-content">
-      <van-tree-select height="89vh" :items="items" :main-active-index.sync="active" @click-nav="onNavClick">
+      <van-tree-select height="89vh" :items="items" :active-id.sync="items.activeId" :main-active-index.sync="active" @click-nav="onNavClick">
         <template #content>
           <div class="right-content">
-            <img src="https://img.yzcdn.cn/vant/apple-1.jpg" alt="" width="100%" @click="toGoodsList(currentId)">
+            <img :src="currentImg" alt="" width="100%" @click="toGoodsList(currentId)">
             <div v-for="(item,index) in subCategary" :key="index" class="sub-categary" @click="toGoodsList(item.id)">
-              <div class="sub-name">{{ item.name }}</div>
+              <div class="sub-name">{{ item.category_name }}</div>
               <div class="sub-child">
                 <ul>
                   <li v-for="(child,i) in item.children" :key="i">
-                    <img :src="child.img" alt="">
-                    <p>{{ child.name }}</p>
+                    <img :src="child.image_path" alt="">
+                    <p>{{ child.category_name }}</p>
                   </li>
                 </ul>
               </div>
@@ -32,64 +32,53 @@
 </template>
 
 <script>
-import { categaryApi } from '@/api/goods'
+import { categoryApi } from '@/api/goods'
 export default {
   data() {
     return {
       active: 0,
-      currentId: '',
-      items: [{ text: '分类1' }, { text: '分类2' }],
-      subCategary: [
-        {
-          id: 1,
-          name: '手机',
-          children: [{
-            id: 11,
-            name: '华为',
-            img: 'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2206804437,2518103967&fm=26&gp=0.jpg'
-          }, {
-            id: 12,
-            name: '小米',
-            img: 'http://e.hiphotos.baidu.com/image/h%3D300/sign=62e28ebfa26eddc439e7b2fb09dbb6a2/377adab44aed2e73e7c226768801a18b87d6fa45.jpg'
-          }, {
-            id: 13,
-            name: '苹果',
-            img: 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2783732542,1835682322&fm=26&gp=0.jpg'
-          }]
-        }, {
-          id: 2,
-          name: '衣服',
-          children: [{
-            id: 21,
-            name: '衬衫',
-            img: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1346332653,3963595222&fm=26&gp=0.jpg'
-          }, {
-            id: 22,
-            name: '棉袄',
-            img: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3981203056,1220791395&fm=26&gp=0.jpg'
-          }, {
-            id: 23,
-            name: '羽绒服',
-            img: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1474690431,1367848502&fm=26&gp=0.jpg'
-          }]
-        }
-      ]
+      currentId: 0,
+      currentImg: '',
+      items: [],
+      categories: [],
+      subCategary: []
     }
   },
   created() {
-    this.active = this.$route.query.category_id
+    this.currentId = this.$route.query.category_id
+    this.getCategoryList()
   },
   methods: {
     onNavClick(e) {
-      console.log(e)
-      this.currentId = e
+      this.currentId = this.items[e].activeId
+      this.currentImg = this.items[e].image_path
+      this.subCategary = this.categories[e].children
     },
     // 获取分类列表
     getCategoryList() {
-      categaryApi.getCategory({
-
-      }).then(res => {
-
+      categoryApi.getCategory().then(res => {
+        // 渲染左侧列表
+        res.data.map(item => {
+          this.items.push({
+            activeId: item.id,
+            text: item.category_name,
+            image_path: item.image_path
+          })
+        })
+        if (this.currentId) {
+          res.data.forEach((element, i) => {
+            if (element.id === parseInt(this.currentId)) {
+              this.active = i
+              this.currentImg = res.data[i].image_path
+              this.subCategary = res.data[i].children
+            }
+          })
+        } else {
+          this.currentId = res.data[0].id
+          this.currentImg = res.data[0].image_path
+          this.subCategary = res.data[0].children
+        }
+        this.categories = res.data
       })
     },
     toGoodsList(id) {
@@ -118,10 +107,10 @@ export default {
       .sub-child{
         ul{
           display: flex;
-          justify-content: space-between;
           align-items: center;
           li{
             width: 28%;
+            margin-right: 8%;
             img{
               width: 100%;
               height: 70px;
@@ -130,6 +119,9 @@ export default {
               margin: 0;
               font-size: 12px;
               text-align: center;
+            }
+            &:last-child{
+              margin: 0;
             }
           }
         }

@@ -59,6 +59,7 @@
 import { Dialog, Toast } from 'vant'
 import { shopCart } from '@/utils/shopCart'
 import NoData from '@/components/NoData'
+import store from '@/store'
 export default {
   components: {
     NoData
@@ -122,11 +123,29 @@ export default {
     }
   },
   created() {
-    this.cartList = JSON.parse(shopCart.getItem())
+    if (shopCart.getItem()) {
+      this.cartList = JSON.parse(shopCart.getItem())
+    } else {
+      this.cartList = []
+    }
   },
   methods: {
     onSubmit() {
-
+      if (this.checkedItem.length === 0) {
+        Toast('请选择商品')
+      } else {
+        const orderCartList = []
+        this.checkedItem.map(item => {
+          orderCartList.push({
+            sku_id: item.sku_id,
+            item_id: item.goods_info.id,
+            buy_num: item.number
+          })
+        })
+        store.dispatch('order/setCartList', JSON.stringify(orderCartList)).then(() => {
+          this.$router.push({ path: '/orderConfirm?from=shop_cart' })
+        })
+      }
     },
     onClickRight() {
       this.isEdit = !this.isEdit
