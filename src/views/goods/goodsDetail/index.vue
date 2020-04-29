@@ -97,9 +97,8 @@
           <van-goods-action-icon icon="cart-o" text="购物车" @click="pathTo('/cart')" />
           <van-goods-action-button
             type="warning"
-            text="加入购物车"
-            :disabled="skuItem.num==0"
-            @click="addCart"
+            text="立即定制"
+            @click="toCustomized"
           />
           <van-goods-action-button
             type="danger"
@@ -333,6 +332,7 @@ export default {
         })
       }
     },
+    toCustomized() {},
     // 分享按钮选中
     onSelect(option) {
       switch (option.name) {

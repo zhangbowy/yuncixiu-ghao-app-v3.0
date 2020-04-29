@@ -83,6 +83,16 @@ const constantRoutes = [
     name: 'Authorize',
     component: () => import('@/views/authorize/login/authorize'),
     meta: { title: '用户授权' }
+  }, {
+    path: '/commonly',
+    name: 'Commonly',
+    component: () => import('@/views/customized/commonly'),
+    meta: { title: '一般定制' }
+  }, {
+    path: '/special',
+    name: 'Special',
+    component: () => import('@/views/customized/special'),
+    meta: { title: '特殊定制' }
   },
   {
     path: '/404',
