@@ -68,6 +68,12 @@ const constantRoutes = [
     meta: { title: '订单详情' }
   },
   {
+    path: '/orderTrace',
+    name: 'OrderTrace',
+    component: () => import('@/views/orderManage/orderTrace'),
+    meta: { title: '物流详情' }
+  },
+  {
     path: '/addressList',
     name: 'AddressList',
     component: () => import('@/views/address/addressList/index'),
@@ -84,15 +90,22 @@ const constantRoutes = [
     component: () => import('@/views/authorize/login/authorize'),
     meta: { title: '用户授权' }
   }, {
-    path: '/commonly',
-    name: 'Commonly',
-    component: () => import('@/views/customized/commonly'),
-    meta: { title: '一般定制' }
-  }, {
-    path: '/special',
-    name: 'Special',
-    component: () => import('@/views/customized/special'),
-    meta: { title: '特殊定制' }
+    path: '/customized',
+    name: 'Customized',
+    component: () => import('@/views/customized'),
+    meta: { title: '开始设计' },
+    children: [{
+      path: 'commonly',
+      name: 'Commonly',
+      component: () => import('@/views/customized/commonly'),
+      meta: { title: '一般定制' }
+    },
+    {
+      path: 'special',
+      name: 'Special',
+      component: () => import('@/views/customized/special'),
+      meta: { title: '特殊定制' }
+    }]
   },
   {
     path: '/404',

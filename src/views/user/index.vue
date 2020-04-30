@@ -21,15 +21,15 @@
             <svg-icon icon-class="wait-confirm" />
             <p>待支付</p>
           </div>
-          <div class="cell-item" @click="toOrderList(4)">
+          <div class="cell-item" @click="toOrderList(2)">
             <svg-icon icon-class="wait-defray" />
             <p>待发货</p>
           </div>
-          <div class="cell-item" @click="toOrderList(5)">
+          <div class="cell-item" @click="toOrderList(3)">
             <svg-icon icon-class="wait-receive" />
             <p>待收货</p>
           </div>
-          <div class="cell-item" @click="toOrderList(6)">
+          <div class="cell-item" @click="toOrderList(4)">
             <svg-icon icon-class="isok" />
             <p>已完成</p>
           </div>

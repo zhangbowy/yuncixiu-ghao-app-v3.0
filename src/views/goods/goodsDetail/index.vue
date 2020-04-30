@@ -201,7 +201,6 @@ export default {
   created() {
     this.goodsId = this.$route.query.goods_id
     this.fetchData(this.goodsId)
-    // 加载skulist和skudata
   },
   methods: {
     // 获取商品详情
@@ -272,6 +271,7 @@ export default {
         this.changeSkuShow()
       }
     },
+    // 立即购买
     buyNow() {
       if (!this.skuItem.sku_id) {
         this.changeSkuShow()
@@ -332,7 +332,10 @@ export default {
         })
       }
     },
-    toCustomized() {},
+    // 去定制
+    toCustomized() {
+      this.$router.push({ path: '/customized/commonly' })
+    },
     // 分享按钮选中
     onSelect(option) {
       switch (option.name) {

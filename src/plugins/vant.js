@@ -27,7 +27,11 @@ import {
   Picker,
   Popup,
   Switch,
-  PullRefresh
+  PullRefresh,
+  Step, Steps,
+  DropdownMenu, DropdownItem,
+  Empty,
+  Overlay
 } from 'vant'
 
 Vue.use(
@@ -100,4 +104,16 @@ Vue.use(
   Tabs
 ).use(
   PullRefresh
+).use(
+  DropdownMenu
+).use(
+  DropdownItem
+).use(
+  Step
+).use(
+  Steps
+).use(
+  Empty
+).use(
+  Overlay
 )

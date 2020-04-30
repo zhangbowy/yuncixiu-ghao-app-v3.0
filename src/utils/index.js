@@ -99,6 +99,7 @@ export const getUrlParams = () => {
   return urlParams
 }
 
+// 判断是否为微信浏览器
 export const isWeiXin = () => {
   var ua = window.navigator.userAgent.toLowerCase()
   if (ua.match(/MicroMessenger/i) && ua.match(/MicroMessenger/i)[0] === 'micromessenger') {
@@ -106,4 +107,33 @@ export const isWeiXin = () => {
   } else {
     return false
   }
+}
+
+// 获取屏幕dpi arr[宽，高]
+export function js_getDPI() {
+  var arrDPI = []
+  if (window.screen.deviceXDPI !== undefined) {
+    arrDPI[0] = window.screen.deviceXDPI
+    arrDPI[1] = window.screen.deviceYDPI
+  } else {
+    var tmpNode = document.createElement('DIV')
+    tmpNode.style.cssText = 'width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:99;visibility:hidden'
+    document.body.appendChild(tmpNode)
+    arrDPI[0] = parseInt(tmpNode.offsetWidth)
+    arrDPI[1] = parseInt(tmpNode.offsetHeight)
+    tmpNode.parentNode.removeChild(tmpNode)
+  }
+  return arrDPI
+}
+
+// 像素转mm
+export function px2mm(pxValue, dpi) {
+  const mm = pxValue / dpi * 2.54 * 10// dpi为上面获取的，自己对应XY轴
+  return mm
+}
+
+// mm像素
+export function mm2px(mm, dpi) {
+  const px = mm / (2.54 * 10) * dpi
+  return px
 }

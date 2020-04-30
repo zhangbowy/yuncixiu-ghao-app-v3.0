@@ -49,5 +49,21 @@ export const orderApi = {
       method: 'post',
       data
     })
+  },
+  // 订单确认收货
+  confirmReceived(data) {
+    return request({
+      url: '/order/confirmReceived',
+      method: 'post',
+      data
+    })
+  },
+  // 订单物流
+  orderTrace(data) {
+    return request({
+      url: '/order/orderTrace',
+      method: 'post',
+      data
+    })
   }
 }

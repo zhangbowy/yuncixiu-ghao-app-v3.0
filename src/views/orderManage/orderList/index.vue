@@ -7,7 +7,7 @@
           <div class="tab-content">
             <order-list v-if="orderList.length>0" :data="orderList" @getList="fetchData()" />
             <div v-if="orderList.length>=10" class="load-more">
-              <infinite-loading @infinite="loadMore">
+              <infinite-loading :identifier="infiniteId" @infinite="loadMore">
                 <span slot="no-results" style="font-size: 12px">没有更多了～</span>
                 <span slot="no-more" style="font-size: 12px">没有更多了～</span>
               </infinite-loading>
@@ -38,6 +38,7 @@ export default {
   },
   data() {
     return {
+      infiniteId: +new Date(), // 重置上拉加载组件
       active: 0,
       isLoading: false, // 下拉刷新
       tabs: [{
@@ -47,12 +48,6 @@ export default {
         name: '待支付',
         type: 1
       }, {
-        name: '待回复',
-        type: 5
-      }, {
-        name: '已回复',
-        type: 6
-      }, {
         name: '待发货',
         type: 2
       }, {
@@ -61,6 +56,12 @@ export default {
       }, {
         name: '已完成',
         type: 4
+      }, {
+        name: '待回复',
+        type: 5
+      }, {
+        name: '已回复',
+        type: 6
       }, {
         name: '已关闭',
         type: -2
@@ -107,6 +108,7 @@ export default {
     },
     onRefresh() {
       this.page = 1
+      this.infiniteId += 1 // 重置上拉加载状态
       this.fetchData()
     },
     loadMore($state) {

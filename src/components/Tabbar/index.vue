@@ -58,6 +58,16 @@ export default {
       ]
     }
   },
+  // 监听,当路由发生变化的时候执行
+  watch: {
+    $route: {
+      handler(val, oldVal) {
+        this.selected = val.path
+      },
+      // 深度观察监听
+      deep: true
+    }
+  },
   created() {
     if (this.path) {
       this.selected = this.path

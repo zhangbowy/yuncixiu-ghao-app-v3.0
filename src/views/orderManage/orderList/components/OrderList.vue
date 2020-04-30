@@ -60,19 +60,21 @@ export default {
         Toast('您点击了取消')
       })
     },
-    confirmRceipt() {
+    confirmRceipt(order_no) {
       Dialog.confirm({
         message: '是否确认收货？'
       }).then(() => {
-        // orderApi.orderCancel({}).then(res => {
-        //   this.$emit('getList')
-        // })
+        orderApi.confirmReceived({
+          order_no: order_no
+        }).then(res => {
+          this.$emit('getList')
+        })
       }).catch(() => {
         Toast('您点击了取消')
       })
     },
     toDetail(order_no) {
-      this.$router.push({ path: `/orderDetail?order_no=${order_no}` })
+      this.$router.replace({ path: `/orderDetail?order_no=${order_no}` })
     }
   }
 }
@@ -96,7 +98,7 @@ export default {
       padding: 10px 10px 8px;
       .order-number{
         width: 80%;
-        font-size: 14px;
+        font-size: 12px;
         color: #333;
       }
       .order-status{
@@ -154,8 +156,8 @@ export default {
     }
     .list-operation{
       text-align: right;
-      padding: 10px;
       .button-box{
+        padding: 10px;
         height: 30px;
         button{
         vertical-align: top;

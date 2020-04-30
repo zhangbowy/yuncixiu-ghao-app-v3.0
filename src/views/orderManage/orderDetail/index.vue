@@ -1,20 +1,30 @@
 <template>
   <div class="order-detail">
-    <top-bar class="top-bar" title="订单详情" />
+    <van-nav-bar
+      class="top-bar"
+      style="color:#333"
+      title="订单详情"
+      left-arrow
+      @click-left="onClickLeft"
+    />
     <div class="detail-header">
       <span>{{ orderDetail.status==1?'待支付': orderDetail.status==2?'待发货':orderDetail.status==3?'待收货':orderDetail.status==4?'已完成':orderDetail.status==5?'待回复':orderDetail.status==6?'已回复':orderDetail.status==-2?'已取消':'' }}</span>
       <span>运费：{{ orderDetail.express_amount.toFixed(2) }}</span>
     </div>
-    <div v-if="orderDetail.status==3" class="express-info">
-      <div class="express-icon"><svg-icon icon-class="express-icon" /></div>
-      <div class="express-info-right">
-        <span>物流详情</span>
-      </div>
+    <div v-if="orderDetail.status==3 || orderDetail.status==4" class="express-info">
+      <van-cell is-link @click="showGoodsCheck = true">
+        <!-- 使用 title 插槽来自定义标题 -->
+        <template #title>
+          <svg-icon class="express-icon" icon-class="express-icon" />
+          <span class="express-info-right">物流详情</span>
+        </template>
+      </van-cell>
+
     </div>
     <div class="address-info">
       <div class="site-icon"><svg-icon icon-class="order-site-icon" /></div>
       <div class="address-info-right">
-        <div class="user-info"><span>{{ orderDetail.receiver_name }}</span> <span>{{ orderDetail.receiver_phone }}</span></div>
+        <div class="user-info"><span>{{ orderDetail.receiver_name }}</span> <span class="user-phone">{{ orderDetail.receiver_phone }}</span></div>
         <div class="address-detail">{{ orderDetail.receiver_address }}</div>
       </div>
     </div>
@@ -51,24 +61,33 @@
     </div>
     <div class="order-footer-btn">
       <div v-if="orderDetail.status==1">
-        <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.id)">取消订单</van-button>
-        <van-button color="coral" round size="small" plain @click.stop="doPay(orderDetail.id)">立即支付</van-button>
+        <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
+        <van-button color="coral" round size="small" plain @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
+      </div>
+      <div v-if="orderDetail.status==3">
+        <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
+        <van-button color="coral" round size="small" plain @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
       </div>
     </div>
+    <!-- 物流详情点击弹框 -->
+    <van-popup v-model="showGoodsCheck" :style="{ width: '80%', borderRadius: '12px' }">
+      <div class="trace-title">选择商品：</div>
+      <div class="trace-content">
+        <van-cell v-for="item in orderDetail.order_item" :key="item.order_item_id" :title="item.name" is-link :to="`/orderTrace?id=${item.order_item_id}`" />
+      </div>
+    </van-popup>
   </div>
 </template>
 
 <script>
-import TopBar from '@/components/TopBar'
 import { orderApi } from '@/api/order'
-import { Dialog, Toast } from 'vant'
+import { Dialog } from 'vant'
 export default {
-  components: {
-    TopBar
-  },
+
   data() {
     return {
       order_no: this.$route.query.order_no,
+      showGoodsCheck: false, // 显示goods弹框
       orderDetail: {
         item_amount: 0,
         express_amount: 0,
@@ -81,6 +100,7 @@ export default {
     this.getOrderDetail(this.order_no)
   },
   methods: {
+    // 获取订单详情
     getOrderDetail(order_no) {
       orderApi.orderDetail({
         order_no: order_no
@@ -91,16 +111,34 @@ export default {
     doPay(id) {
 
     },
-    cancelOrder(id) {
+    // 取消订单
+    cancelOrder(order_no) {
       Dialog.confirm({
         message: '是否取消该订单？'
       }).then(() => {
-        // on confirm
-        Toast('您点击确认')
+        orderApi.orderCancel({
+          order_no: order_no
+        }).then(res => {
+          this.getOrderDetail(this.order_no)
+        })
       }).catch(() => {
-        // on cancel
-        Toast('您点击取消')
       })
+    },
+    // 确认收货
+    confirmRceipt(order_no) {
+      Dialog.confirm({
+        message: '是否确认收货？'
+      }).then(() => {
+        orderApi.confirmReceived({
+          order_no: order_no
+        }).then(res => {
+          this.getOrderDetail(this.order_no)
+        })
+      }).catch(() => {
+      })
+    },
+    onClickLeft() {
+      this.$router.replace('/orderList')
     }
   }
 }
@@ -130,16 +168,18 @@ export default {
     display: flex;
     align-items: center;
     border-bottom: 10px solid #f5f5f5;
-    padding: 10px 0;
     .express-icon{
-      width: 15%;
-      font-size: 20px;
-      text-align: center;
+      font-size: 24px;
+      display: inline-block;
+      vertical-align: middle;
     }
     .express-info-right{
       width: 85%;
       font-size: 14px;
-      color: #13bf6c;
+      color: #1296db;
+      margin-left: 15px;
+      display: inline-block;
+      vertical-align: middle;
     }
   }
   .address-info{
@@ -154,10 +194,14 @@ export default {
     }
     .address-info-right{
       width: 85%;
-      font-size: 16px;
+      font-size: 14px;
       .user-info{
-        color: #000;
+        color: #333;
         padding-bottom: 10px;
+        .user-phone{
+          color: #999;
+          padding-left: 10px;
+        }
       }
       .address-detail{
         font-size: 14px;
@@ -175,7 +219,7 @@ export default {
     }
   }
  .goods-info{
-    padding: 0 10px;
+    padding: 0 16px;
     border-bottom: 10px solid #f5f5f5;
     .goods-item{
       display: flex;
@@ -256,18 +300,22 @@ export default {
     position: fixed;
     left: 0;
     bottom: 0;
-    height: 45px;
+    height: 50px;
     width: 100%;
     box-sizing: border-box;
     text-align: right;
-    padding: 0 10px;
-    border-top: 1px solid #f5f5f5;
+    padding: 0 16px;
     background: #fff;
     z-index: 999;
     button{
       vertical-align: middle;
       margin-left: 10px;
     }
+  }
+  .trace-title{
+    font-size: 14px;
+    border-bottom: 1px solid #f5f5f5;
+    padding: 10px 16PX;
   }
 }
 </style>
