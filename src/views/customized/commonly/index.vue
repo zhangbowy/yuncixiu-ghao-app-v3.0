@@ -4,53 +4,94 @@
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
-            <van-dropdown-item v-model="fontType" title="字体" :options="fontTypeOptions" />
-            <van-dropdown-item ref="item" title="颜色">
-              <div class="color-box">
-                <div class="color-title">标准色</div>
-                <div class="color-list">
-                  <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" />
-                </div>
-              </div>
+            <van-dropdown-item v-model="fontType" :options="fontTypeOptions" />
+            <van-dropdown-item ref="fontColor" title="颜色">
+              <van-tabs type="card" color="#333" background="#fff">
+                <van-tab title="标准色">
+                  <div class="color-box">
+                    <div class="color-title">标准色</div>
+                    <div class="color-list">
+                      <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" />
+                    </div>
+                  </div>
+                </van-tab>
+                <van-tab title="自定义" />
+              </van-tabs>
             </van-dropdown-item>
-            <van-dropdown-item v-model="fontSize" title="字号" :options="sizeOptions" />
-            <van-dropdown-item v-model="fontAlign" title="对齐" :options="alignment" />
+            <van-dropdown-item v-model="fontSize" :options="sizeOptions" />
+            <van-dropdown-item v-model="fontAlign" :options="alignment" />
           </van-dropdown-menu>
         </div>
       </transition>
+      <transition name="van-slide-down">
+        <div v-show="middleVisible" class="operate-btn">
+          <van-dropdown-menu>
+            <van-dropdown-item ref="itemColor" title="颜色">
+              <van-tabs type="card" color="#333" background="#fff">
+                <van-tab title="标准色">
+                  <div class="color-box">
+                    <div class="color-title">标准色</div>
+                    <div class="color-list">
+                      <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" />
+                    </div>
+                  </div>
+                </van-tab>
+                <van-tab title="自定义" />
+              </van-tabs>
+            </van-dropdown-item>
+            <van-dropdown-item ref="imgSize" title="尺寸">
+              <div>
+                <van-form validate-first @failed="onFailed">
+                  <van-field
+                    v-model="imgSize"
+                    name="imgSize"
+                    label="尺寸"
+                    placeholder="请输入图片尺寸"
+                    clearable
+                    :rules="[{ validator, message: '超出最大尺寸' }]"
+                  />
+                </van-form>
+              </div>
+            </van-dropdown-item>
+          </van-dropdown-menu>
+        </div>
+      </transition>
+      <!-- 遮罩层 -->
       <van-overlay z-index="10" class-name="top-mask" :show="visible" @click="hiddenVisible" />
+      <van-overlay z-index="10" class-name="top-mask" :show="middleVisible" @click="hiddenVisible" />
     </div>
     <div class="designArea">
       <div class="bg-box" :style="{backgroundImage: 'url(' + design_bg + ')', backgroundSize:'130%',backgroundRepeat: 'no-repeat', backgroundPosition: 'center center'}">
-        <!-- <img :src="design_bg" class="bg-img" alt="" width="100%"> -->
         <div class="design-box">
           <div class="top-input" :class="{'focus':topFocus==true}">
-            <div v-if="topFocus==false" class="top-img-list" @click="imgFocus(1)">
+            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: fontAlign,fontSize: `${fontSize}px` }" @click="imgFocus(1)">
               <img v-for="item in topImg" :key="item" :src="item" alt="">
+              <span v-if="topFocus==false && topImg.length==0">{{ topText?topText: '双击开始编辑' }}</span>
             </div>
-            <van-field v-else v-model.trim="topText" :input-align="fontAlign" placeholder="文本" @blur="inpuBlur(1)" @focus="inpuFocus(1)" />
+            <van-field v-else v-model.trim="topText" :input-align="fontAlign" @blur="inpuBlur(1)" @focus="inpuFocus(1)" />
           </div>
           <div class="middle-img">
-            <div />
+            <img :src="patternPicture[0]?patternPicture[0].content:''" width="150" height="150" alt="" @click="middleImgFocus">
           </div>
-          <div class="bottom-input" :class="{'focus':bottomFocus==true}" @click="imgFocus(2)">
-            <div v-if="bottomFocus==false" class="bottom-img-list">
+          <div class="bottom-input" :class="{'focus':bottomFocus==true}">
+            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: fontAlign,fontSize: `${fontSize}px`}" @click="imgFocus(2)">
               <img v-for="item in bottomImg" :key="item" :src="item" alt="">
+              <span v-if="bottomFocus==false && bottomImg.length==0">{{ bottomText? bottomText: '双击开始编辑' }}</span>
             </div>
-            <van-field v-else v-model.trim="bottomText" :input-align="fontAlign" placeholder="文本" @blur="inpuBlur(2)" @focus="inpuFocus(2)" />
+            <van-field v-else v-model.trim="bottomText" :input-align="fontAlign" @blur="inpuBlur(2)" @focus="inpuFocus(2)" />
           </div>
         </div>
       </div>
     </div>
     <div class="bottomOptions">
       <div class="operate-btn">
-        <div class="uoload-btn">
+        <div class="uoload-btn" @click="showUpload">
           <svg-icon icon-class="upload-img" />
           <p>上传花样</p>
         </div>
         <div class="picture-library" @click="showImgList">
           <svg-icon icon-class="picture-lib" />
-          <p>花样选择</p>
+          <p>花样库</p>
         </div>
       </div>
       <div class="footer-btn">
@@ -58,28 +99,51 @@
         <van-button size="small" color="linear-gradient(to right, #4bb0ff, #6149f6)">完成设计</van-button>
       </div>
     </div>
+    <!-- 上传图片 -->
+    <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
+      <div class="modal">
+        <div class="modal-title">上传花样</div>
+        <div class="modal-content">
+          <van-uploader v-model="patternPicture" multiple :max-count="1" />
+        </div>
+        <div class="modal-footer">
+          提示：一次只能上传一张图片
+        </div>
+      </div>
+    </van-popup>
+    <!-- 花样库 -->
+    <van-popup v-model="patternModal" :style="{ width: '80%', height: '30%' }" round closeable>
+      <div class="modal">
+        <div class="modal-title">花样库</div>
+      </div>
+    </van-popup>
+
   </div>
 </template>
 
 <script>
-import { js_getDPI } from '@/utils' // 获取屏幕dip
+// import { js_getDPI } from '@/utils' // 获取屏幕dip
 import { getFontList } from '@/api/design'
+import $ from 'jquery'
+import './arctext'
 export default {
   components: {
   },
   data() {
     return {
-      dpi: '',
-      visible: false,
-      topFocus: false,
-      bottomFocus: false,
-      topText: '',
-      topImg: [],
-      bottomText: '',
-      bottomImg: [],
-      fontType: '',
-      fontTypeOptions: [],
-      current: 0,
+      dpi: '', // 屏幕dpi
+      uploadModal: false,
+      patternModal: false,
+      visible: false, // 顶部操作是否显示
+      middleVisible: false, // 顶部图片属性是否显示
+      topFocus: false, // 上输入框聚焦
+      bottomFocus: false, // 底部输入框聚焦
+      topText: '', // 上输入框文本
+      topImg: [], // 上图片
+      bottomText: '', // 底部文本
+      bottomImg: [], // 底部图片
+      fontType: '', // 字体类型
+      fontTypeOptions: [], // 可选字体类型数组
       checkedArr: [{
         type: 1,
         value: '',
@@ -99,8 +163,8 @@ export default {
         color: '',
         size: '',
         align: ''
-      }],
-      fontAlign: '',
+      }], // 结果数组
+      fontAlign: 'center', // 字体对齐方式
       alignment: [{
         text: '左对齐', value: 'left'
       }, {
@@ -139,17 +203,24 @@ export default {
         name: 5,
         value: '#B92860'
       }],
-      fontSize: '',
-      sizeOptions: [{ text: '12px', value: 12 },
+      fontSize: 12, // 字体大小
+      sizeOptions: [
+        { text: '12px', value: 12 },
         { text: '18px', value: 18 },
-        { text: '24px', value: 24 }],
+        { text: '24px', value: 24 }
+      ],
+      // 背景图
       design_bg: 'https://origin-rendering.yinshida.com.cn/v1/dcl/preview?format=png&width=2048&scene=https%3A%2F%2Fscene.yinshida.com.cn%2Fv1%2Fscenes%2F0439333f-14e0-4f49-b4ad-1c78749d8e93',
-      fontContent: {}
+      fontContent: {}, // 字体内容
+      patternPicture: [], // 花样图片
+      imgSize: ''
     }
   },
   created() {
-    this.dpi = js_getDPI()
+    // 获取字体列表
     this.getFontList()
+
+    this.imgRotate()
   },
   methods: {
     // 获取字体列表
@@ -161,27 +232,68 @@ export default {
             value: item.font_id,
             content: item.fontContent
           })
+          this.fontType = res.data[0].font_id
         })
       })
+    },
+    middleImgFocus() {
+      this.visible = false
+      this.middleVisible = true
     },
     // 输入框聚焦
     inpuFocus(type) {
       this.visible = true
+      this.middleVisible = false
       type === 1 ? this.topFocus = true : this.bottomFocus = true
     },
-    // 图片点击
+    // 文字图片点击
     imgFocus(type) {
       type === 1 ? this.topFocus = true : this.bottomFocus = true
     },
     // 输入框失焦
     inpuBlur(type) {
+      // type判断图片位置 1为上 2为下
       type === 1 ? this.topFocus = false : this.bottomFocus = false
+      if (type === 1) {
+        this.imgRotate()
+      }
+    },
+    // 图片旋转
+    imgRotate() {
+      $(function() {
+        $('.top-input span').arctext({
+          radius: 180,
+          dir: 1,
+          rotate: true,
+          fitText: false
+        })
+      })
+      $(function() {
+        $('.top-input .top-img-list').arctext({
+          radius: 180
+        })
+      })
     },
     // 显示花样图片弹框
-    showImgList() {},
+    showImgList() {
+      this.patternModal = true
+    },
+    // 显示上传图片弹框
+    showUpload() {
+      this.uploadModal = true
+    },
     // 隐藏遮罩
     hiddenVisible() {
       this.visible = false
+      this.middleVisible = false
+    },
+    // 异步校验函数返回 Promise
+    validator(val) {
+      return val < 150
+    },
+    onFailed(errorInfo) {
+      console.log('failed', errorInfo)
+      this.imgSize = ''
     }
   }
 }
@@ -221,6 +333,7 @@ export default {
       }
     }
   }
+  // 设计区域
   .designArea{
     height:70vh;
     position: absolute;
@@ -249,9 +362,9 @@ export default {
       position: relative;
       border: 5px solid rgba(192, 192, 192, 0.5);
       .top-input,.bottom-input{
+        font-size: 12px;
         .van-cell{
           background: none;
-          border: 1px solid rgba(255,255,255,0);
           .van-field__control{
             color: #fff;
           }
@@ -268,6 +381,11 @@ export default {
       .top-img-list, .bottom-img-list{
         width: 100%;
         height: 45px;
+        line-height: 45px;
+        span{
+          color: #fff;
+          padding: 0 5px;
+        }
       }
       .top-input{
         position: absolute;
@@ -287,10 +405,19 @@ export default {
         bottom: 46px;
         left: 0;
         width: 99.2%;
-        border: 1px solid rgba(255,255,255,0);
+        border: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        img{
+          display: block;
+          margin: 0 auto;
+          width: 150px;
+          height: 150px;
+        }
       }
     }
   }
+  // 底部选项
   .bottomOptions{
     height: 15vh;
     position: absolute;
@@ -333,6 +460,48 @@ export default {
   }
   .top-mask{
     background: rgba(0, 0, 0, 0.1);
+  }
+
+  // 弹框
+  .modal{
+    .modal-title{
+      font-size: 16px;
+      padding: 18px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .modal-content{
+      padding: 18px;
+      text-align: center;
+      .van-uploader{
+        width: 150px;
+        height: 150px;
+        border: 1px solid #cccccc;
+        border-radius: 0.21333rem;
+        .van-uploader__upload{
+          width: 150px;
+          height: 150px;
+          text-align: center;
+          margin: 0;
+          line-height: 150px;
+        }
+        .van-uploader__wrapper{
+          height: 150px;
+          align-items: center;
+        }
+        .van-uploader__preview{
+          margin: 0 auto;
+          .van-uploader__preview-image{
+            width: 100%;
+            height: auto;
+          }
+        }
+      }
+    }
+    .modal-footer{
+      font-size: 14px;
+      border-top: 1px solid #f5f5f5;
+      padding: 18px;
+    }
   }
 }
 </style>

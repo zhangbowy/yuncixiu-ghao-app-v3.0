@@ -31,7 +31,8 @@ import {
   Step, Steps,
   DropdownMenu, DropdownItem,
   Empty,
-  Overlay
+  Overlay,
+  Uploader
 } from 'vant'
 
 Vue.use(
@@ -116,4 +117,6 @@ Vue.use(
   Empty
 ).use(
   Overlay
+).use(
+  Uploader
 )
