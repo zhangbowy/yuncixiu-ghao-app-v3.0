@@ -69,6 +69,14 @@
             <div class="goods-adction">
               <van-goods-action>
                 <van-goods-action-button
+                  v-if="goodsDetail.is_custom==1 && skuCustom==1"
+                  type="warning"
+                  text="立即定制"
+                  :disabled="skuItem.num==0"
+                  @click="skutoCustomized"
+                />
+                <van-goods-action-button
+                  v-else
                   type="warning"
                   text="加入购物车"
                   :disabled="skuItem.num==0"
@@ -96,15 +104,24 @@
           <van-goods-action-icon icon="wap-home-o" text="首页" @click="pathTo('/')" />
           <van-goods-action-icon icon="cart-o" text="购物车" @click="pathTo('/cart')" />
           <van-goods-action-button
+            v-if="goodsDetail.is_custom==0"
+            type="warning"
+            text="加入购物车"
+            :disabled="skuItem.num==0"
+            @click="addCart"
+          />
+          <van-goods-action-button
+            v-if="goodsDetail.is_custom==1"
             type="warning"
             text="立即定制"
-            @click="toCustomized"
+            :disabled="skuItem.num==0"
+            @click="toCustomized(1)"
           />
           <van-goods-action-button
             type="danger"
             text="立即购买"
             :disabled="skuItem.num==0"
-            @click="buyNow"
+            @click="buyNow(0)"
           />
         </van-goods-action>
       </div>
@@ -147,7 +164,8 @@ export default {
         { name: '微信', icon: 'wechat' }
       ], // 分享选项
       goodsNumber: 0, // 购买数量
-      id: this.$route.query.goods_id
+      id: this.$route.query.goods_id,
+      skuCustom: 0
     }
   },
   watch: {
@@ -217,7 +235,7 @@ export default {
         this.skuItem.images = res.data.thumb_image_path
       })
     },
-    // 轮播切换
+    // 滑动切换轮播
     onChange(index) {
       this.current = index
     },
@@ -272,7 +290,8 @@ export default {
       }
     },
     // 立即购买
-    buyNow() {
+    buyNow(type) {
+      this.skuCustom = type
       if (!this.skuItem.sku_id) {
         this.changeSkuShow()
       } else {
@@ -294,7 +313,7 @@ export default {
     // sku添加购物车按钮
     skuAddCart() {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
-        this.changeSkuShow()
+        Toast('请选择规格')
       } else {
         this.skuItem.number = this.goodsNumber
         this.skuItem.goods_info = this.goodsDetail
@@ -333,8 +352,23 @@ export default {
       }
     },
     // 去定制
-    toCustomized() {
-      this.$router.push({ path: '/customized/commonly' })
+    toCustomized(type) {
+      this.skuCustom = type
+      if (!this.skuItem.sku_id && this.skuList.length > 0) {
+        this.changeSkuShow()
+      } else {
+        this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
+        this.changeSkuShow()
+      }
+    },
+    // sku去定制按钮
+    skutoCustomized() {
+      if (!this.skuItem.sku_id && this.skuList.length > 0) {
+        Toast('请选择规格')
+      } else {
+        this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
+        this.changeSkuShow()
+      }
     },
     // 分享按钮选中
     onSelect(option) {
@@ -365,7 +399,6 @@ export default {
     top: 0;
     z-index: 999;
   }
-
   .goods-content{
     .goods-images{
       img{

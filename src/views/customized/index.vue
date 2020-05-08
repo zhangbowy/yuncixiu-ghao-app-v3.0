@@ -2,7 +2,23 @@
   <div class="customized">
     <div class="navbar">
       <!-- tab标题栏 -->
-      <top-bar title="开始设计" />
+      <van-nav-bar
+        title="开始设计"
+        left-text=""
+        left-arrow
+        @click-left="onClickLeft"
+      >
+        <template #right>
+          <!-- <van-icon name="arrow-down" size="18" /> -->
+          <van-dropdown-menu>
+            <van-dropdown-item ref="item">
+              <van-cell title="一般定制" is-link to="/customized/commonly" @click="onConfirm" />
+              <van-cell title="特殊定制" is-link to="/customized/special" @click="onConfirm" />
+              <van-cell title="手绘" is-link to="/customized/handDrawn" @click="onConfirm" />
+            </van-dropdown-item>
+          </van-dropdown-menu>
+        </template>
+      </van-nav-bar>
     </div>
     <div class="customized-content">
       <router-view />
@@ -11,10 +27,26 @@
 </template>
 
 <script>
-import TopBar from '@/components/TopBar'
 export default {
   components: {
-    TopBar
+  },
+  data() {
+    return {
+      value1: 0,
+      option1: [
+        { text: '一般定制', value: 0 },
+        { text: '特殊定制', value: 1 },
+        { text: '手绘', value: 2 }
+      ]
+    }
+  },
+  methods: {
+    onClickLeft() {
+      this.$router.go(-1)
+    },
+    onConfirm() {
+      this.$refs.item.toggle()
+    }
   }
 }
 </script>

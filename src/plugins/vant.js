@@ -32,7 +32,9 @@ import {
   DropdownMenu, DropdownItem,
   Empty,
   Overlay,
-  Uploader
+  Uploader,
+  Icon,
+  Slider
 } from 'vant'
 
 Vue.use(
@@ -119,4 +121,8 @@ Vue.use(
   Overlay
 ).use(
   Uploader
+).use(
+  Icon
+).use(
+  Slider
 )

@@ -11,7 +11,7 @@
                   <div class="color-box">
                     <div class="color-title">标准色</div>
                     <div class="color-list">
-                      <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" />
+                      <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" @click="pickColor(item.value)" />
                     </div>
                   </div>
                 </van-tab>
@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </van-tab>
-                <van-tab title="自定义" />
+                <!-- <van-tab title="自定义" /> -->
               </van-tabs>
             </van-dropdown-item>
             <van-dropdown-item ref="imgSize" title="尺寸">
@@ -61,10 +61,11 @@
       <van-overlay z-index="10" class-name="top-mask" :show="middleVisible" @click="hiddenVisible" />
     </div>
     <div class="designArea">
-      <div class="bg-box" :style="{backgroundImage: 'url(' + design_bg + ')', backgroundSize:'130%',backgroundRepeat: 'no-repeat', backgroundPosition: 'center center'}">
+      <div class="bg-box">
+        <img class="bg-img" :src="customInfo.item.background" :width="2*customInfo.custom_info.design_bg_width" :height="2*customInfo.custom_info.design_bg_height" alt="">
         <div class="design-box">
           <div class="top-input" :class="{'focus':topFocus==true}">
-            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: fontAlign,fontSize: `${fontSize}px` }" @click="imgFocus(1)">
+            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: fontAlign,fontSize: `${fontSize}px`,color: `${fontColor}` }" @click="imgFocus(1)">
               <img v-for="item in topImg" :key="item" :src="item" alt="">
               <span v-if="topFocus==false && topImg.length==0">{{ topText?topText: '双击开始编辑' }}</span>
             </div>
@@ -74,7 +75,7 @@
             <img :src="patternPicture[0]?patternPicture[0].content:''" width="150" height="150" alt="" @click="middleImgFocus">
           </div>
           <div class="bottom-input" :class="{'focus':bottomFocus==true}">
-            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: fontAlign,fontSize: `${fontSize}px`}" @click="imgFocus(2)">
+            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: fontAlign,fontSize: `${fontSize}px`,color: `${fontColor}`}" @click="imgFocus(2)">
               <img v-for="item in bottomImg" :key="item" :src="item" alt="">
               <span v-if="bottomFocus==false && bottomImg.length==0">{{ bottomText? bottomText: '双击开始编辑' }}</span>
             </div>
@@ -123,12 +124,10 @@
 
 <script>
 // import { js_getDPI } from '@/utils' // 获取屏幕dip
-import { getFontList } from '@/api/design'
+import { getFontList, customDetail } from '@/api/design'
 import $ from 'jquery'
 import './arctext'
 export default {
-  components: {
-  },
   data() {
     return {
       dpi: '', // 屏幕dpi
@@ -144,26 +143,6 @@ export default {
       bottomImg: [], // 底部图片
       fontType: '', // 字体类型
       fontTypeOptions: [], // 可选字体类型数组
-      checkedArr: [{
-        type: 1,
-        value: '',
-        color: '',
-        size: '',
-        align: ''
-      }, {
-        type: 2,
-        value: '',
-        color: '',
-        size: '',
-        width: '',
-        height: ''
-      }, {
-        type: 3,
-        value: '',
-        color: '',
-        size: '',
-        align: ''
-      }], // 结果数组
       fontAlign: 'center', // 字体对齐方式
       alignment: [{
         text: '左对齐', value: 'left'
@@ -203,24 +182,35 @@ export default {
         name: 5,
         value: '#B92860'
       }],
+      fontColor: '#fff',
       fontSize: 12, // 字体大小
       sizeOptions: [
         { text: '12px', value: 12 },
         { text: '18px', value: 18 },
         { text: '24px', value: 24 }
       ],
-      // 背景图
-      design_bg: 'https://origin-rendering.yinshida.com.cn/v1/dcl/preview?format=png&width=2048&scene=https%3A%2F%2Fscene.yinshida.com.cn%2Fv1%2Fscenes%2F0439333f-14e0-4f49-b4ad-1c78749d8e93',
       fontContent: {}, // 字体内容
       patternPicture: [], // 花样图片
-      imgSize: ''
+      imgSize: '',
+      customInfo: {
+        custom_info: {
+          design_bg_width: 500,
+          design_bg_height: 500
+        },
+        item: {}
+      }
     }
   },
   created() {
     // 获取字体列表
     this.getFontList()
-
+    // 图片旋转
     this.imgRotate()
+    if (this.$route.query.goods_id && this.$route.query.sku_id) {
+      this.goods_id = this.$route.query.goods_id
+      this.sku_id = this.$route.query.sku_id
+    }
+    this.customDetail(this.goods_id, this.sku_id)
   },
   methods: {
     // 获取字体列表
@@ -230,10 +220,19 @@ export default {
           this.fontTypeOptions.push({
             text: item.font_name,
             value: item.font_id,
-            content: item.fontContent
+            content: item.font_content
           })
           this.fontType = res.data[0].font_id
         })
+      })
+    },
+    // 获取定制分类模板信息
+    customDetail(id, sku_id) {
+      customDetail({
+        id: id,
+        sku_id: sku_id
+      }).then(res => {
+        this.customInfo = res.data
       })
     },
     middleImgFocus() {
@@ -294,6 +293,10 @@ export default {
     onFailed(errorInfo) {
       console.log('failed', errorInfo)
       this.imgSize = ''
+    },
+    pickColor(color) {
+      this.fontColor = color
+      this.$refs.fontColor.toggle()
     }
   }
 }
@@ -342,8 +345,11 @@ export default {
     left: 0;
     .bg-box{
       width: 100%;
-      height: 100%;
+      height: 500px;
       overflow: hidden;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
       .bg-img{
         position: absolute;
         top: 50%;
@@ -383,7 +389,6 @@ export default {
         height: 45px;
         line-height: 45px;
         span{
-          color: #fff;
           padding: 0 5px;
         }
       }

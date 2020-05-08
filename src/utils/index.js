@@ -137,3 +137,23 @@ export function mm2px(mm, dpi) {
   const px = mm / (2.54 * 10) * dpi
   return px
 }
+
+/**
+ * 已知毫米和比例 转换毫米对等的像素
+ * @param {*} mm
+ * @param {*} Proportion
+ */
+export function mmTopx(mm, Proportion) {
+  const px = mm / Proportion
+  return px
+}
+
+/**
+ * 已知像素和比例 转换像素对等的毫米
+ * @param {*} px
+ * @param {*} Proportion
+ */
+export function pxTomm(px, Proportion) {
+  const mm = px * Proportion
+  return mm
+}

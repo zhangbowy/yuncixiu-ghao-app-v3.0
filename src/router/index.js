@@ -105,6 +105,12 @@ const constantRoutes = [
       name: 'Special',
       component: () => import('@/views/customized/special'),
       meta: { title: '特殊定制' }
+    },
+    {
+      path: 'handDrawn',
+      name: 'HandDrawn',
+      component: () => import('@/views/customized/handDrawn'),
+      meta: { title: '手绘' }
     }]
   },
   {
