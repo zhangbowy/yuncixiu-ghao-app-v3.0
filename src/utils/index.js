@@ -157,3 +157,19 @@ export function pxTomm(px, Proportion) {
   const mm = px * Proportion
   return mm
 }
+
+// 只提取汉字
+export function GetChinese(strValue) {
+  if (strValue != null && strValue !== '') {
+    var reg = /[\u4e00-\u9fa5]/g
+    return strValue.match(reg).join('')
+  } else { return '' }
+}
+
+// 去掉汉字
+export function RemoveChinese(strValue) {
+  if (strValue != null && strValue !== '') {
+    var reg = /[\u4e00-\u9fa5]/g
+    return strValue.replace(reg, '')
+  } else { return '' }
+}

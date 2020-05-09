@@ -26,6 +26,19 @@
       <transition name="van-slide-down">
         <div v-show="middleVisible" class="operate-btn">
           <van-dropdown-menu>
+            <van-dropdown-item ref="itemColor" title="颜色">
+              <van-tabs type="card" color="#333" background="#fff">
+                <van-tab title="标准色">
+                  <div class="color-box">
+                    <div class="color-title">标准色</div>
+                    <div class="color-list">
+                      <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" />
+                    </div>
+                  </div>
+                </van-tab>
+                <!-- <van-tab title="自定义" /> -->
+              </van-tabs>
+            </van-dropdown-item>
             <van-dropdown-item ref="imgSize" title="尺寸">
               <div>
                 <van-form validate-first @failed="onFailed">
@@ -49,35 +62,28 @@
     </div>
     <div class="designArea">
       <div class="bg-box">
-        <!-- 背景图 -->
-        <img class="bg-img" :src="customInfo.item.background" :style="designImgStyle" alt="">
-        <!-- 设计区域 -->
-        <div class="design-box" :style="designBoxStyle">
-          <!-- 上输入框  -->
+        <img class="bg-img" :src="customInfo.item.background" :width="2*customInfo.custom_info.design_bg_width" :height="2*customInfo.custom_info.design_bg_height" alt="">
+        <div class="design-box">
           <div class="top-input" :class="{'focus':topFocus==true}">
             <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: fontAlign,fontSize: `${fontSize}px`,color: `${fontColor}` }" @click="imgFocus(1)">
+              <img v-for="item in topImg" :key="item" :src="item" alt="">
               <span v-if="topFocus==false && topImg.length==0">{{ topText?topText: '双击开始编辑' }}</span>
-              <img v-for="(item,index) in topImg" v-else :key="index" :height="fontSize" :src="item" alt="">
             </div>
             <van-field v-else v-model.trim="topText" :input-align="fontAlign" @blur="inpuBlur(1)" @focus="inpuFocus(1)" />
           </div>
-          <!-- 中间图片 -->
           <div class="middle-img">
-            <img v-if="patternPicture[0]" :src="patternPicture[0]?patternPicture[0].content:''" width="150" height="150" alt="" @click="middleImgFocus">
+            <img :src="patternPicture[0]?patternPicture[0].content:''" width="150" height="150" alt="" @click="middleImgFocus">
           </div>
-          <!-- 下输入框 -->
           <div class="bottom-input" :class="{'focus':bottomFocus==true}">
             <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: fontAlign,fontSize: `${fontSize}px`,color: `${fontColor}`}" @click="imgFocus(2)">
+              <img v-for="item in bottomImg" :key="item" :src="item" alt="">
               <span v-if="bottomFocus==false && bottomImg.length==0">{{ bottomText? bottomText: '双击开始编辑' }}</span>
-              <img v-for="(item,index) in bottomImg" v-else :key="index" :height="fontSize" :src="item" alt="">
             </div>
             <van-field v-else v-model.trim="bottomText" :input-align="fontAlign" @blur="inpuBlur(2)" @focus="inpuFocus(2)" />
           </div>
         </div>
-        <!-- 设计区域结束 -->
       </div>
     </div>
-    <!-- 底部操作 -->
     <div class="bottomOptions">
       <div class="operate-btn">
         <div class="uoload-btn" @click="showUpload">
@@ -118,7 +124,7 @@
 
 <script>
 // import { js_getDPI } from '@/utils' // 获取屏幕dip
-import { getFontList, customDetail, getTextImage } from '@/api/design'
+import { getFontList, customDetail } from '@/api/design'
 import $ from 'jquery'
 import './arctext'
 export default {
@@ -185,32 +191,14 @@ export default {
       ],
       fontContent: {}, // 字体内容
       patternPicture: [], // 花样图片
-      imgSize: '', // 图片大小
+      imgSize: '',
       customInfo: {
         custom_info: {
-          design_width: 0,
-          disign_height: 0,
-          design_top: 0,
-          design_left: 0,
-          design_bg: '',
-          design_bg_width: 0,
-          design_bg_height: 0
+          design_bg_width: 500,
+          design_bg_height: 500
         },
         item: {}
-      },
-      design_box: {
-        design_bg_width: 0, // 设计背景宽度
-        design_bg_height: 0, // 设计背景高度
-        design_bg_X: 0, // 设计背景x轴距离
-        design_bg_Y: 0, // 设计背景y轴距离
-        design_W: 0, // 设计区域宽
-        design_H: 0, // 设计区域高
-        design_X: 0, // 设计区域x轴距离
-        design_Y: 0, // 设计区域y轴距离
-        design_scale: 1 // 缩放量
-      },
-      designImgStyle: {}, // 设计背景style
-      designBoxStyle: {} // 设计区域style
+      }
     }
   },
   created() {
@@ -245,45 +233,7 @@ export default {
         sku_id: sku_id
       }).then(res => {
         this.customInfo = res.data
-        this.initPage(res.data)
       })
-    },
-    // 初始化页面方法
-    // 计算背景图位置 设计区域位置
-    initPage(item) {
-      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
-      // 计算比例
-      const design_scale = SCREEN_WIDTH * 0.8 / item.custom_info.design_width
-      this.design_box.design_scale = design_scale
-      // 计算设计区背景实际宽高 ps:基本上是固定的
-      this.design_box.design_bg_width = design_scale * item.custom_info.design_bg_width
-      this.design_box.design_bg_height = design_scale * item.custom_info.design_bg_height
-      // 设计区域实际跨高和左上对齐位置
-      this.design_box.design_W = item.custom_info.design_width * design_scale
-      this.design_box.design_H = item.custom_info.design_height * design_scale
-      this.design_box.design_X = (SCREEN_WIDTH - this.design_box.design_W) / 2
-      this.design_box.design_Y = (SCREEN_WIDTH - this.design_box.design_H) / 2
-      // 计算设计区背景图的对齐位置
-      this.design_box.design_bg_X = item.custom_info.design_left * design_scale - this.design_box.design_X
-      this.design_box.design_bg_Y = item.custom_info.design_top * design_scale - this.design_box.design_Y
-
-      // 背景图位置style
-      this.designImgStyle = {
-        position: 'absolute',
-        width: `${this.design_box.design_bg_width}px`,
-        height: `${this.design_box.design_bg_height}px`,
-        left: `-${this.design_box.design_bg_X}px`,
-        top: `-${this.design_box.design_bg_Y}px`
-      }
-      // 设计区域位置style
-      this.designBoxStyle = {
-        position: 'absolute',
-        width: `${this.design_box.design_W}px`,
-        height: `${this.design_box.design_H}px`,
-        left: `${this.design_box.design_X}px`,
-        top: '50%',
-        marginTop: `-${this.design_box.design_H / 2}px`
-      }
     },
     middleImgFocus() {
       this.visible = false
@@ -303,26 +253,8 @@ export default {
     inpuBlur(type) {
       // type判断图片位置 1为上 2为下
       type === 1 ? this.topFocus = false : this.bottomFocus = false
-      let arr = []
       if (type === 1) {
-        const text = this.topText
-        arr = text.split('')
-        getTextImage({
-          font_id: this.fontType,
-          font_list: JSON.stringify(arr)
-        }).then(res => {
-          this.topImg = res.data
-        })
         this.imgRotate()
-      } else {
-        const text = this.bottomText
-        arr = text.split('')
-        getTextImage({
-          font_id: this.fontType,
-          font_list: JSON.stringify(arr)
-        }).then(res => {
-          this.bottomImg = res.data
-        })
       }
     },
     // 图片旋转
@@ -413,15 +345,27 @@ export default {
     left: 0;
     .bg-box{
       width: 100%;
-      height: 375px;
+      height: 500px;
       overflow: hidden;
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
+      .bg-img{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
     }
     .design-box{
       position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      height: 300px;
+      transform: translate(-50%,-50%);
       background: rgba(0, 0, 0, 0.5);
+      position: relative;
       border: 5px solid rgba(192, 192, 192, 0.5);
       .top-input,.bottom-input{
         font-size: 12px;
@@ -446,9 +390,6 @@ export default {
         line-height: 45px;
         span{
           padding: 0 5px;
-        }
-        img{
-          margin: 0 2px;
         }
       }
       .top-input{

@@ -22,3 +22,14 @@ export function customDetail(params) {
     params
   })
 }
+/**
+ * 获取文字图片
+ * @param {*} params
+ */
+export function getTextImage(params) {
+  return request({
+    url: '/custom/getFont',
+    method: 'get',
+    params
+  })
+}

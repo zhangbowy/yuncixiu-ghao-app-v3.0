@@ -401,6 +401,7 @@ export default {
   }
   .goods-content{
     .goods-images{
+      min-height: 335px;
       img{
         width: 100%;
         height: 335px;
@@ -415,6 +416,7 @@ export default {
         font-weight: bold;
         font-size: 22px;
         position: relative;
+        min-height: 25px;
         p{
           width: 65%;
           margin: 0;
