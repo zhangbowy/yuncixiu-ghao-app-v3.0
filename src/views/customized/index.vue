@@ -10,11 +10,11 @@
       >
         <template #right>
           <!-- <van-icon name="arrow-down" size="18" /> -->
-          <van-dropdown-menu>
+          <van-dropdown-menu style="height: 45px;border: none">
             <van-dropdown-item ref="item">
-              <van-cell title="一般定制" is-link to="/customized/commonly" @click="onConfirm" />
-              <van-cell title="特殊定制" is-link to="/customized/special" @click="onConfirm" />
-              <van-cell title="手绘" is-link to="/customized/handDrawn" @click="onConfirm" />
+              <van-cell title="一般定制" is-link :to="`/customized/commonly?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
+              <van-cell title="特殊定制" is-link :to="`/customized/special?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
+              <van-cell title="手绘" is-link :to="`/customized/handDrawn?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
             </van-dropdown-item>
           </van-dropdown-menu>
         </template>
@@ -33,6 +33,8 @@ export default {
   data() {
     return {
       value1: 0,
+      goods_id: this.$route.query.goods_id,
+      sku_id: this.$route.query.sku_id,
       option1: [
         { text: '一般定制', value: 0 },
         { text: '特殊定制', value: 1 },

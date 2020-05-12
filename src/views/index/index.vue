@@ -56,13 +56,13 @@ export default {
       samples: [
         {
           id: 1,
-          src: 'https://s1.ax1x.com/2020/04/13/GjhiqI.gif'
+          src: 'http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/15/2020-05-11/a3ed98a4-cd24-4fce-975a-757cdc485a53.png'
         }, {
           id: 2,
-          src: 'https://s1.ax1x.com/2020/04/13/GjhAdP.gif'
+          src: 'http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/15/2020-05-11/073606a2-397f-4f24-a6ad-c3e18ba98003.png'
         }, {
           id: 3,
-          src: 'https://s1.ax1x.com/2020/04/13/GjhkZt.gif'
+          src: 'http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/15/2020-05-11/f6431e37-76b9-4caf-ac83-118beda838a9.png'
         }, {
           id: 4,
           src: 'https://s1.ax1x.com/2020/04/13/GjhCMd.gif'
@@ -145,6 +145,7 @@ export default {
       img{
         width: 100%;
         max-height: 100px;
+        min-height: 100px;
         border-radius: 6px;
       }
     }

@@ -173,3 +173,63 @@ export function RemoveChinese(strValue) {
     return strValue.replace(reg, '')
   } else { return '' }
 }
+
+export function imageUrlToBase64(url) {
+  console.log(url)
+  // 一定要设置为let，不然图片不显示
+  const image = new Image()
+
+  // 解决跨域问题
+  image.setAttribute('crossOrigin', 'anonymous')
+
+  const imageUrl = url
+  image.src = imageUrl
+
+  // image.onload为异步加载
+  image.onload = () => {
+    var canvas = document.createElement('canvas')
+    canvas.width = image.width
+    canvas.height = image.height
+    var context = canvas.getContext('2d')
+    context.drawImage(image, 0, 0, image.width, image.height)
+
+    var quality = 1
+    // 这里的dataurl就是base64类型
+    var dataURL = canvas.toDataURL('image/png', quality)// 使用toDataUrl将图片转换成jpeg的格式,不要把图片压缩成png，因为压缩成png后base64的字符串可能比不转换前的长！
+    return dataURL
+  }
+}
+
+// export function imageUrlToBase64(imgUrl) {
+//   console.log('方式一》》》》》》》》》', imgUrl)
+//   window.URL = window.URL || window.webkitURL
+//   var xhr = new XMLHttpRequest()
+//   xhr.open('get', imgUrl, true)
+//   // 至关重要
+//   xhr.responseType = 'blob'
+//   xhr.onload = function() {
+//     if (this.status === 200) {
+//       // 得到一个blob对象
+//       var blob = this.response
+//       console.log('blob', blob)
+//       // 至关重要
+//       const oFileReader = new FileReader()
+//       oFileReader.onloadend = function(e) {
+//         // 此处拿到的已经是 base64的图片了
+//         const base64 = e.target.result
+//         console.log('方式一》》》》》》》》》', base64)
+//         return base64
+//       }
+//       // oFileReader.readAsDataURL(blob)
+//       // // ====为了在页面显示图片，可以删除====
+//       // var img = document.createElement('img')
+//       // img.onload = function(e) {
+//       //   window.URL.revokeObjectURL(img.src) // 清除释放
+//       // }
+//       // const src = window.URL.createObjectURL(blob)
+//       // img.src = src
+//       // document.getElementById("container1").appendChild(img);
+//       // ====为了在页面显示图片，可以删除====
+//     }
+//   }
+// }

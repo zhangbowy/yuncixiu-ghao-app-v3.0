@@ -34,7 +34,8 @@ import {
   Overlay,
   Uploader,
   Icon,
-  Slider
+  Slider,
+  List
 } from 'vant'
 
 Vue.use(
@@ -125,4 +126,4 @@ Vue.use(
   Icon
 ).use(
   Slider
-)
+).use(List)

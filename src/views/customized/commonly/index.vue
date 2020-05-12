@@ -8,15 +8,11 @@
             <van-dropdown-item ref="fontColor" title="颜色">
               <van-tabs type="card" color="#333" background="#fff">
                 <van-tab title="标准色">
-                  <div class="color-box">
-                    <div class="color-title">标准色</div>
-                    <div class="color-list">
-                      <div v-for="(item,index) in colorList" :key="index" class="color-item" :style="{background: item.value}" @click="pickColor(item.value)" />
-                    </div>
-                  </div>
+                  <compact-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab>
-                <van-tab title="自定义" />
-              </van-tabs>
+                <van-tab title="自定义">
+                  <sketch-picker v-model="fontColor" @change="imgColorChnage" />
+                </van-tab></van-tabs>
             </van-dropdown-item>
             <van-dropdown-item v-model="fontSize" :options="sizeOptions" />
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
@@ -26,20 +22,14 @@
       <transition name="van-slide-down">
         <div v-show="middleVisible" class="operate-btn">
           <van-dropdown-menu>
-            <van-dropdown-item ref="imgSize" title="尺寸">
-              <div>
-                <van-form validate-first @failed="onFailed">
-                  <van-field
-                    v-model="imgSize"
-                    name="imgSize"
-                    label="尺寸"
-                    placeholder="请输入图片尺寸"
-                    clearable
-                    :rules="[{ validator, message: '超出最大尺寸' }]"
-                  />
-                </van-form>
+            <div class="middle-img-menu">
+              <div class="menu-item">
+                <van-button icon="edit" plain type="default" @click="changeMiddleImg">图片尺寸</van-button>
               </div>
-            </van-dropdown-item>
+              <div class="menu-item">
+                <van-button icon="delete" plain type="default" @click="deleteMiddleImg">删除</van-button>
+              </div>
+            </div>
           </van-dropdown-menu>
         </div>
       </transition>
@@ -55,23 +45,24 @@
         <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
           <div class="top-input" :class="{'focus':topFocus==true}">
-            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: fontAlign,fontSize: `${fontSize}px`,color: `${fontColor}` }" @click="imgFocus(1)">
-              <span v-if="topFocus==false && topImg.length==0">{{ topText?topText: '双击开始编辑' }}</span>
-              <img v-for="(item,index) in topImg" v-else :key="index" :height="fontSize" :src="item" alt="">
+            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}` }" @click="imgFocus(1)">
+              <span v-if="topFocus==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
+              <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
             </div>
-            <van-field v-else v-model.trim="topText" :input-align="fontAlign" @blur="inpuBlur(1)" @focus="inpuFocus(1)" />
+            <van-field v-else v-model.trim="form.topText.content" maxlength="15" :input-align="form.topText.align" @input="getFont(1)" @focus="inpuFocus(1)" />
           </div>
           <!-- 中间图片 -->
           <div class="middle-img">
-            <img v-if="patternPicture[0]" :src="patternPicture[0]?patternPicture[0].content:''" width="150" height="150" alt="" @click="middleImgFocus">
+            <img v-if="patternPicture[0]" :src="patternPicture[0]?patternPicture[0].content: ''" alt="" @click="showMiddleMemu(1)">
+            <img v-if="!patternPicture[0] && form.middleImg.prev_png_path" :src="form.middleImg.prev_png_path" alt="" @click="showMiddleMemu(2)">
           </div>
           <!-- 下输入框 -->
           <div class="bottom-input" :class="{'focus':bottomFocus==true}">
-            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: fontAlign,fontSize: `${fontSize}px`,color: `${fontColor}`}" @click="imgFocus(2)">
-              <span v-if="bottomFocus==false && bottomImg.length==0">{{ bottomText? bottomText: '双击开始编辑' }}</span>
-              <img v-for="(item,index) in bottomImg" v-else :key="index" :height="fontSize" :src="item" alt="">
+            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click="imgFocus(2)">
+              <span v-if="bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
+              <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
             </div>
-            <van-field v-else v-model.trim="bottomText" :input-align="fontAlign" @blur="inpuBlur(2)" @focus="inpuFocus(2)" />
+            <van-field v-else v-model.trim="form.bottomText.content" maxlength="15" :input-align="form.bottomText.align" @input="getFont(2)" @focus="inpuFocus(2)" />
           </div>
         </div>
         <!-- 设计区域结束 -->
@@ -102,14 +93,21 @@
           <van-uploader v-model="patternPicture" multiple :max-count="1" />
         </div>
         <div class="modal-footer">
-          提示：一次只能上传一张图片
+          一次只能上传一张图片
         </div>
       </div>
     </van-popup>
     <!-- 花样库 -->
-    <van-popup v-model="patternModal" :style="{ width: '80%', height: '30%' }" round closeable>
+    <van-popup v-model="patternModal" :style="{ width: '80%', height: '60vh' }" round closeable>
       <div class="modal">
         <div class="modal-title">花样库</div>
+        <div class="modal-content figure-content">
+          <div class="figure-list">
+            <div v-for="(item,index) in figureList" :key="index" class="figure-item">
+              <img :src="item.prev_png_path" alt="" @click="checkFigureItem(item)">
+            </div>
+          </div>
+        </div>
       </div>
     </van-popup>
 
@@ -117,26 +115,32 @@
 </template>
 
 <script>
-// import { js_getDPI } from '@/utils' // 获取屏幕dip
-import { getFontList, customDetail, getTextImage } from '@/api/design'
+import { getFontList, customDetail, getTextImage, getFigure, reColor } from '@/api/design'
+import Sketch from '@/components/VueColorPicker/Sketch'
+import Compact from '@/components/VueColorPicker/Compact'
 import $ from 'jquery'
 import './arctext'
+import { Toast } from 'vant'
 export default {
+  components: {
+    'sketch-picker': Sketch,
+    'compact-picker': Compact
+  },
   data() {
     return {
-      dpi: '', // 屏幕dpi
       uploadModal: false,
       patternModal: false,
       visible: false, // 顶部操作是否显示
       middleVisible: false, // 顶部图片属性是否显示
       topFocus: false, // 上输入框聚焦
       bottomFocus: false, // 底部输入框聚焦
+      figureList: [], // 花样库
       topText: '', // 上输入框文本
       topImg: [], // 上图片
       bottomText: '', // 底部文本
       bottomImg: [], // 底部图片
       fontType: '', // 字体类型
-      fontTypeOptions: [], // 可选字体类型数组
+      fontTypeOptions: [], // 可选字体
       fontAlign: 'center', // 字体对齐方式
       alignment: [{
         text: '左对齐', value: 'left'
@@ -145,46 +149,31 @@ export default {
       }, {
         text: '右对齐', value: 'right'
       }],
-      colorList: [{
-        name: 1,
-        value: '#ffffff'
-      }, {
-        name: 2,
-        value: '#000000'
-      }, {
-        name: 3,
-        value: '#f1f2f3'
-      }, {
-        name: 4,
-        value: '#FDB500'
-      }, {
-        name: 5,
-        value: '#6D4A2F'
-      }, {
-        name: 1,
-        value: '#999999'
-      }, {
-        name: 2,
-        value: '#B8E4DD'
-      }, {
-        name: 3,
-        value: '#43B5CD'
-      }, {
-        name: 4,
-        value: '#F66B29'
-      }, {
-        name: 5,
-        value: '#B92860'
-      }],
-      fontColor: '#fff',
+      fontColor: {},
       fontSize: 12, // 字体大小
       sizeOptions: [
         { text: '12px', value: 12 },
         { text: '18px', value: 18 },
         { text: '24px', value: 24 }
       ],
-      fontContent: {}, // 字体内容
-      patternPicture: [], // 花样图片
+      form: {
+        topText: {
+          content: '',
+          fontSize: '12',
+          fontColor: '#fff',
+          fontType: '',
+          align: 'center'
+        },
+        middleImg: {},
+        bottomText: {
+          content: '',
+          fontSize: '12',
+          fontColor: '#fff',
+          fontType: '',
+          align: 'center'
+        }
+      },
+      patternPicture: [], // 花样图片库
       imgSize: '', // 图片大小
       customInfo: {
         custom_info: {
@@ -198,6 +187,7 @@ export default {
         },
         item: {}
       },
+      // 提交表单
       design_box: {
         design_bg_width: 0, // 设计背景宽度
         design_bg_height: 0, // 设计背景高度
@@ -213,16 +203,52 @@ export default {
       designBoxStyle: {} // 设计区域style
     }
   },
+  watch: {
+    fontType(newValue, oldValue) {
+      if (this.topFocus === true) {
+        this.form.topText.fontType = newValue
+      }
+      if (this.bottomFocus === true) {
+        this.form.bottomText.fontType = newValue
+      }
+    },
+    fontSize(newValue, oldValue) {
+      if (this.topFocus === true) {
+        this.form.topText.fontSize = newValue
+      }
+      if (this.bottomFocus === true) {
+        this.form.bottomText.fontSize = newValue
+      }
+    },
+    fontAlign(newValue, oldValue) {
+      if (this.topFocus === true) {
+        this.form.topText.align = newValue
+      }
+      if (this.bottomFocus === true) {
+        this.form.bottomText.align = newValue
+      }
+    },
+    fontColor(newValue, oldValue) {
+      if (this.topFocus === true) {
+        this.form.topText.fontColor = newValue.hex
+      }
+      if (this.bottomFocus === true) {
+        this.form.bottomText.fontColor = newValue.hex
+      }
+    }
+  },
   created() {
     // 获取字体列表
     this.getFontList()
-    // 图片旋转
+    // 弧形文字
     this.imgRotate()
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
     }
+    // 获取定制信息
     this.customDetail(this.goods_id, this.sku_id)
+    this.getFigureList()
   },
   methods: {
     // 获取字体列表
@@ -236,6 +262,13 @@ export default {
           })
           this.fontType = res.data[0].font_id
         })
+      })
+    },
+    // 获取花样库列表
+    getFigureList() {
+      getFigure({
+      }).then(res => {
+        this.figureList = res.data.data
       })
     },
     // 获取定制分类模板信息
@@ -252,7 +285,7 @@ export default {
     // 计算背景图位置 设计区域位置
     initPage(item) {
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
-      // 计算比例
+      // 计算比例 * 0.8表示屏幕的宽度80%
       const design_scale = SCREEN_WIDTH * 0.8 / item.custom_info.design_width
       this.design_box.design_scale = design_scale
       // 计算设计区背景实际宽高 ps:基本上是固定的
@@ -285,11 +318,7 @@ export default {
         marginTop: `-${this.design_box.design_H / 2}px`
       }
     },
-    middleImgFocus() {
-      this.visible = false
-      this.middleVisible = true
-    },
-    // 输入框聚焦
+    // 输入框输入
     inpuFocus(type) {
       this.visible = true
       this.middleVisible = false
@@ -300,31 +329,51 @@ export default {
       type === 1 ? this.topFocus = true : this.bottomFocus = true
     },
     // 输入框失焦
-    inpuBlur(type) {
+    getFont(type) {
       // type判断图片位置 1为上 2为下
-      type === 1 ? this.topFocus = false : this.bottomFocus = false
       let arr = []
       if (type === 1) {
-        const text = this.topText
+        const text = this.form.topText.content
         arr = text.split('')
+        // 获取文字图片
         getTextImage({
           font_id: this.fontType,
           font_list: JSON.stringify(arr)
         }).then(res => {
-          this.topImg = res.data
+          if (res.code === 0) {
+            this.topImg = res.data
+            this.imgRotate()
+          } else {
+            Toast(res.msg)
+          }
         })
-        this.imgRotate()
       } else {
-        const text = this.bottomText
+        const text = this.form.bottomText.content
         arr = text.split('')
         getTextImage({
           font_id: this.fontType,
           font_list: JSON.stringify(arr)
         }).then(res => {
-          this.bottomImg = res.data
+          if (res.code === 0) {
+            this.bottomImg = res.data
+          } else {
+            Toast(res.msg)
+          }
         })
       }
     },
+    showMiddleMemu(type) {
+      // type==1个人上传，type==2花样库选择
+      this.middleVisible = true
+    },
+    // 删除中间图片
+    deleteMiddleImg() {
+      this.patternPicture = []
+      this.form.middleImg = {}
+      this.middleVisible = false
+    },
+    // 修改图片尺寸
+    changeMiddleImg() {},
     // 图片旋转
     imgRotate() {
       $(function() {
@@ -336,10 +385,31 @@ export default {
         })
       })
       $(function() {
-        $('.top-input .top-img-list').arctext({
-          radius: 180
+        $('.top-img-list img').arctext({
+          radius: 180,
+          dir: 1,
+          rotate: true,
+          fitText: false
         })
       })
+    },
+    // 图片颜色选择
+    imgColorChnage(e) {
+      if (this.topFocus === true) {
+        reColor({
+          color: e,
+          image: this.topImg
+        }).then(res => {
+          this.topImg = res.data
+        })
+      } else {
+        reColor({
+          color: e,
+          image: this.bottomImg
+        }).then(res => {
+          this.bottomImg = res.data
+        })
+      }
     },
     // 显示花样图片弹框
     showImgList() {
@@ -353,18 +423,42 @@ export default {
     hiddenVisible() {
       this.visible = false
       this.middleVisible = false
+      this.topFocus = false
+      this.bottomFocus = false
     },
     // 异步校验函数返回 Promise
     validator(val) {
       return val < 150
     },
     onFailed(errorInfo) {
-      console.log('failed', errorInfo)
       this.imgSize = ''
     },
     pickColor(color) {
+      if (this.topFocus === true) {
+        this.form.topText.fontColor = color
+        // reColor({
+        //   color: color,
+        //   image: this.topImg
+        // }).then(res => {
+        //   console.log(res)
+        // })
+      } else {
+        this.form.bottomText.fontColor = color
+        // reColor({
+        //   color: color,
+        //   image: this.bottomImg
+        // }).then(res => {
+        //   console.log(res)
+        // })
+      }
       this.fontColor = color
       this.$refs.fontColor.toggle()
+    },
+    checkFigureItem(item) {
+      console.log(item)
+      this.form.middleImg = item
+      this.middleImg = item.prev_png_path
+      this.patternModal = false
     }
   }
 }
@@ -384,6 +478,12 @@ export default {
     .operate-btn{
       position: relative;
       z-index: 999;
+      .middle-img-menu{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        justify-content: space-around;
+      }
     }
     .color-box{
       padding: 10px;
@@ -469,7 +569,6 @@ export default {
         bottom: 46px;
         left: 0;
         width: 99.2%;
-        border: 1px solid rgba(255,255,255,0.1);
         display: flex;
         align-items: center;
         img{
@@ -560,6 +659,30 @@ export default {
           }
         }
       }
+
+      .figure-list{
+        display: flex;
+        flex-flow: wrap;
+        .figure-item{
+          width: 30%;
+          margin-right: 5%;
+          margin-bottom: 10px;
+          border-radius: 10px;
+          box-shadow: 0px 0px 20px #f5f5f5;
+          img{
+            width: 100%;
+            height: 70px;
+          }
+        }
+        .figure-item:nth-child(3n){
+          margin-right: 0;
+        }
+      }
+    }
+    .figure-content{
+      height: calc(60vh - 120px);
+      margin: 10px;
+      overflow: auto;
     }
     .modal-footer{
       font-size: 14px;

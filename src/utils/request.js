@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { Toast } from 'vant'
 
 // 创建axios实例
 const service = axios.create({
@@ -48,6 +49,7 @@ service.interceptors.response.use(
         store.dispatch('user/resetToken')
         return res
       }
+      Toast(res.msg || '请求异常')
       return Promise.reject(new Error('Error'))
     } else {
       return res

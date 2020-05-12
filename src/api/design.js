@@ -33,3 +33,27 @@ export function getTextImage(params) {
     params
   })
 }
+
+/**
+ * 图片换色
+ * @param {*} data
+ */
+export function reColor(data) {
+  return request({
+    url: '/custom/reColor',
+    method: 'post',
+    data
+  })
+}
+/**
+ * 获取花样
+ * @param {*currentPage limit} params
+ */
+export function getFigure(params) {
+  return request({
+    url: '/custom/getDesign',
+    method: 'get',
+    params
+  })
+}
+

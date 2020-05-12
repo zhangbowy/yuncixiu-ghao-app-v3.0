@@ -8,7 +8,7 @@ const constantRoutes = [
     path: '/',
     name: 'Index',
     component: () => import('@/views/index'),
-    meta: { title: '首页', showTabbar: true }
+    meta: { title: '首页', keepAlive: false, showTabbar: true }
   }, {
     path: '/user',
     name: 'User',
@@ -18,7 +18,7 @@ const constantRoutes = [
     path: '/classify',
     name: 'Classify',
     component: () => import('@/views/classification/index'),
-    meta: { title: '分类', showTabbar: true }
+    meta: { title: '分类', keepAlive: false, showTabbar: true }
   }, {
     path: '/cart',
     name: 'ShopCart',
