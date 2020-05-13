@@ -121,7 +121,6 @@ export default {
         hex: c,
         source: 'hex'
       })
-      this.$emit('change', c)
     },
     childChange(data) {
       this.colorChange(data)

@@ -56,7 +56,6 @@ export default {
         hex: c,
         source: 'hex'
       })
-      this.$emit('change', c)
     }
   }
 }

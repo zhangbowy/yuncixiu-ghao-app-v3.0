@@ -54,17 +54,35 @@
    *   add &nbsp; for empty chars.
    */
   function injector(t, splitter, klass, after) {
-    var a = t.text().split(splitter); var inject = ''; var emptyclass
-    if (a.length) {
-      $(a).each(function(i, item) {
-        emptyclass = ''
-        if (item === ' ') {
-          emptyclass = ' empty'
-          item = '&nbsp;'
-        }
-        inject += '<span class="' + klass + (i + 1) + emptyclass + '">' + item + '</span>' + after
-      })
-      t.empty().append(inject)
+    console.log(t)
+    var inject = ''; var emptyclass
+    if (t[0].tagName === 'SPAN') {
+      var a = t.text().split(splitter)
+      if (a.length) {
+        $(a).each(function(i, item) {
+          emptyclass = ''
+          if (item === ' ') {
+            emptyclass = ' empty'
+            item = '&nbsp;'
+          }
+          inject += '<span class="' + klass + (i + 1) + emptyclass + '">' + item + '</span>' + after
+        })
+        t.empty().append(inject)
+      }
+    } else {
+      var src = t[0].children
+      if (src.length) {
+        $(src).each(function(i, item) {
+          console.log(item.src)
+          emptyclass = ''
+          if (item.src === ' ') {
+            emptyclass = ' empty'
+            item = '&nbsp;'
+          }
+          inject += '<img src="' + item.src + '" class="' + klass + (i + 1) + emptyclass + '">' + after
+        })
+        t.empty().append(inject)
+      }
     }
   }
 
@@ -143,6 +161,7 @@
       if (this.options.fitText) { this.$el.fitText() }
 
       this.$letters = this.$el.find('span').css('display', 'inline-block')
+      this.$letters = this.$el.find('img').css('display', 'inline-block')
     },
     _calc: function() {
       if (this.options.radius === -1) { return false }

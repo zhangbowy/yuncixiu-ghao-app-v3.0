@@ -23,7 +23,7 @@
         left-icon="volume-o"
         :scrollable="true"
       >
-        欢迎来到云刺绣商城，快去定制您的专属
+        欢迎访问云刺绣商城！
       </van-notice-bar>
     </div>
     <!-- 推荐种类 -->
@@ -117,15 +117,19 @@ export default {
   background: #f5f5f5;
   padding-bottom: 50px;
   .index-banner{
-    .my-swipe .van-swipe-item {
-      color: #fff;
-      font-size: 20px;
-      line-height: 10px;
-      text-align: center;
-      max-height: 220px;
-      img{
-        width: 100%;
+    .my-swipe{
+      background: #f7f7f7;
+      height: 220px;
+      .van-swipe-item {
+        color: #fff;
+        font-size: 20px;
+        line-height: 10px;
+        text-align: center;
         height: 220px;
+        img{
+          width: 100%;
+          height: 220px;
+        }
       }
     }
   }
@@ -136,6 +140,7 @@ export default {
     justify-content: space-around;
     background: #fff;
     padding-top: 10px;
+    border-bottom: 10px solid #f5f5f5;
     &-item{
       width: 28%;
       border: 1px solid #f5f5f5;

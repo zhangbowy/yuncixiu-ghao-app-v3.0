@@ -46,10 +46,10 @@
           <!-- 上输入框  -->
           <div class="top-input" :class="{'focus':topFocus==true}">
             <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}` }" @click="imgFocus(1)">
-              <span v-if="topFocus==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
+              <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
             </div>
-            <van-field v-else v-model.trim="form.topText.content" maxlength="15" :input-align="form.topText.align" @input="getFont(1)" @focus="inpuFocus(1)" />
+            <van-field v-if="topFocus==true" v-model="form.topText.content" maxlength="15" :input-align="form.topText.align" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)" />
           </div>
           <!-- 中间图片 -->
           <div class="middle-img">
@@ -59,10 +59,10 @@
           <!-- 下输入框 -->
           <div class="bottom-input" :class="{'focus':bottomFocus==true}">
             <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click="imgFocus(2)">
-              <span v-if="bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
+              <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
             </div>
-            <van-field v-else v-model.trim="form.bottomText.content" maxlength="15" :input-align="form.bottomText.align" @input="getFont(2)" @focus="inpuFocus(2)" />
+            <van-field v-if="bottomFocus==true" v-model="form.bottomText.content" maxlength="15" :input-align="form.bottomText.align" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)" />
           </div>
         </div>
         <!-- 设计区域结束 -->
@@ -81,8 +81,8 @@
         </div>
       </div>
       <div class="footer-btn">
-        <van-button icon="eye" color="#333" plain size="small" type="primary">预览</van-button>
-        <van-button size="small" color="linear-gradient(to right, #4bb0ff, #6149f6)">完成设计</van-button>
+        <van-button icon="eye" color="#333" plain size="small" type="primary" @click="preview">预览</van-button>
+        <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">完成设计</van-button>
       </div>
     </div>
     <!-- 上传图片 -->
@@ -110,14 +110,40 @@
         </div>
       </div>
     </van-popup>
+    <!-- 预览设计 -->
+    <van-popup v-model="previewModal" :style="{ width: '80%' }" round closeable>
+      <div class="modal">
+        <div class="modal-title">预览</div>
+        <div v-loading="loading" class="modal-content preview-content">
+          <img :src="previewImg" alt="" width="100%">
+        </div>
+        <div class="modal-footer">
+          <van-button size="small" style="width: 50%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">完成设计</van-button>
+        </div>
+      </div>
+    </van-popup>
+    <!-- 完成设计 -->
+    <van-popup v-model="confirmModal" :style="{ width: '100%',height: '100vh' }">
+      <div class="confirm-modal">
+        <div class="confirm-content">
+          <img :src="previewImg" alt="" width="100%">
+        </div>
+        <div class="confirm-footer">
+          <van-button size="small" color="#333" plain type="primary" @click="confirmModal=false">返回修改</van-button>
+          <van-button size="small" color="linear-gradient(to right, #ffd01e,#ff8917)">加入购物车</van-button>
+          <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)">立即购买</van-button>
+        </div>
+      </div>
+    </van-popup>
 
   </div>
 </template>
 
 <script>
-import { getFontList, customDetail, getTextImage, getFigure, reColor } from '@/api/design'
+import { designApi } from '@/api/design'
 import Sketch from '@/components/VueColorPicker/Sketch'
 import Compact from '@/components/VueColorPicker/Compact'
+import { debounce } from '@/utils'
 import $ from 'jquery'
 import './arctext'
 import { Toast } from 'vant'
@@ -128,12 +154,17 @@ export default {
   },
   data() {
     return {
-      uploadModal: false,
-      patternModal: false,
+      uploadModal: false, // 上传图片弹框是否显示
+      patternModal: false, // 花样弹框是否显示
+      previewModal: false, // 预览弹框是否显示
+      confirmModal: false, // 完成设计
       visible: false, // 顶部操作是否显示
       middleVisible: false, // 顶部图片属性是否显示
       topFocus: false, // 上输入框聚焦
       bottomFocus: false, // 底部输入框聚焦
+      topInput: false,
+      bottomInput: false,
+      loading: false,
       figureList: [], // 花样库
       topText: '', // 上输入框文本
       topImg: [], // 上图片
@@ -200,40 +231,41 @@ export default {
         design_scale: 1 // 缩放量
       },
       designImgStyle: {}, // 设计背景style
-      designBoxStyle: {} // 设计区域style
+      designBoxStyle: {}, // 设计区域style
+      previewImg: '' // 预览图片
     }
   },
   watch: {
     fontType(newValue, oldValue) {
-      if (this.topFocus === true) {
+      if (this.topInput === true) {
         this.form.topText.fontType = newValue
       }
       if (this.bottomFocus === true) {
-        this.form.bottomText.fontType = newValue
+        this.form.bottomInput.fontType = newValue
       }
     },
     fontSize(newValue, oldValue) {
-      if (this.topFocus === true) {
+      if (this.topInput === true) {
         this.form.topText.fontSize = newValue
       }
       if (this.bottomFocus === true) {
-        this.form.bottomText.fontSize = newValue
+        this.form.bottomInput.fontSize = newValue
       }
     },
     fontAlign(newValue, oldValue) {
-      if (this.topFocus === true) {
+      if (this.topInput === true) {
         this.form.topText.align = newValue
       }
       if (this.bottomFocus === true) {
-        this.form.bottomText.align = newValue
+        this.form.bottomInput.align = newValue
       }
     },
     fontColor(newValue, oldValue) {
-      if (this.topFocus === true) {
+      if (this.topInput === true) {
         this.form.topText.fontColor = newValue.hex
       }
       if (this.bottomFocus === true) {
-        this.form.bottomText.fontColor = newValue.hex
+        this.form.bottomInput.fontColor = newValue.hex
       }
     }
   },
@@ -253,7 +285,7 @@ export default {
   methods: {
     // 获取字体列表
     getFontList() {
-      getFontList().then(res => {
+      designApi.getFontList().then(res => {
         res.data.map(item => {
           this.fontTypeOptions.push({
             text: item.font_name,
@@ -266,14 +298,14 @@ export default {
     },
     // 获取花样库列表
     getFigureList() {
-      getFigure({
+      designApi.getFigure({
       }).then(res => {
         this.figureList = res.data.data
       })
     },
     // 获取定制分类模板信息
     customDetail(id, sku_id) {
-      customDetail({
+      designApi.customDetail({
         id: id,
         sku_id: sku_id
       }).then(res => {
@@ -324,44 +356,47 @@ export default {
       this.middleVisible = false
       type === 1 ? this.topFocus = true : this.bottomFocus = true
     },
+    inputBlur(type) {
+      type === 1 ? this.topFocus = false : this.bottomFocus = false
+    },
     // 文字图片点击
     imgFocus(type) {
       type === 1 ? this.topFocus = true : this.bottomFocus = true
+      type === 1 ? this.topInput = true : this.bottomInput = true
+      // this.visible = true
+      // this.middleVisible = false
     },
-    // 输入框失焦
-    getFont(type) {
-      // type判断图片位置 1为上 2为下
+    getFontTop: debounce(function() {
       let arr = []
-      if (type === 1) {
-        const text = this.form.topText.content
-        arr = text.split('')
-        // 获取文字图片
-        getTextImage({
-          font_id: this.fontType,
-          font_list: JSON.stringify(arr)
-        }).then(res => {
-          if (res.code === 0) {
-            this.topImg = res.data
-            this.imgRotate()
-          } else {
-            Toast(res.msg)
-          }
-        })
-      } else {
-        const text = this.form.bottomText.content
-        arr = text.split('')
-        getTextImage({
-          font_id: this.fontType,
-          font_list: JSON.stringify(arr)
-        }).then(res => {
-          if (res.code === 0) {
-            this.bottomImg = res.data
-          } else {
-            Toast(res.msg)
-          }
-        })
-      }
-    },
+      const text = this.form.topText.content
+      arr = text.split('')
+      designApi.getTextImage({
+        font_id: this.fontType,
+        font_list: JSON.stringify(arr)
+      }).then(res => {
+        if (res.code === 0) {
+          this.topImg = res.data
+          this.imgRotate()
+        } else {
+          Toast(res.msg)
+        }
+      })
+    }, 1000),
+    getFontBottom: debounce(function() {
+      let arr = []
+      const text = this.form.bottomText.content
+      arr = text.split('')
+      designApi.getTextImage({
+        font_id: this.fontType,
+        font_list: JSON.stringify(arr)
+      }).then(res => {
+        if (res.code === 0) {
+          this.bottomImg = res.data
+        } else {
+          Toast(res.msg)
+        }
+      })
+    }, 1000),
     showMiddleMemu(type) {
       // type==1个人上传，type==2花样库选择
       this.middleVisible = true
@@ -385,7 +420,7 @@ export default {
         })
       })
       $(function() {
-        $('.top-img-list img').arctext({
+        $('.top-img-list').arctext({
           radius: 180,
           dir: 1,
           rotate: true,
@@ -395,16 +430,18 @@ export default {
     },
     // 图片颜色选择
     imgColorChnage(e) {
-      if (this.topFocus === true) {
-        reColor({
-          color: e,
+      if (this.topInput === true) {
+        this.form.topText.fontColor = e.hex
+        designApi.reColor({
+          color: e.hex,
           image: this.topImg
         }).then(res => {
           this.topImg = res.data
         })
       } else {
-        reColor({
-          color: e,
+        this.form.bottomText.fontColor = e.hex
+        designApi.reColor({
+          color: e.hex,
           image: this.bottomImg
         }).then(res => {
           this.bottomImg = res.data
@@ -425,40 +462,42 @@ export default {
       this.middleVisible = false
       this.topFocus = false
       this.bottomFocus = false
+      this.topInput = false
+      this.bottomInput = false
     },
     // 异步校验函数返回 Promise
     validator(val) {
       return val < 150
     },
-    onFailed(errorInfo) {
-      this.imgSize = ''
-    },
-    pickColor(color) {
-      if (this.topFocus === true) {
-        this.form.topText.fontColor = color
-        // reColor({
-        //   color: color,
-        //   image: this.topImg
-        // }).then(res => {
-        //   console.log(res)
-        // })
-      } else {
-        this.form.bottomText.fontColor = color
-        // reColor({
-        //   color: color,
-        //   image: this.bottomImg
-        // }).then(res => {
-        //   console.log(res)
-        // })
-      }
-      this.fontColor = color
-      this.$refs.fontColor.toggle()
-    },
     checkFigureItem(item) {
-      console.log(item)
       this.form.middleImg = item
       this.middleImg = item.prev_png_path
       this.patternModal = false
+    },
+    // 点击预览
+    preview() {
+      this.getPreview()
+      this.previewModal = true
+    },
+    // 获取预览图
+    getPreview() {
+      this.loading = true
+      designApi.getPreview({
+        id: this.$route.query.goods_id,
+        font_list: JSON.stringify([1, 2, 3, 4]),
+        font_id: this.fontType
+      }).then(res => {
+        this.loading = false
+        this.previewImg = res.data
+      })
+    },
+    // 完成定制
+    complete() {
+      this.previewModal = false
+      if (!this.previewImg) {
+        this.getPreview()
+      }
+      this.confirmModal = true
     }
   }
 }
@@ -627,13 +666,14 @@ export default {
 
   // 弹框
   .modal{
+    position: relative;
     .modal-title{
       font-size: 16px;
       padding: 18px;
       border-bottom: 1px solid #f5f5f5;
     }
     .modal-content{
-      padding: 18px;
+      padding: 12px;
       text-align: center;
       .van-uploader{
         width: 150px;
@@ -684,10 +724,42 @@ export default {
       margin: 10px;
       overflow: auto;
     }
+    .preview-content{
+      position: relative;
+      min-height: 120px;
+    }
     .modal-footer{
       font-size: 14px;
       border-top: 1px solid #f5f5f5;
       padding: 18px;
+      text-align: center;
+    }
+  }
+  .confirm-modal{
+    height: 100vh;
+    position: relative;
+    .confirm-content{
+      padding: 12px;
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .confirm-footer{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      height: 7vh;
+      box-sizing: border-box;
+      justify-content: space-between;
+      button{
+        width: 30%;
+      }
     }
   }
 }

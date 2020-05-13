@@ -35,7 +35,8 @@ import {
   Uploader,
   Icon,
   Slider,
-  List
+  List,
+  Loading
 } from 'vant'
 
 Vue.use(
@@ -126,4 +127,6 @@ Vue.use(
   Icon
 ).use(
   Slider
-).use(List)
+).use(List).use(
+  Loading
+)

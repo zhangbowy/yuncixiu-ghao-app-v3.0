@@ -84,6 +84,7 @@ export default {
     colorChange(data, oldHue) {
       this.oldHue = this.colors.hsl.h
       this.colors = _colorChange(data, oldHue || this.oldHue)
+      this.$emit('change', this.val)
     },
     isValidHex(hex) {
       return tinycolor(hex).isValid()

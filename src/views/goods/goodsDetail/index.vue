@@ -323,7 +323,7 @@ export default {
         cartList.map(item => {
           arr.push(item.sku_id)
         })
-        // 判断选中的sku是否已村子购物车数组中
+        // 判断选中的sku是否已存在购物车数组中
         const index = arr.indexOf(this.skuItem.sku_id)
         if (index < 0) {
           cartList.push(this.skuItem)

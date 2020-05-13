@@ -9,8 +9,14 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vueEsign from 'vue-esign'
-Vue.use(vueEsign)
 import '@/permission' // 鉴权
+
+// main.js
+import Directive from './directive'
+// 使用插件
+Vue.use(Directive)
+Vue.use(vueEsign)
+
 Vue.config.productionTip = false
 
 new Vue({
