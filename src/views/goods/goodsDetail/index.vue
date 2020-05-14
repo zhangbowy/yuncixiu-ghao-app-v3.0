@@ -271,6 +271,7 @@ export default {
       } else {
         this.skuItem.number = this.goodsNumber
         this.skuItem.goods_info = this.goodsDetail
+        this.skuItem.shopping_type = 1
         const cartList = shopCart.getItem() ? JSON.parse(shopCart.getItem()) : []
         const arr = []
         // 获取当前购物车的sku_id数组
@@ -299,7 +300,8 @@ export default {
         cartList.push({
           sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
           item_id: this.goodsDetail.id,
-          buy_num: this.goodsNumber
+          buy_num: this.goodsNumber,
+          shopping_type: 1
         })
         store.dispatch('order/setCartList', JSON.stringify(cartList)).then(() => {
           this.$router.push({ path: '/orderConfirm' })
@@ -357,8 +359,17 @@ export default {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
         this.changeSkuShow()
       } else {
-        this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
-        this.changeSkuShow()
+        const goodsInfo = []
+        goodsInfo.push({
+          sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
+          item_id: this.goodsDetail.id,
+          buy_num: this.goodsNumber,
+          shopping_type: 2
+        })
+        store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
+          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
+          this.changeSkuShow()
+        })
       }
     },
     // sku去定制按钮
@@ -366,8 +377,17 @@ export default {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
         Toast('请选择规格')
       } else {
-        this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
-        this.changeSkuShow()
+        const goodsInfo = []
+        goodsInfo.push({
+          sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
+          item_id: this.goodsDetail.id,
+          buy_num: this.goodsNumber,
+          shopping_type: 2
+        })
+        store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
+          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
+          this.changeSkuShow()
+        })
       }
     },
     // 分享按钮选中

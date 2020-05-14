@@ -32,5 +32,6 @@ export default {
 	width: 100px;
 	transform: translate(-50%, -50%);
   font-size: 14px;
+  text-align: center;
 }
 </style>

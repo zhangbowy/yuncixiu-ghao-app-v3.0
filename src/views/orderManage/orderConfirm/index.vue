@@ -30,7 +30,7 @@
       <div v-for="(item,index) in orderInfo.item_list" :key="index" class="goods-item">
         <div class="good-img"><img :src="item.image" alt=""></div>
         <div class="good-right">
-          <div class="good-name">{{ item.name }}</div>
+          <div class="good-name">{{ item.name }}<span v-if="item._order_type" class="order-type">{{ item._order_type }}</span></div>
           <div class="good-sku">已选：{{ item.sku_name }} </div>
           <div class="good-bottom">
             <span class="price">￥{{ item.current_price }}</span>
@@ -109,15 +109,16 @@ export default {
     },
     onSubmit() {
       orderApi.orderPay({
-        cart_list: this.orderInfo.item_list,
+        cart_list: JSON.parse(this.order.cartList),
         address_id: this.orderInfo.address.address_id,
-        buyer_message: this.message
+        buyer_message: this.message,
+        shopping_type: this.orderInfo.shopping_type
       }).then(res => {
-        console.log(res)
         if (this.$route.query.from === 'shop_cart') {
           store.dispatch('shopCart/removeCartList')
         }
         store.dispatch('order/resetState')
+        this.$router.replace({ path: '/orderList' })
       })
     },
     toAddress() {
@@ -195,6 +196,16 @@ export default {
         padding-left: 10px;
         .good-name{
           height: 40px;
+          .order-type{
+            margin-left: 10px;
+            background: crimson;
+            border-radius: 20px;
+            padding: 2px 5px;
+            color: #fff;
+            font-size: 10px;
+            display: inline-block;
+            vertical-align: top;
+          }
         }
         .good-sku{
           padding: 5px 0;

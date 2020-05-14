@@ -24,15 +24,16 @@
           <van-dropdown-menu>
             <div class="middle-img-menu">
               <div class="menu-item">
-                <van-button icon="edit" plain type="default" @click="changeMiddleImg">图片尺寸</van-button>
+                <van-button icon="edit" size="small" plain type="default" @click="showInput=true">尺寸</van-button>
               </div>
               <div class="menu-item">
-                <van-button icon="delete" plain type="default" @click="deleteMiddleImg">删除</van-button>
+                <van-button icon="delete" size="small" plain type="default" @click="deleteMiddleImg">删除</van-button>
               </div>
             </div>
           </van-dropdown-menu>
         </div>
       </transition>
+
       <!-- 遮罩层 -->
       <van-overlay z-index="10" class-name="top-mask" :show="visible" @click="hiddenVisible" />
       <van-overlay z-index="10" class-name="top-mask" :show="middleVisible" @click="hiddenVisible" />
@@ -53,8 +54,7 @@
           </div>
           <!-- 中间图片 -->
           <div class="middle-img">
-            <img v-if="patternPicture[0]" :src="patternPicture[0]?patternPicture[0].content: ''" alt="" @click="showMiddleMemu(1)">
-            <img v-if="!patternPicture[0] && form.middleImg.prev_png_path" :src="form.middleImg.prev_png_path" alt="" @click="showMiddleMemu(2)">
+            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{width: `${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}" @click="showMiddleMemu()">
           </div>
           <!-- 下输入框 -->
           <div class="bottom-input" :class="{'focus':bottomFocus==true}">
@@ -71,6 +71,10 @@
     <!-- 底部操作 -->
     <div class="bottomOptions">
       <div class="operate-btn">
+        <div class="uoload-btn" @click="showTemplate">
+          <svg-icon icon-class="template-icon" />
+          <p>选择模板</p>
+        </div>
         <div class="uoload-btn" @click="showUpload">
           <svg-icon icon-class="upload-img" />
           <p>上传花样</p>
@@ -85,31 +89,65 @@
         <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">完成设计</van-button>
       </div>
     </div>
+    <!-- 选择定制模板 -->
+    <van-popup v-model="templateModal" :style="{ width: '80%' }" round closeable>
+      <div class="modal">
+        <div class="modal-title">选择模板</div>
+        <div class="modal-content ">
+          <div class="figure-list">
+            <div v-for="(item,index) in templateList" :key="index" class="figure-item" :class="{checked:currentTemplate.emb_template_id == item.emb_template_id}">
+              <img :src="item.cover_image" alt="" @click="checkTeplateItem(item)">
+              <p class="temp-name">{{ item.template_name }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </van-popup>
     <!-- 上传图片 -->
     <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
       <div class="modal">
         <div class="modal-title">上传花样</div>
         <div class="modal-content">
           <van-uploader v-model="patternPicture" multiple :max-count="1" />
+          <number-input
+            v-model="form.middleImg.width"
+            width="80%"
+            :value="form.middleImg.height"
+            label="图片宽度"
+            placeholder="请输入宽度"
+            :max="middleImgWidth"
+            unit="mm"
+          />
+          <number-input
+            v-model="form.middleImg.height"
+            width="80%"
+            :value="form.middleImg.height"
+            label="图片高度"
+            :max="middleImgHeight"
+            placeholder="请输入高度"
+            unit="mm"
+          />
         </div>
         <div class="modal-footer">
           一次只能上传一张图片
         </div>
       </div>
     </van-popup>
+
     <!-- 花样库 -->
     <van-popup v-model="patternModal" :style="{ width: '80%', height: '60vh' }" round closeable>
       <div class="modal">
         <div class="modal-title">花样库</div>
         <div class="modal-content figure-content">
           <div class="figure-list">
-            <div v-for="(item,index) in figureList" :key="index" class="figure-item">
+            <div v-for="(item,index) in figureList" :key="index" class="figure-item" :class="{checked: form.middleImg.design_id == item.design_id}">
               <img :src="item.prev_png_path" alt="" @click="checkFigureItem(item)">
             </div>
           </div>
         </div>
       </div>
     </van-popup>
+
     <!-- 预览设计 -->
     <van-popup v-model="previewModal" :style="{ width: '80%' }" round closeable>
       <div class="modal">
@@ -122,20 +160,47 @@
         </div>
       </div>
     </van-popup>
-    <!-- 完成设计 -->
+    <!-- 完成设计弹出层 -->
     <van-popup v-model="confirmModal" :style="{ width: '100%',height: '100vh' }">
-      <div class="confirm-modal">
+      <div v-loading="loading" class="confirm-modal">
         <div class="confirm-content">
           <img :src="previewImg" alt="" width="100%">
         </div>
         <div class="confirm-footer">
           <van-button size="small" color="#333" plain type="primary" @click="confirmModal=false">返回修改</van-button>
           <van-button size="small" color="linear-gradient(to right, #ffd01e,#ff8917)">加入购物车</van-button>
-          <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)">立即购买</van-button>
+          <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="buyNow">立即购买</van-button>
         </div>
       </div>
     </van-popup>
-
+    <!-- 修改图片尺寸 -->
+    <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
+      <div class="modal">
+        <div class="modal-title">修改花样尺寸</div>
+        <div class="modal-content">
+          <div class="img-size">
+            <number-input
+              v-model="form.middleImg.width"
+              width="100%"
+              :value="form.middleImg.height"
+              label="图片宽度"
+              placeholder="请输入宽度"
+              :max="middleImgWidth"
+              unit="mm"
+            />
+            <number-input
+              v-model="form.middleImg.height"
+              width="100%"
+              :value="form.middleImg.height"
+              label="图片高度"
+              :max="middleImgHeight"
+              placeholder="请输入高度"
+              unit="mm"
+            />
+          </div>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -143,19 +208,25 @@
 import { designApi } from '@/api/design'
 import Sketch from '@/components/VueColorPicker/Sketch'
 import Compact from '@/components/VueColorPicker/Compact'
+import NumberInput from '@/components/Input/NumberInput'
 import { debounce } from '@/utils'
+import { mapState } from 'vuex'
 import $ from 'jquery'
 import './arctext'
 import { Toast } from 'vant'
+import store from '../../../store'
 export default {
   components: {
     'sketch-picker': Sketch,
-    'compact-picker': Compact
+    'compact-picker': Compact,
+    'number-input': NumberInput
   },
+
   data() {
     return {
       uploadModal: false, // 上传图片弹框是否显示
       patternModal: false, // 花样弹框是否显示
+      templateModal: false, // 模板选择弹框
       previewModal: false, // 预览弹框是否显示
       confirmModal: false, // 完成设计
       visible: false, // 顶部操作是否显示
@@ -165,7 +236,10 @@ export default {
       topInput: false,
       bottomInput: false,
       loading: false,
+      showInput: false,
       figureList: [], // 花样库
+      templateList: [], // 模板列表
+      currentTemplate: {}, // 当前模板
       topText: '', // 上输入框文本
       topImg: [], // 上图片
       bottomText: '', // 底部文本
@@ -195,7 +269,11 @@ export default {
           fontType: '',
           align: 'center'
         },
-        middleImg: {},
+        middleImg: {
+          width: 0,
+          height: 0,
+          design_id: ''
+        },
         bottomText: {
           content: '',
           fontSize: '12',
@@ -204,6 +282,8 @@ export default {
           align: 'center'
         }
       },
+      middleImgWidth: 0, // 中间图片的最大宽度
+      middleImgHeight: 0, // 中间图片的最大高度
       patternPicture: [], // 花样图片库
       imgSize: '', // 图片大小
       customInfo: {
@@ -235,37 +315,48 @@ export default {
       previewImg: '' // 预览图片
     }
   },
+  computed: {
+    ...mapState([
+      'design'
+    ])
+  },
   watch: {
     fontType(newValue, oldValue) {
       if (this.topInput === true) {
         this.form.topText.fontType = newValue
       }
-      if (this.bottomFocus === true) {
-        this.form.bottomInput.fontType = newValue
+      if (this.bottomInput === true) {
+        this.form.bottomText.fontType = newValue
       }
     },
     fontSize(newValue, oldValue) {
       if (this.topInput === true) {
         this.form.topText.fontSize = newValue
       }
-      if (this.bottomFocus === true) {
-        this.form.bottomInput.fontSize = newValue
+      if (this.bottomInput === true) {
+        this.form.bottomText.fontSize = newValue
       }
     },
     fontAlign(newValue, oldValue) {
       if (this.topInput === true) {
         this.form.topText.align = newValue
       }
-      if (this.bottomFocus === true) {
-        this.form.bottomInput.align = newValue
+      if (this.bottomInput === true) {
+        this.form.bottomText.align = newValue
       }
     },
     fontColor(newValue, oldValue) {
       if (this.topInput === true) {
         this.form.topText.fontColor = newValue.hex
       }
-      if (this.bottomFocus === true) {
-        this.form.bottomInput.fontColor = newValue.hex
+      if (this.bottomInput === true) {
+        this.form.bottomText.fontColor = newValue.hex
+      }
+    },
+    patternPicture(newValue, oldValue) {
+      if (newValue[0]) {
+        this.form.middleImg.design_id = ''
+        this.form.middleImg.prev_png_path = ''
       }
     }
   },
@@ -280,7 +371,8 @@ export default {
     }
     // 获取定制信息
     this.customDetail(this.goods_id, this.sku_id)
-    this.getFigureList()
+    this.getFigureList() // 获取花样库
+    this.getTemplate() // 获取定制模板
   },
   methods: {
     // 获取字体列表
@@ -294,6 +386,15 @@ export default {
           })
           this.fontType = res.data[0].font_id
         })
+      })
+    },
+    // 获取定制模板
+    getTemplate() {
+      designApi.getEmbTemplate({
+        template_type: 1 // 1 一般定制 2 特殊定制
+      }).then(res => {
+        this.templateList = res.data
+        this.currentTemplate = this.templateList[2]
       })
     },
     // 获取花样库列表
@@ -332,6 +433,9 @@ export default {
       this.design_box.design_bg_X = item.custom_info.design_left * design_scale - this.design_box.design_X
       this.design_box.design_bg_Y = item.custom_info.design_top * design_scale - this.design_box.design_Y
 
+      // 中间图片的最大宽高 单位毫米
+      this.middleImgWidth = this.design_box.design_W / design_scale
+      this.middleImgHeight = this.design_box.design_H / design_scale
       // 背景图位置style
       this.designImgStyle = {
         position: 'absolute',
@@ -404,11 +508,18 @@ export default {
     // 删除中间图片
     deleteMiddleImg() {
       this.patternPicture = []
-      this.form.middleImg = {}
+      this.form.middleImg = {
+        width: this.middleImgWidth,
+        height: this.middleImgHeight,
+        design_id: '',
+        prev_png_path: ''
+      }
       this.middleVisible = false
     },
     // 修改图片尺寸
-    changeMiddleImg() {},
+    changeMiddleImg() {
+      // this.uploadModal = true
+    },
     // 图片旋转
     imgRotate() {
       $(function() {
@@ -456,6 +567,10 @@ export default {
     showUpload() {
       this.uploadModal = true
     },
+    // 显示模板选择弹框
+    showTemplate() {
+      this.templateModal = true
+    },
     // 隐藏遮罩
     hiddenVisible() {
       this.visible = false
@@ -465,14 +580,18 @@ export default {
       this.topInput = false
       this.bottomInput = false
     },
-    // 异步校验函数返回 Promise
-    validator(val) {
-      return val < 150
-    },
+    // 选中花样图片
     checkFigureItem(item) {
-      this.form.middleImg = item
-      this.middleImg = item.prev_png_path
+      this.form.middleImg.design_id = item.design_id
+      this.form.middleImg.prev_png_path = item.prev_png_path
+      this.form.middleImg.width = this.middleImgWidth
+      this.form.middleImg.height = this.middleImgHeight
       this.patternModal = false
+      this.patternPicture = [] // 上传的花样图片设为空
+    },
+    // checked定制模板
+    checkTeplateItem(item) {
+      this.currentTemplate = item
     },
     // 点击预览
     preview() {
@@ -498,6 +617,29 @@ export default {
         this.getPreview()
       }
       this.confirmModal = true
+    },
+    // 立即购买
+    buyNow() {
+      var goodsInfo = JSON.parse(this.design.goodsInfo)
+      goodsInfo[0].design_info = {
+        design_id: this.form.middleImg.design_id,
+        top_font_size: this.form.topText.fontSize,
+        top_font_content: this.form.topText.content,
+        top_font_color: this.form.topText.fontColor,
+        bottom_font_size: this.form.bottomText.fontSize,
+        bottom_font_content: this.form.bottomText.content,
+        bottom_font_color: this.form.bottomText.fontColor,
+        font_id: this.fontType,
+        font_family: this.fontType,
+        design_width: this.form.middleImg.width,
+        design_height: this.form.middleImg.height,
+        is_choose_design: this.form.middleImg.design_id ? '1' : '0',
+        custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
+        preview_image: this.previewImg
+      }
+      store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
+        this.$router.push({ path: '/orderConfirm' })
+      })
     }
   }
 }
@@ -542,6 +684,12 @@ export default {
         }
       }
     }
+    .img-size{
+      background: #fff;
+    }
+    .van-dropdown-menu{
+      line-height: 0;
+    }
   }
   // 设计区域
   .designArea{
@@ -564,6 +712,7 @@ export default {
       border: 5px solid rgba(192, 192, 192, 0.5);
       .top-input,.bottom-input{
         font-size: 12px;
+        z-index: 1;
         .van-cell{
           background: none;
           .van-field__control{
@@ -676,19 +825,13 @@ export default {
       padding: 12px;
       text-align: center;
       .van-uploader{
-        width: 150px;
-        height: 150px;
         border: 1px solid #cccccc;
         border-radius: 0.21333rem;
         .van-uploader__upload{
-          width: 150px;
-          height: 150px;
           text-align: center;
           margin: 0;
-          line-height: 150px;
         }
         .van-uploader__wrapper{
-          height: 150px;
           align-items: center;
         }
         .van-uploader__preview{
@@ -705,14 +848,23 @@ export default {
         flex-flow: wrap;
         .figure-item{
           width: 30%;
-          margin-right: 5%;
+          margin-right: 3.8%;
           margin-bottom: 10px;
           border-radius: 10px;
           box-shadow: 0px 0px 20px #f5f5f5;
+          border: 1px solid #f5f5f5;
           img{
             width: 100%;
             height: 70px;
+            border-radius: 10px 10px 0 0;
           }
+          .temp-name{
+            font-size: 12px;
+            margin: 0 0 5px;
+          }
+        }
+        .figure-item.checked{
+          border: 1px solid #1296db;
         }
         .figure-item:nth-child(3n){
           margin-right: 0;

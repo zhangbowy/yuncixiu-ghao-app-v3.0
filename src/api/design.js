@@ -67,5 +67,16 @@ export const designApi = {
       method: 'get',
       params
     })
+  },
+  /**
+   * 获取定制模板
+   * @param {*id} params
+   */
+  getEmbTemplate(params) {
+    return request({
+      url: '/custom/getEmbTemplate',
+      method: 'get',
+      params
+    })
   }
 }
