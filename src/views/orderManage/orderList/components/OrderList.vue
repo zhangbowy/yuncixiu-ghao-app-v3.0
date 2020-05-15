@@ -23,10 +23,10 @@
       <div class="list-operation">
         <div v-if="item.status==1" class="button-box">
           <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
-          <van-button color="coral" round size="small" plain @click.stop="doPay(item.order_no)">立即支付</van-button>
+          <van-button color="#ee0a24" round size="small" @click.stop="doPay(item.order_no)">立即支付</van-button>
         </div>
         <div v-if="item.status==3" class="button-box">
-          <van-button color="coral" round size="small" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
+          <van-button color="#ee0a24" round size="small" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
         </div>
       </div>
     </div>
@@ -85,9 +85,8 @@ export default {
   padding: 10px;
   .order-list-item{
     border-radius: 10px;
-    box-shadow: 0 10px 20px #f4f5f9;
-    margin-bottom: 20px;
-    border: 1px solid #f5f5f5;
+    box-shadow: 0 2px 15px #ebebeb;
+    margin-bottom: 15px;
     &:last-child{
       margin-bottom: 0;
     }
@@ -116,11 +115,11 @@ export default {
         display: flex;
         align-items: center;
         img{
-          width: 80px;
+          width: 25%;
           height: 80px;
         }
         .goods-info-right{
-          flex: 1;
+          width: 73%;
           font-size: 14px;
           padding-left: 10px;
           color: #999;
@@ -131,6 +130,9 @@ export default {
             font-size: 16px;
             color: #000;
             overflow: hidden;
+            -ms-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           .price-info{
             display: flex;
@@ -162,6 +164,7 @@ export default {
         button{
         vertical-align: top;
         margin-left: 10px;
+        padding: 0 10px;
       }
       }
 

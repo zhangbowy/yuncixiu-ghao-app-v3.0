@@ -85,9 +85,8 @@ export default {
 <style lang="scss" scoped>
 .user-view{
   .top-info{
-    background: #fff;
-    padding: 10px 20px;
-    border-bottom: 10px solid #f5f5f5;
+    background: linear-gradient(to top,#ff6034,#ee0a24);
+    padding: 30px 20px 70px;
     img.user-avator{
       width: 60px;
       height: 60px;
@@ -104,6 +103,7 @@ export default {
       p{
         margin: 0;
         padding: 5px 0;
+        color: #fff;
       }
       p.user-phone{
         color: #999;
@@ -113,10 +113,17 @@ export default {
   }
   .content-view{
     padding: 10px;
+    position: relative;
+    padding-top: 60px;
     .order-cell{
       padding: 10px 20px;
       border-radius: 10px;
-      box-shadow: 0px 5px 20px #f3f3f3;
+      box-shadow: 0px 2px 15px #f3f3f3;
+      position: absolute;
+      width: 95%;
+      box-sizing: border-box;
+      top: -48px;
+      background: #fff;
       &-title{
         display: flex;
         align-items: center;
@@ -152,11 +159,10 @@ export default {
   }
   .cell-box{
     padding: 10px;
-    box-shadow: 0px 10px 20px #f3f4f3;
     border-radius: 10px;
     margin-top: 20px;
     background: #fff;
-    .cell-item:last-child{
+    .cell-item{
       border: none;
     }
   }

@@ -59,13 +59,13 @@ export const designApi = {
   },
   /**
    * 获取预览图
-   * @param {*id} params
+   * @param {*id} data
    */
-  getPreview(params) {
+  getPreview(data) {
     return request({
       url: '/custom/getPreview',
-      method: 'get',
-      params
+      method: 'post',
+      data
     })
   },
   /**

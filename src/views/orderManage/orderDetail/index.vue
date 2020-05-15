@@ -59,14 +59,14 @@
       <div class="order-details-item">订单类型：{{ orderDetail.order_type==1?'普通订单':orderDetail.order_type==2?'一般定制':orderDetail.order_type==3?'特殊定制':orderDetail.order_type==4?'手绘':'询价' }}</div>
       <div class="order-details-item">付款时间：{{ orderDetail.created_at }}</div>
     </div>
-    <div class="order-footer-btn">
+    <div v-if="orderDetail.status!=-2" class="order-footer-btn">
       <div v-if="orderDetail.status==1">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
-        <van-button color="coral" round size="small" plain @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
+        <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
       </div>
       <div v-if="orderDetail.status==3">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
-        <van-button color="coral" round size="small" plain @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
+        <van-button color="#ee0a24" round size="small" @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
       </div>
     </div>
     <!-- 物流详情点击弹框 -->
@@ -301,6 +301,7 @@ export default {
     left: 0;
     bottom: 0;
     height: 50px;
+    line-height: 50px;
     width: 100%;
     box-sizing: border-box;
     text-align: right;

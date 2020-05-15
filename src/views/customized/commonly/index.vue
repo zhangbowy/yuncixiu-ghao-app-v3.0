@@ -54,7 +54,7 @@
           </div>
           <!-- 中间图片 -->
           <div class="middle-img">
-            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{width: `${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}" @click="showMiddleMemu()">
+            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{height: `${form.middleImg.height*design_box.design_scale}px`}" @click="showMiddleMemu()">
           </div>
           <!-- 下输入框 -->
           <div class="bottom-input" :class="{'focus':bottomFocus==true}">
@@ -259,12 +259,13 @@ export default {
       sizeOptions: [
         { text: '12px', value: 12 },
         { text: '18px', value: 18 },
-        { text: '24px', value: 24 }
+        { text: '24px', value: 24 },
+        { text: '45px', value: 45 }
       ],
       form: {
         topText: {
           content: '',
-          fontSize: '12',
+          fontSize: 12,
           fontColor: '#fff',
           fontType: '',
           align: 'center'
@@ -276,7 +277,7 @@ export default {
         },
         bottomText: {
           content: '',
-          fontSize: '12',
+          fontSize: 12,
           fontColor: '#fff',
           fontType: '',
           align: 'center'
@@ -435,7 +436,7 @@ export default {
 
       // 中间图片的最大宽高 单位毫米
       this.middleImgWidth = this.design_box.design_W / design_scale
-      this.middleImgHeight = this.design_box.design_H / design_scale
+      this.middleImgHeight = this.design_box.design_H / design_scale - 90 / design_scale
       // 背景图位置style
       this.designImgStyle = {
         position: 'absolute',
@@ -458,7 +459,13 @@ export default {
     inpuFocus(type) {
       this.visible = true
       this.middleVisible = false
-      type === 1 ? this.topFocus = true : this.bottomFocus = true
+      if (type === 1) {
+        this.fontSize = this.form.topText.fontSize
+        this.topFocus = true
+      } else {
+        this.fontSize = this.form.bottomText.fontSize
+        this.bottomFocus = true
+      }
     },
     inputBlur(type) {
       type === 1 ? this.topFocus = false : this.bottomFocus = false
@@ -601,10 +608,27 @@ export default {
     // 获取预览图
     getPreview() {
       this.loading = true
+      // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
+      const box_scale = 45 / this.design_box.design_H
+      // 计算文字图片和文字输入框的比例
+      const top_font_scale = this.form.topText.fontSize / 45
+      const bottom_font_scale = this.form.bottomText.fontSize / 45
+      // 计算图片高度和设计区的比例
+      const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
+      // 请求预览图接口
       designApi.getPreview({
         id: this.$route.query.goods_id,
-        font_list: JSON.stringify([1, 2, 3, 4]),
-        font_id: this.fontType
+        design_id: this.form.middleImg.design_id,
+        top_scale: box_scale,
+        top_font_scale: top_font_scale,
+        top_font_content: this.topImg,
+        top_font_color: this.form.topText.fontColor,
+        font_id: this.fontType,
+        middle_scale: middle_scale,
+        bottom_scale: box_scale,
+        bottom_font_scale: bottom_font_scale,
+        bottom_font_content: this.bottomImg,
+        bottom_font_color: this.form.bottomText.fontColor
       }).then(res => {
         this.loading = false
         this.previewImg = res.data

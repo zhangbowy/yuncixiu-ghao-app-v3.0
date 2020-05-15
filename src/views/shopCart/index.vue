@@ -46,7 +46,7 @@
             <van-checkbox v-model="checked" checked-color="#ff6034">全选</van-checkbox>
           </van-col>
           <van-col span="12" class="delete-operat">
-            <van-button size="small" round hairline type="danger" @click.stop="deleteCart">删除({{ checkedArr.length }})</van-button>
+            <van-button round hairline type="danger" @click.stop="deleteCart">删除({{ checkedArr.length }})</van-button>
           </van-col>
         </van-row>
       </div>
@@ -187,23 +187,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.cart-header{
+  position: sticky;
+  top: 0;
+  width: 100%;
+  left: 0;
+  background: #ffffff;
+  z-index: 999;
+}
 .cart-content{
   .no-data{
     padding: 50px 0;
   }
   .goods-list{
+    padding-bottom: 100px;
     .goods-item{
       display: flex;
-      padding: 10px 20px;
-      margin-bottom: 10px;
+      padding: 15px 20px;
       font-size: 14px;
-      box-shadow: 0px 5px 20px #f3f3f3;
       .good-info{
         width: 90%;
         display: flex;
         img{
-          width: 20%;
-          height: 60px;
+          width: 25%;
+          height: 75px;
           margin-left: 10px;
         }
         .good-info-right{
@@ -243,19 +250,31 @@ export default {
 }
 .footer-operation{
   position: fixed;
-  bottom: 0;
-  left: 0;
-  height: 51px;
+  bottom: 50px;
   width: 100%;
-  border-top: 1px solid #f5f5f5;
   padding: 0 16px;
+  height: 51px;
+  line-height: 50px;
+  background: #ffffff;
   box-sizing: border-box;
+  border-top: 1px solid #f5f5f5;
+  .van-submit-bar{
+    border-top: 1px solid #f5f5f5;
+    bottom: 50px;
+    z-index: 999;
+  }
   .operation-box{
     align-items: center;
     font-size: 14px;
-    height: 50px;
     .delete-operat{
       text-align: right;
+      button{
+        width: 110px;
+        height: 40px;
+        font-weight: 500;
+        line-height: 40px;
+        border: none;
+      }
     }
   }
 

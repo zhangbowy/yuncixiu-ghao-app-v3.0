@@ -83,8 +83,8 @@ export default {
 <style type="text/css">
 .warp {
   width: 100%;
-  border-top: 1px solid #eee;
   background: #fff;
+  border-top: 1px solid #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -95,8 +95,7 @@ export default {
   height: 24px;
 }
 .tabberWarp img {
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin-top: 5px;
 }
 .tabberWarp {
   position: fixed;

@@ -57,9 +57,9 @@ export default {
 }
 .itemWarp span {
   font-size: 12px;
-  color: #333;
+  color: #B1B8C8;
 }
 .itemWarp span.active {
-  color: #1296db;
+  color: #ee0a24;
 }
 </style>

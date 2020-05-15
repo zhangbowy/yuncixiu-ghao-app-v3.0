@@ -5,7 +5,7 @@
         <div v-for="(item,index) in data" :key="`${index}-${item.id}`" class="goods-item" @click="toDetail(item.id)">
           <img :src="item.thumb_image_path" alt="">
           <p class="goods-name">{{ item.name }}</p>
-          <p class="goods-price"><span>￥{{ item.current_price }}</span> <span class="old-price">￥{{ item.old_price }}</span></p>
+          <p class="goods-price"><span>￥{{ item.current_price.toFixed(2) }}</span> <span class="old-price">￥{{ item.old_price.toFixed(2) }}</span></p>
         </div>
       </div>
     </div>
@@ -51,6 +51,7 @@ export default {
           width: 100%;
           height: 159px;
           border-radius: 6px;
+          display: block;
         }
         p{
           font-size: 14px;
@@ -60,6 +61,10 @@ export default {
         }
         p.goods-name{
           color: #000;
+          overflow: hidden;
+          -ms-text-overflow: ellipsis;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         p.goods-price{
           color: #df2525;

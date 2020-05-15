@@ -4,7 +4,7 @@
       <!-- tab标题栏 -->
       <top-bar title="确认订单" />
     </div>
-    <div class="order-type">
+    <div class="express-type">
       <van-cell title="配送方式" @click="show = true">
         <!-- 使用 right-icon 插槽来自定义右侧图标 -->
         <template #right-icon>
@@ -16,11 +16,11 @@
     <div v-if="orderType.type==2 && orderInfo.address" class="order-address" @click="toAddress">
       <div class="user-info">
         <span>{{ orderInfo.address.name }}</span>
-        <span>{{ orderInfo.address.phone }}</span>
-        <span v-if="orderInfo.address.is_default==1" class="is-default">默认</span>
+        <span class="user-phone">{{ orderInfo.address.phone }}</span>
+        <span v-if="orderInfo.address.is_default==1" class="is-default">默认地址</span>
       </div>
       <div class="address-detail">
-        收货地址：<span>{{ orderInfo.address.province }}{{ orderInfo.address.city }}{{ orderInfo.address.area }}{{ orderInfo.address.address }}</span>
+        <span>{{ orderInfo.address.province }}{{ orderInfo.address.city }}{{ orderInfo.address.area }}{{ orderInfo.address.address }}</span>
       </div>
       <span class="right-arrow">
         <svg-icon icon-class="right-arrow" />
@@ -137,8 +137,20 @@ export default {
 <style lang="scss" scoped>
 .order-confirm{
   background: #f5f5f5;
+  margin-bottom: 50px;
+  .navbar{
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 999;
+  }
+  .express-type{
+    border-bottom: 1px solid #f5f5f5;
+  }
   .order-address{
-    padding: 0 10px 20px;
+    padding: 10px 10px 20px 16px;
     margin-bottom: 10px;
     position: relative;
     background:#fff url('../../../assets/images/address-bottom-line.png') no-repeat left bottom/100%;;
@@ -147,6 +159,10 @@ export default {
       color: #000;
       font-size: 16px;
       width: 90%;
+      .user-phone{
+        color: #999;
+        font-size: 12px;
+      }
       .is-default{
         margin-left: 10px;
         background: crimson;
@@ -162,8 +178,8 @@ export default {
       }
     }
     .address-detail{
-      color: #666;
-      font-size: 14px;
+      color: #000000;
+      font-size: 12px;
       width: 90%;
       line-height: 1.5;
     }
@@ -200,7 +216,7 @@ export default {
             margin-left: 10px;
             background: crimson;
             border-radius: 20px;
-            padding: 2px 5px;
+            padding: 3px 5px;
             color: #fff;
             font-size: 10px;
             display: inline-block;
@@ -247,7 +263,6 @@ export default {
     width: 100%;
     height: 50px;
     overflow: hidden;
-    border-top: 1px solid #f5f5f5;
   }
 }
 </style>

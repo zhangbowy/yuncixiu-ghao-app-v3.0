@@ -79,22 +79,22 @@ export default {
           id: 88,
           src: 'http://img10.360buyimg.com/n1/jfs/t1144/221/780030540/153183/9cbd453e/5548385fN1fc13cc9.jpg',
           name: '印花拎包',
-          price: '45'
+          price: 45
         }, {
           id: 2,
           src: 'http://img4.imgtn.bdimg.com/it/u=3555418247,60757103&fm=26&gp=0.jpg',
           name: '笔记本双肩包',
-          price: '69'
+          price: 69
         }, {
           id: 3,
           src: 'http://img3.imgtn.bdimg.com/it/u=1918815643,3089648412&fm=26&gp=0.jpg',
           name: '14寸笔记本电脑包',
-          price: '78'
+          price: 78
         }, {
           id: 4,
           src: 'http://ec4.images-amazon.com/images/I/71gfm0gcb0L._UL1500_.jpg',
           name: '黑色鸭舌帽',
-          price: '34'
+          price: 34
         }
       ],
       indicatorColor: '#000'

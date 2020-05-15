@@ -62,6 +62,7 @@ export default {
           width: 100%;
           height: 159px;
           border-radius: 6px;
+          display: block;
         }
         p{
           font-size: 14px;
@@ -71,6 +72,10 @@ export default {
         }
         p.goods-name{
           color: #000;
+          overflow: hidden;
+          -ms-text-overflow: ellipsis;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         p.goods-price{
           color: #df2525;

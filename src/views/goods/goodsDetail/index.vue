@@ -22,7 +22,7 @@
       <div class="goods-info">
         <div class="goods-name">
           <p>{{ goodsDetail.name }}</p>
-          <span>{{ goodsDetail.real_sale }}人付款</span>
+          <span>{{ goodsDetail.sale_num }}人付款</span>
         </div>
         <div class="share-btn" @click="share = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
         <div class="goods-price">
@@ -334,7 +334,7 @@ export default {
         }
         shopCart.setItem(JSON.stringify(cartList))
         Toast('添加成功！')
-        this.changeSkuShow()
+        // this.changeSkuShow()
       }
     },
     // sku购买按钮

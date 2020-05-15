@@ -23,7 +23,7 @@ const constantRoutes = [
     path: '/cart',
     name: 'ShopCart',
     component: () => import('@/views/shopCart/index'),
-    meta: { title: '购物车' }
+    meta: { title: '购物车', showTabbar: true }
   },
   {
     path: '/login',

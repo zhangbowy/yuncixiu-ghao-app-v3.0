@@ -55,6 +55,9 @@ export default {
   .left-box{
     width: 50%;
     font-size: 20px;
+    .svg-icon{
+      vertical-align: middle;
+    }
     span{
       font-size: 14px;
       display: inline-block;

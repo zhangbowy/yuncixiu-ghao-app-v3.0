@@ -1,6 +1,8 @@
 <template>
   <div class="address-manage">
-    <top-bar :title="'地址列表'" />
+    <div class="address-navbar">
+      <top-bar title="地址列表" />
+    </div>
     <div class="addrss-content">
       <address-list
         :list="list"
@@ -141,6 +143,14 @@ export default {
 .address-manage{
   background: #f5f5f5;
   min-height: 100vh;
+  .address-navbar{
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 999;
+  }
   .delete-item{
     font-size: 14px;
     color: #8a8a8a;
