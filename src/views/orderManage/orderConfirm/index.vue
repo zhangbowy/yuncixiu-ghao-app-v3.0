@@ -263,6 +263,7 @@ export default {
     width: 100%;
     height: 50px;
     overflow: hidden;
+    border-top: 1px solid #f5f5f5;
   }
 }
 </style>

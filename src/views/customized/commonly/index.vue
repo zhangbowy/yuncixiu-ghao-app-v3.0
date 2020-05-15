@@ -75,7 +75,7 @@
           <svg-icon icon-class="template-icon" />
           <p>选择模板</p>
         </div>
-        <div class="uoload-btn" @click="showUpload">
+        <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
           <svg-icon icon-class="upload-img" />
           <p>上传花样</p>
         </div>
