@@ -1,5 +1,5 @@
 <template>
-  <div role="application" aria-label="Sketch color picker" :class="['vc-sketch', disableAlpha ? 'vc-sketch__disable-alpha' : '']">
+  <div role="application" aria-label="Sketch color picker" style="z-index: 10" :class="['vc-sketch', disableAlpha ? 'vc-sketch__disable-alpha' : '']">
     <div class="vc-sketch-saturation-wrap">
       <saturation v-model="colors" @change="childChange" />
     </div>
@@ -157,7 +157,7 @@ export default {
   background: #fff;
   border-radius: 4px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .15), 0 8px 16px rgba(0, 0, 0, .15);
-  margin:  10px auto;
+  margin: 10px auto;
 }
 
 .vc-sketch-saturation-wrap {
@@ -226,6 +226,7 @@ export default {
   width: 90%;
   padding: 4px 0 3px 10%;
   border: none;
+  text-align: center;
   box-shadow: inset 0 0 0 1px #ccc;
   font-size: 10px;
 }

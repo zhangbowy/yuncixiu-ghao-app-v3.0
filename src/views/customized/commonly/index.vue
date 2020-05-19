@@ -33,7 +33,6 @@
           </van-dropdown-menu>
         </div>
       </transition>
-
       <!-- 遮罩层 -->
       <van-overlay z-index="10" class-name="top-mask" :show="visible" @click="hiddenVisible" />
       <van-overlay z-index="10" class-name="top-mask" :show="middleVisible" @click="hiddenVisible" />
@@ -69,40 +68,9 @@
       </div>
     </div>
     <!-- 底部操作 -->
-    <div class="bottomOptions">
-      <div class="operate-btn">
-        <div class="uoload-btn" @click="showTemplate">
-          <svg-icon icon-class="template-icon" />
-          <p>选择模板</p>
-        </div>
-        <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
-          <svg-icon icon-class="upload-img" />
-          <p>上传花样</p>
-        </div>
-        <div class="picture-library" @click="showImgList">
-          <svg-icon icon-class="picture-lib" />
-          <p>花样库</p>
-        </div>
-      </div>
-      <div class="footer-btn">
-        <van-button icon="eye" color="#333" plain size="small" type="primary" @click="preview">预览</van-button>
-        <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">完成设计</van-button>
-      </div>
-    </div>
+    <bottom-options :current-template="currentTemplate" @change="bottomBtn" />
     <!-- 选择定制模板 -->
-    <van-popup v-model="templateModal" :style="{ width: '80%' }" round closeable>
-      <div class="modal">
-        <div class="modal-title">选择模板</div>
-        <div class="modal-content ">
-          <div class="figure-list">
-            <div v-for="(item,index) in templateList" :key="index" class="figure-item" :class="{checked:currentTemplate.emb_template_id == item.emb_template_id}">
-              <img :src="item.cover_image" alt="" @click="checkTeplateItem(item)">
-              <p class="temp-name">{{ item.template_name }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </van-popup>
+    <template-modal v-model="templateModal" :data-list="templateList" :current-template="currentTemplate" @change="checkTeplateItem" />
     <!-- 上传图片 -->
     <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
       <div class="modal">
@@ -135,44 +103,11 @@
     </van-popup>
 
     <!-- 花样库 -->
-    <van-popup v-model="patternModal" :style="{ width: '80%', height: '60vh' }" round closeable>
-      <div class="modal">
-        <div class="modal-title">花样库</div>
-        <div class="modal-content figure-content">
-          <div class="figure-list">
-            <div v-for="(item,index) in figureList" :key="index" class="figure-item" :class="{checked: form.middleImg.design_id == item.design_id}">
-              <img :src="item.prev_png_path" alt="" @click="checkFigureItem(item)">
-            </div>
-          </div>
-        </div>
-      </div>
-    </van-popup>
-
+    <pattern-modal v-model="patternModal" :figure-list="figureList" :form="form" @change="checkFigureItem" />
     <!-- 预览设计 -->
-    <van-popup v-model="previewModal" :style="{ width: '80%' }" round closeable>
-      <div class="modal">
-        <div class="modal-title">预览</div>
-        <div v-loading="loading" class="modal-content preview-content">
-          <img :src="previewImg" alt="" width="100%">
-        </div>
-        <div class="modal-footer">
-          <van-button size="small" style="width: 50%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">完成设计</van-button>
-        </div>
-      </div>
-    </van-popup>
+    <preview-modal v-model="previewModal" :loading="loading" :img="previewImg" @complete="complete" />
     <!-- 完成设计弹出层 -->
-    <van-popup v-model="confirmModal" :style="{ width: '100%',height: '100vh' }">
-      <div v-loading="loading" class="confirm-modal">
-        <div class="confirm-content">
-          <img :src="previewImg" alt="" width="100%">
-        </div>
-        <div class="confirm-footer">
-          <van-button size="small" color="#333" plain type="primary" @click="confirmModal=false">返回修改</van-button>
-          <van-button size="small" color="linear-gradient(to right, #ffd01e,#ff8917)">加入购物车</van-button>
-          <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="buyNow">立即购买</van-button>
-        </div>
-      </div>
-    </van-popup>
+    <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
     <!-- 修改图片尺寸 -->
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
@@ -209,17 +144,27 @@ import { designApi } from '@/api/design'
 import Sketch from '@/components/VueColorPicker/Sketch'
 import Compact from '@/components/VueColorPicker/Compact'
 import NumberInput from '@/components/Input/NumberInput'
+import ConfirmModal from './components/ConfirmModal'
+import PreviewModal from './components/PreviewModal'
+import TemplateModal from './components/TemplateModal'
+import PatternModal from './components/PatternModal'
+import BottomOptions from './components/BottomOptions'
 import { debounce } from '@/utils'
 import { mapState } from 'vuex'
 import $ from 'jquery'
 import './arctext'
 import { Toast } from 'vant'
-import store from '../../../store'
+import store from '@/store'
 export default {
   components: {
     'sketch-picker': Sketch,
     'compact-picker': Compact,
-    'number-input': NumberInput
+    'number-input': NumberInput,
+    'preview-modal': PreviewModal,
+    'confirm-modal': ConfirmModal,
+    'template-modal': TemplateModal,
+    'pattern-modal': PatternModal,
+    'bottom-options': BottomOptions
   },
 
   data() {
@@ -235,8 +180,8 @@ export default {
       bottomFocus: false, // 底部输入框聚焦
       topInput: false,
       bottomInput: false,
-      loading: false,
-      showInput: false,
+      loading: false, // 加载动画
+      showInput: false, // 显示上传图片弹框
       figureList: [], // 花样库
       templateList: [], // 模板列表
       currentTemplate: {}, // 当前模板
@@ -455,7 +400,7 @@ export default {
         marginTop: `-${this.design_box.design_H / 2}px`
       }
     },
-    // 输入框输入
+    // 输入框聚焦
     inpuFocus(type) {
       this.visible = true
       this.middleVisible = false
@@ -467,6 +412,7 @@ export default {
         this.bottomFocus = true
       }
     },
+    // 输入框失去焦点
     inputBlur(type) {
       type === 1 ? this.topFocus = false : this.bottomFocus = false
     },
@@ -474,8 +420,6 @@ export default {
     imgFocus(type) {
       type === 1 ? this.topFocus = true : this.bottomFocus = true
       type === 1 ? this.topInput = true : this.bottomInput = true
-      // this.visible = true
-      // this.middleVisible = false
     },
     getFontTop: debounce(function() {
       let arr = []
@@ -523,10 +467,6 @@ export default {
       }
       this.middleVisible = false
     },
-    // 修改图片尺寸
-    changeMiddleImg() {
-      // this.uploadModal = true
-    },
     // 图片旋转
     imgRotate() {
       $(function() {
@@ -566,17 +506,13 @@ export default {
         })
       }
     },
-    // 显示花样图片弹框
-    showImgList() {
-      this.patternModal = true
-    },
-    // 显示上传图片弹框
-    showUpload() {
-      this.uploadModal = true
-    },
-    // 显示模板选择弹框
-    showTemplate() {
-      this.templateModal = true
+    // 底部按钮组件 点击事件
+    bottomBtn(name) {
+      if (name === 'showImgList') this.patternModal = true // 显示花样库
+      if (name === 'showUpload') this.uploadModal = true // 显示上传图片弹框
+      if (name === 'showTemplate') this.templateModal = true // 显示模板弹框
+      if (name === 'preview') this.preview()
+      if (name === 'complete') this.complete()
     },
     // 隐藏遮罩
     hiddenVisible() {
@@ -792,47 +728,7 @@ export default {
       }
     }
   }
-  // 底部选项
-  .bottomOptions{
-    height: 15vh;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    left: 0;
-    .operate-btn{
-      height: 8vh;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      text-align: center;
-      font-size: 26px;
-      border-top: 1px solid #f4f5f9;
-      box-sizing: border-box;
-      background: #ffffff;
-      p{
-        font-size: 12px;
-        margin: 3px 0;
-      }
-      .uoload-btn{
-        width: 50%;
-        border-right: 1px solid #f5f5f5;
-      }
-      .picture-library{
-        width: 50%;
-      }
-    }
-    .footer-btn{
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      padding: 0 30px;
-      height: 7vh;
-      justify-content: space-between;
-      button{
-        width: 40%;
-      }
-    }
-  }
+
   .top-mask{
     background: rgba(0, 0, 0, 0.1);
   }
@@ -866,76 +762,12 @@ export default {
           }
         }
       }
-
-      .figure-list{
-        display: flex;
-        flex-flow: wrap;
-        .figure-item{
-          width: 30%;
-          margin-right: 3.8%;
-          margin-bottom: 10px;
-          border-radius: 10px;
-          box-shadow: 0px 0px 20px #f5f5f5;
-          border: 1px solid #f5f5f5;
-          img{
-            width: 100%;
-            height: 70px;
-            border-radius: 10px 10px 0 0;
-          }
-          .temp-name{
-            font-size: 12px;
-            margin: 0 0 5px;
-          }
-        }
-        .figure-item.checked{
-          border: 1px solid #1296db;
-        }
-        .figure-item:nth-child(3n){
-          margin-right: 0;
-        }
-      }
-    }
-    .figure-content{
-      height: calc(60vh - 120px);
-      margin: 10px;
-      overflow: auto;
-    }
-    .preview-content{
-      position: relative;
-      min-height: 120px;
     }
     .modal-footer{
       font-size: 14px;
       border-top: 1px solid #f5f5f5;
       padding: 18px;
       text-align: center;
-    }
-  }
-  .confirm-modal{
-    height: 100vh;
-    position: relative;
-    .confirm-content{
-      padding: 12px;
-      text-align: center;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .confirm-footer{
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      padding: 0 30px;
-      height: 7vh;
-      box-sizing: border-box;
-      justify-content: space-between;
-      button{
-        width: 30%;
-      }
     }
   }
 }

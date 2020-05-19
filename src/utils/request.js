@@ -6,7 +6,7 @@ import { Toast } from 'vant'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   withCredentials: true, // 跨域请求时发送cookies
-  timeout: 20000 // 请求超时
+  timeout: 2000000 // 请求超时
 })
 
 // 请求拦截器

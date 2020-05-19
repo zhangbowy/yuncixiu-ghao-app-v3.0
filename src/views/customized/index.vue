@@ -9,7 +9,6 @@
         @click-left="onClickLeft"
       >
         <template #right>
-          <!-- <van-icon name="arrow-down" size="18" /> -->
           <van-dropdown-menu style="height: 45px;border: none">
             <van-dropdown-item ref="item">
               <van-cell title="一般定制" is-link :to="`/customized/commonly?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
@@ -64,6 +63,9 @@ export default {
   .customized-content{
     height: 100vh;
     box-sizing: border-box;
+  }
+  .van-hairline--top-bottom::after{
+    border: 0;
   }
 }
 </style>
