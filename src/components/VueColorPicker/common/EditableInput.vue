@@ -17,12 +17,12 @@
 export default {
   name: 'EditableInput',
   props: {
-    label: String,
-    labelText: String,
-    desc: String,
-    value: [String, Number],
-    max: Number,
-    min: Number,
+    label: { type: String, default: '' },
+    labelText: { type: String, default: '' },
+    desc: { type: String, default: '' },
+    value: { type: [String, Number], default: '' },
+    max: { type: Number, default: 0 },
+    min: { type: Number, default: 0 },
     arrowOffset: {
       type: Number,
       default: 1

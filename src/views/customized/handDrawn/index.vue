@@ -15,22 +15,38 @@
         <div class="config-item">
           <span>笔画粗细：</span>
           <div class="slider">
-            <van-slider v-model="lineWidth" bar-height="10px" button-size="18px" :min="1" :max="40" @change="onChange" />
+            <van-stepper v-model="lineWidth" input-width="25px" button-size="22" disable-input min="1" max="50" />
+            <!-- <van-slider v-model="lineWidth" bar-height="10px" button-size="18px" :min="1" :max="40" @change="onChange" /> -->
           </div>
-          <span style="margin-left:10px">{{ lineWidth }}</span>
+        </div>
+        <div class="config-item">
+          <span>笔锋粗细：</span>
+          <div class="slider">
+            <van-stepper v-model="minWidth" input-width="25px" button-size="22" disable-input min="1" max="5" />
+            <!-- <van-slider v-model="lineWidth" bar-height="10px" button-size="18px" :min="1" :max="40" @change="onChange" /> -->
+          </div>
         </div>
       </div>
     </div>
     <!-- 中间画板 -->
     <div v-if="design_box.design_H" class="drawn-content">
       <design-area :area-info="designArea" :background="backgroundImg">
-        <vue-sign slot="design-content" ref="esign" :width="design_box.design_W" :height="design_box.design_H" :is-crop="isCrop" :line-width="lineWidth" :line-color="lineColor" :bg-color.sync="bgColor" />
+        <!-- <vue-sign slot="design-content" ref="esign" :width="design_box.design_W" :height="design_box.design_H" :is-crop="isCrop" :line-width="lineWidth" :line-color="lineColor" :bg-color.sync="bgColor" /> -->
+        <VueSignaturePad
+          slot="design-content"
+          ref="signaturePad"
+          :width="`${design_box.design_W}px`"
+          :height="`${design_box.design_H}px`"
+          :options="{ penColor:lineColor,maxWidth:lineWidth, minWidth:minWidth }"
+        />
+        <!-- <sign-ture :width="design_box.design_W" :height="design_box.design_H" :line-width="lineWidth" :line-color="lineColor" /> -->
       </design-area>
     </div>
     <!-- 底部操作 -->
     <div class="footer-btn">
       <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
-      <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">生成图片</van-button>
+      <van-button type="default" size="small" @click="undo">撤销</van-button>
+      <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
     </div>
     <!-- 完成设计弹出层 -->
     <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
@@ -42,14 +58,13 @@ import { Sketch } from 'vue-color' // 颜色选择器
 import { designApi } from '@/api/design'
 import DesignArea from '@/components/Design/DesignArea'
 import ConfirmModal from '../commonly/components/ConfirmModal'
-import VueSign from '@/components/VueSign'
 import store from '@/store'
 import { mapState } from 'vuex'
+import { Toast } from 'vant'
 export default {
   components: {
     'sketch-picker': Sketch,
     'design-area': DesignArea,
-    'vue-sign': VueSign,
     ConfirmModal
   },
   data() {
@@ -59,17 +74,20 @@ export default {
       design_box: {
         design_H: ''
       },
+      cropInfo: {},
       backgroundImg: '',
       lineWidth: 6, // 笔画粗细
+      minWidth: 1, // 笔锋粗细
       lineColor: '#fff',
-      bgColor: '#000000',
+      bgColor: '',
       resultImg: '', // 结果图片
       isCrop: true,
       // 颜色选择器
       colorShow: false,
       loading: false,
       confirmModal: false, // 完成设计
-      previewImg: '' // 预览图片
+      previewImg: '', // 预览图片
+      canvasTxt: null
     }
   },
   computed: {
@@ -82,10 +100,14 @@ export default {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
     }
+
     // 获取定制信息
     this.customDetail(this.goods_id, this.sku_id)
   },
   methods: {
+    undo() {
+      this.$refs.signaturePad.undoSignature()
+    },
     // 获取定制分类模板信息
     async customDetail(id, sku_id) {
       await designApi.customDetail({
@@ -136,31 +158,41 @@ export default {
     // 获取预览图
     getPreview() {
       this.loading = true
+      const draw_height_scale = this.cropInfo.height / this.design_box.design_H
+      const draw_left_scale = this.cropInfo.site[0] / this.design_box.design_W
+      const draw_top_scale = this.cropInfo.site[1] / this.design_box.design_H
       // 请求预览图接口
       designApi.getPreview({
         id: this.$route.query.goods_id,
-        type: 3,
-        draw_image: this.resultImg
+        type: 4,
+        draw_image: this.resultImg,
+        draw_height_scale: draw_height_scale,
+        draw_left_scale: draw_left_scale,
+        draw_top_scale: draw_top_scale
       }).then(res => {
         this.loading = false
         this.previewImg = res.data
+      }).catch(() => {
+        this.loading = false
+        Toast('网络错误 请返回重试')
       })
     },
     // 清空画布
     handleReset() {
-      this.$refs.esign.reset()
+      this.$refs.signaturePad.clearSignature()
     },
-    // 生成图片
     handleGenerate() {
-      this.$refs.esign.generate().then(res => {
-        console.log(res)
-        this.resultImg = res.resultImg
-        this.getPreview()
-        this.confirmModal = true
-      }).catch(err => {
-        alert(err) // 画布没有签字时会执行这里 'Not Signned'
-      })
+      const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
+      if (isEmpty === true) {
+        alert('请绘制内容')
+        return false
+      }
+      this.resultImg = data
+      this.cropInfo = cropInfo
+      this.getPreview()
+      this.confirmModal = true
     },
+
     // 颜色选择器
     handleShowColor() {
       if (this.colorShow) {
@@ -181,10 +213,10 @@ export default {
     // 立即购买
     buyNow() {
       var goodsInfo = JSON.parse(this.design.goodsInfo)
+      goodsInfo[0].shopping_type = 4
       goodsInfo[0].design_info = {
-        design_width: this.form.middleImg.width,
-        design_height: this.form.middleImg.height,
-        preview_image: this.previewImg
+        preview_image: this.previewImg,
+        draw_image: this.resultImg
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm' })
@@ -209,7 +241,7 @@ export default {
         width: 48%;
         margin-bottom: 10px;
         .slider{
-          width: 40%;
+          width: 48%;
           display: inline-block;
           vertical-align: middle;
         }
@@ -222,7 +254,7 @@ export default {
           vertical-align: middle;
           width: 40px;
           height: 14px;
-          border: 1px solid #f5f5f5;
+          border: 1px solid #dcdcdc;
           position: relative;
         }
         .sketch{

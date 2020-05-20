@@ -22,7 +22,8 @@
 export default {
   name: 'Hue',
   props: {
-    value: Object,
+    value: { type: Object,
+      default: () => {} },
     direction: {
       type: String,
       // [horizontal | vertical]
@@ -38,8 +39,11 @@ export default {
   computed: {
     colors() {
       const h = this.value.hsl.h
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       if (h !== 0 && h - this.oldHue > 0) this.pullDirection = 'right'
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       if (h !== 0 && h - this.oldHue < 0) this.pullDirection = 'left'
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.oldHue = h
 
       return this.value

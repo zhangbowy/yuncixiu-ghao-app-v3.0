@@ -22,7 +22,10 @@ import throttle from 'lodash.throttle'
 export default {
   name: 'Saturation',
   props: {
-    value: Object
+    value: {
+      type: Object,
+      default: () => {}
+    }
   },
   computed: {
     colors() {

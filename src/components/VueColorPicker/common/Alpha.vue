@@ -27,8 +27,8 @@ export default {
     checkboard
   },
   props: {
-    value: Object,
-    onChange: Function
+    value: { type: Object, default: () => {} },
+    onChange: { type: Function, default: () => {} }
   },
   computed: {
     colors() {

@@ -4,7 +4,7 @@
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
-            <van-dropdown-item v-model="fontType" :options="fontTypeOptions" />
+            <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" />
             <van-dropdown-item ref="fontColor" title="颜色">
               <van-tabs type="card" color="#333" background="#fff">
                 <van-tab title="标准色">
@@ -267,14 +267,6 @@ export default {
     ])
   },
   watch: {
-    fontType(newValue, oldValue) {
-      if (this.topInput === true) {
-        this.form.topText.fontType = newValue
-      }
-      if (this.bottomInput === true) {
-        this.form.bottomText.fontType = newValue
-      }
-    },
     fontSize(newValue, oldValue) {
       if (this.topInput === true) {
         this.form.topText.fontSize = newValue
@@ -289,14 +281,6 @@ export default {
       }
       if (this.bottomInput === true) {
         this.form.bottomText.align = newValue
-      }
-    },
-    fontColor(newValue, oldValue) {
-      if (this.topInput === true) {
-        this.form.topText.fontColor = newValue.hex
-      }
-      if (this.bottomInput === true) {
-        this.form.bottomText.fontColor = newValue.hex
       }
     },
     patternPicture(newValue, oldValue) {
@@ -471,7 +455,7 @@ export default {
     imgRotate() {
       $(function() {
         $('.top-input span').arctext({
-          radius: 180,
+          radius: 360,
           dir: 1,
           rotate: true,
           fitText: false
@@ -479,12 +463,26 @@ export default {
       })
       $(function() {
         $('.top-img-list').arctext({
-          radius: 180,
+          radius: 360,
           dir: 1,
           rotate: true,
           fitText: false
         })
       })
+      $('.top-img-list img').each(function() {
+        $(this).attr('height', this.fontSize)
+      })
+    },
+    // 字体选择
+    fontChange(value) {
+      if (this.topInput === true) {
+        this.form.topText.fontType = value
+        this.getFontTop()
+      }
+      if (this.bottomInput === true) {
+        this.form.bottomText.fontType = value
+        this.getFontBottom()
+      }
     },
     // 图片颜色选择
     imgColorChnage(e) {

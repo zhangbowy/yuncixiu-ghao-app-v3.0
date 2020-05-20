@@ -51,7 +51,7 @@ export default {
 .designArea{
   height:70vh;
   position: absolute;
-  top: 13vh;
+  top: 17vh;
   width: 100%;
   left: 0;
   .bg-box{

@@ -10,7 +10,9 @@ import router from './router'
 import store from './store'
 import vueEsign from 'vue-esign'
 import '@/permission' // 鉴权
+import VueSignaturePad from '@/components/VueSign/vue-signature-pad.esm'
 
+Vue.use(VueSignaturePad)
 // main.js
 import Directive from './directive'
 // 使用插件

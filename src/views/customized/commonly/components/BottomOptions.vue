@@ -43,7 +43,7 @@ export default {
       this.$emit('change', 'showImgList')
     },
     complete() {
-      this.$emit('change', 'showImgList')
+      this.$emit('change', 'complete')
     }
   }
 }
