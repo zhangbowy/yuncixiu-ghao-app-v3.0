@@ -5,7 +5,7 @@
         <van-checkbox-group v-model="result" direction="horizontal">
           <van-checkbox v-for="(item,index) in templateList" :key="index" :name="item.emb_template_id">
             <div class="temp-item">
-              <img :src="item.cover_image" alt="" width="80" height="80">
+              <img :src="item.cover_image" alt="" width="60" height="60">
               <p>{{ item.template_name }}</p>
             </div>
           </van-checkbox>
@@ -20,11 +20,6 @@
           placeholder="建议面积不超过300*200mm"
           :rules="[{ pattern, message: '请输入正确尺寸' }]"
         />
-        <van-field name="uploader" label="刺绣图片">
-          <template #input>
-            <van-uploader v-model="uploader" multiple :max-count="1" />
-          </template>
-        </van-field>
         <!-- 通过 validator 进行函数校验 -->
         <van-field
           v-model="colorNum"
@@ -45,7 +40,11 @@
             <van-switch v-model="switchChecked" size="20" />
           </template>
         </van-field>
-
+        <van-field name="uploader" label="定制图案">
+          <template #input>
+            <van-uploader v-model="uploader" multiple :max-count="1" />
+          </template>
+        </van-field>
         <div style="margin: 16px;">
           <van-button round block type="info" native-type="submit">
             提交
@@ -113,6 +112,7 @@ export default {
       justify-content: space-around;
       .van-checkbox--horizontal{
         width: 40%;
+        justify-content: center;
       }
     }
     .temp-item{
@@ -120,6 +120,7 @@ export default {
       text-align: center;
       img{
         display: block;
+        margin: 0 auto;
       }
       p{
         margin-top: 0;

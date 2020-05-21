@@ -330,6 +330,7 @@ export default {
     // 获取花样库列表
     getFigureList() {
       designApi.getFigure({
+        pageSize: 1000
       }).then(res => {
         this.figureList = res.data.data
       })
