@@ -142,6 +142,7 @@ import { goodsApi } from '@/api/goods'
 import { ImagePreview, Toast } from 'vant'
 import { shopCart } from '@/utils/shopCart'
 import store from '@/store'
+import { wechatInterface } from '@/utils/wxUtils'
 export default {
   components: {
     TopBar
@@ -340,7 +341,7 @@ export default {
     // sku购买按钮
     skuBuy() {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
-        this.changeSkuShow()
+        Toast('请选择规格')
       } else {
         const cartList = []
         cartList.push({
@@ -406,6 +407,9 @@ export default {
           this.bindShareQzone()
           break
       }
+    },
+    bindShareTimeLine() {
+      wechatInterface({}, () => {}, () => {}, 'share')
     }
   }
 }
@@ -502,6 +506,9 @@ export default {
         padding: 20px;
         padding-bottom: 60px;
         .sku-info{
+          img{
+            border-radius: 5px;
+          }
           .right-info{
             display: inline-block;
             font-size: 14px;

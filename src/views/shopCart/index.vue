@@ -212,6 +212,7 @@ export default {
           width: 25%;
           height: 75px;
           margin-left: 10px;
+          border-radius: 6px;
         }
         .good-info-right{
           width: 90%;

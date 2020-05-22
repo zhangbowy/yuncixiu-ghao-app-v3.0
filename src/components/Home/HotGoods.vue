@@ -39,7 +39,7 @@ export default {
     padding: 10px;
     background: #fff;
     .recommend-title{
-      font-size: 18px;
+      font-size: 16px;
       color: #000;
       padding: 10px 0 20px;
       span{

@@ -40,7 +40,7 @@
     <div class="designArea">
       <div class="bg-box">
         <!-- 背景图 -->
-        <img class="bg-img" :src="customInfo.item.background" :style="designImgStyle" alt="">
+        <img class="bg-img" :src="customInfo.item && customInfo.item.background ?customInfo.item.background: customInfo.custom_info.design_bg" :style="designImgStyle" alt="">
         <!-- 设计区域 -->
         <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
@@ -49,7 +49,10 @@
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
             </div>
-            <van-field v-if="topFocus==true" v-model="form.topText.content" maxlength="15" :input-align="form.topText.align" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)" />
+            <div class="input-box">
+              <input v-if="topFocus==true" v-model="form.topText.content" type="text" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}` }" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)">
+            </div>
+            <!-- <van-field v-if="topFocus==true" v-model="form.topText.content" maxlength="15" :input-align="form.topText.align" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)" /> -->
           </div>
           <!-- 中间图片 -->
           <div class="middle-img">
@@ -61,7 +64,10 @@
               <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
             </div>
-            <van-field v-if="bottomFocus==true" v-model="form.bottomText.content" maxlength="15" :input-align="form.bottomText.align" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)" />
+            <!-- <van-field v-if="bottomFocus==true" v-model="form.bottomText.content" maxlength="15" :input-align="form.bottomText.align" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)" /> -->
+            <div class="input-box">
+              <input v-if="bottomFocus==true" v-model.lazy="form.bottomText.content" type="text" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`,background: 'none'}" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)">
+            </div>
           </div>
         </div>
         <!-- 设计区域结束 -->
@@ -199,7 +205,9 @@ export default {
       }, {
         text: '右对齐', value: 'right'
       }],
-      fontColor: {},
+      fontColor: {
+        hex: 'fff'
+      },
       fontSize: 12, // 字体大小
       sizeOptions: [
         { text: '12px', value: 12 },
@@ -412,7 +420,8 @@ export default {
       arr = text.split('')
       designApi.getTextImage({
         font_id: this.fontType,
-        font_list: JSON.stringify(arr)
+        font_list: JSON.stringify(arr),
+        color: this.form.topText.fontColor
       }).then(res => {
         if (res.code === 0) {
           this.topImg = res.data
@@ -421,14 +430,15 @@ export default {
           Toast(res.msg)
         }
       })
-    }, 1000),
+    }, 500),
     getFontBottom: debounce(function() {
       let arr = []
       const text = this.form.bottomText.content
       arr = text.split('')
       designApi.getTextImage({
         font_id: this.fontType,
-        font_list: JSON.stringify(arr)
+        font_list: JSON.stringify(arr),
+        color: this.form.bottomText.fontColor
       }).then(res => {
         if (res.code === 0) {
           this.bottomImg = res.data
@@ -436,7 +446,7 @@ export default {
           Toast(res.msg)
         }
       })
-    }, 1000),
+    }, 500),
     showMiddleMemu(type) {
       // type==1个人上传，type==2花样库选择
       this.middleVisible = true
@@ -572,9 +582,7 @@ export default {
     // 完成定制
     complete() {
       this.previewModal = false
-      if (!this.previewImg) {
-        this.getPreview()
-      }
+      this.getPreview()
       this.confirmModal = true
     },
     // 立即购买
@@ -672,18 +680,20 @@ export default {
       .top-input,.bottom-input{
         font-size: 12px;
         z-index: 1;
-        .van-cell{
-          background: none;
-          .van-field__control{
-            color: #fff;
+        .input-box{
+          border: 1px solid #4bb1ff00;
+          input{
+            background: none;
+            height: 45px;
+            width: 100%;
+            border: none;
+            outline: none;
           }
         }
         &.focus{
-          .van-cell{
+          .input-box{
             border: 1px solid #4bb0ff;
-            .van-field__control{
-              color: #fff;
-            }
+
           }
         }
       }
@@ -721,8 +731,6 @@ export default {
         img{
           display: block;
           margin: 0 auto;
-          width: 150px;
-          height: 150px;
         }
       }
     }

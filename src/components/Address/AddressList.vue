@@ -12,8 +12,12 @@
         </div>
         <svg-icon class="edit-icon" icon-class="address-edit" @click.stop="editAddress(item)" />
       </div>
-
     </div>
+    <div v-if="list.length==0" class="no-address">
+      <span><svg-icon icon-class="add-address" /></span>
+      <p>您还没有创建收货地址</p>
+    </div>
+
     <div class="address-add">
       <div class="add-btn" @click="addAddress">
         新增地址
@@ -98,6 +102,15 @@ export default {
       }
     }
 
+  }
+  .no-address{
+    font-size: 14px;
+    padding-top: 30%;
+    text-align: center;
+    color: #B1B8C8;
+    span{
+      font-size: 42px
+    }
   }
   .address-add{
     position: fixed;

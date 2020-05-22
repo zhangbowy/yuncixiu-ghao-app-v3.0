@@ -14,7 +14,10 @@
             <div class="goods-name">{{ goods.name }}</div>
             <div class="sku-info">{{ goods.sku_name }}</div>
             <div class="price-info">
-              <div class="price">￥<span>{{ goods.current_price }}</span></div>
+              <div class="price">
+                <div>商品价：<span>￥{{ goods.current_price.toFixed(2) }}</span></div>
+                <div v-if="goods.design_price">花样价：<span>￥{{ goods.design_price.toFixed(2) }}</span></div>
+              </div>
               <div class="number">x{{ goods.buy_num }}</div>
             </div>
           </div>
@@ -117,6 +120,7 @@ export default {
         img{
           width: 25%;
           height: 80px;
+          border-radius: 6px;
         }
         .goods-info-right{
           width: 73%;
@@ -144,12 +148,23 @@ export default {
             width: 100%;
             padding-right: 10px;
             box-sizing: border-box;
-            .price{
-              width: 50%;
-              color: #ee0a24;
+            >div{
+              display: inline-block;
+              color: #666;
             }
-            .number{
-              width: 50%;
+            div.price{
+              width: 80%;
+              font-size: 12px;
+              padding: 2px 0;
+              span{
+                color: #df2525;
+                font-size: 14px;
+              }
+            }
+            div.number{
+              width: 20%;
+              color: #666;
+              font-size: 14px;
               text-align: right;
             }
           }

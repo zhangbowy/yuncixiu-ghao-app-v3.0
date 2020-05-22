@@ -16,7 +16,10 @@
         clearable
         label="电话"
         placeholder="电话"
-        :rules="[{ required: true, message: '请填写电话' }]"
+        :rules="[
+          { required: true, message: '请填写您的手机号码！' },
+          { pattern: /^1[3456789]\d{9}$/, message: '手机号码格式错误！'}
+        ]"
       />
       <van-field
         readonly
@@ -26,6 +29,9 @@
         :value="area"
         right-icon="arrow"
         placeholder="选择省 / 市 / 区"
+        :rules="[
+          { required: true, message: '请选择省市区！' },
+        ]"
         @click="showPicker = true"
       />
       <van-field
@@ -34,7 +40,7 @@
         clearable
         label="详细地址"
         placeholder="详细地址"
-        :rules="[{ required: true, message: '请填写详细地址' }]"
+        :rules="[{ required: true, message: '请填写详细地址!' }]"
       />
       <van-field
         v-model="form.post_code"
@@ -43,8 +49,11 @@
         clearable
         label="邮编"
         placeholder="邮编"
-        :rules="[{ required: true, message: '请填写邮编' }]"
+        :rules="[
+          { required: true, message: '请填写邮编！' }
+        ]"
       />
+      <!-- { pattern: /^[1-9]\d{5}$/g, message: '邮编格式错误！'} -->
       <van-field name="is_default" label="默认地址" input-align="right">
         <template #input>
           <van-switch v-model="form.is_default" size="20" :active-value="1" :inactive-value="0" />
@@ -62,7 +71,9 @@
         删除
       </van-button>
     </div>
+    <van-overlay :show="showPicker" @click="showPicker = false" />
     <van-popup v-model="showPicker" position="bottom" :overlay="false">
+
       <van-picker
         show-toolbar
         value-key="name"

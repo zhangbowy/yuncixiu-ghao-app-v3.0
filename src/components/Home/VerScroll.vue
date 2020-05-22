@@ -67,7 +67,7 @@ export default {
     overflow: hidden;
     padding: 10px;
     .kind-title{
-      font-size: 18px;
+      font-size: 16px;
       color: #000;
       padding: 10px 0 20px;
       span{
@@ -92,6 +92,7 @@ export default {
           overflow: hidden;
           width: 60px;
           height: 60px;
+          border-radius: 6px;
         }
         p{
           margin: 5px 0;

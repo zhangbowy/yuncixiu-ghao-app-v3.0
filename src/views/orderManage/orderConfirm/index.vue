@@ -1,5 +1,5 @@
 <template>
-  <div class="order-confirm">
+  <div v-loading="loading" class="order-confirm">
     <div class="navbar">
       <!-- tab标题栏 -->
       <top-bar title="确认订单" />
@@ -13,7 +13,7 @@
       </van-cell>
       <van-action-sheet v-model="show" :actions="actions" @select="onSelect" />
     </div>
-    <div v-if="orderType.type==2 && orderInfo.address" class="order-address" @click="toAddress">
+    <div v-if="orderType.type==2 && orderInfo.address.phone" class="order-address" @click="toAddress">
       <div class="user-info">
         <span>{{ orderInfo.address.name }}</span>
         <span class="user-phone">{{ orderInfo.address.phone }}</span>
@@ -26,15 +26,29 @@
         <svg-icon icon-class="right-arrow" />
       </span>
     </div>
+    <div v-else class="order-address" @click="toAddress">
+      <span class="site-icon">
+        <svg-icon icon-class="order-site" />
+      </span>
+      <div class="add-tip">
+        <span>添加收货地址</span>
+      </div>
+      <span class="right-arrow">
+        <svg-icon icon-class="right-arrow" />
+      </span>
+    </div>
     <div class="good-info">
       <div v-for="(item,index) in orderInfo.item_list" :key="index" class="goods-item">
         <div class="good-img"><img :src="item.image" alt=""></div>
         <div class="good-right">
           <div class="good-name">{{ item.name }}<span v-if="item._order_type" class="order-type">{{ item._order_type }}</span></div>
-          <div class="good-sku">已选：{{ item.sku_name }} </div>
+          <div class="good-sku">已选规格：{{ item.sku_name }} </div>
           <div class="good-bottom">
-            <span class="price">￥{{ item.current_price }}</span>
-            <span class="number">x{{ item.buy_num }}</span>
+            <div class="price">
+              <div>商品价：<span>￥{{ item.current_price.toFixed(2) }}</span></div>
+              <div v-if="item.design_price">花样价：<span>￥{{ item.design_price.toFixed(2) }}</span></div>
+            </div>
+            <div class="number">x{{ item.buy_num }}</div>
           </div>
         </div>
       </div>
@@ -67,12 +81,14 @@ import TopBar from '@/components/TopBar'
 import { orderApi } from '@/api/order'
 import { mapState } from 'vuex'
 import store from '@/store'
+import { Toast } from 'vant'
 export default {
   components: {
     TopBar
   },
   data() {
     return {
+      loading: false,
       show: false,
       actions: [
         { name: '实体店铺', type: 1 },
@@ -82,6 +98,9 @@ export default {
         name: '快递', type: 2
       },
       orderInfo: {
+        address: {
+          phone: ''
+        }
       },
       message: ''
     }
@@ -100,11 +119,15 @@ export default {
   },
   methods: {
     getConfirmData(address_id) {
+      this.loading = true
       orderApi.calculation({
         address_id: address_id,
         cart_list: JSON.parse(this.order.cartList)
       }).then(res => {
+        this.loading = false
         this.orderInfo = res.data
+      }).catch(() => {
+        Toast('网络异常!')
       })
     },
     onSubmit() {
@@ -122,7 +145,7 @@ export default {
       })
     },
     toAddress() {
-      this.$router.replace({ path: `/addressList?redirect=${'/orderConfirm'}` })
+      this.$router.push({ path: `/addressList?redirect=${'/orderConfirm'}` })
     },
     onSelect(item) {
       // 默认情况下点击选项时不会自动收起
@@ -153,7 +176,18 @@ export default {
     padding: 10px 10px 20px 16px;
     margin-bottom: 10px;
     position: relative;
-    background:#fff url('../../../assets/images/address-bottom-line.png') no-repeat left bottom/100%;;
+    background:#fff url('../../../assets/images/address-bottom-line.png') no-repeat left bottom/100%;
+    .site-icon{
+      position: absolute;
+      left: 10px;
+      top: 45%;
+      transform: translateY(-50%);
+      font-size: 22px;
+    }
+    .add-tip{
+      padding: 8px 20px 0;
+      font-size: 14px;
+    }
     .user-info{
       padding: 5px 0;
       color: #000;
@@ -204,6 +238,7 @@ export default {
         img{
           width: 100%;
           height: 86px;
+          border-radius: 6px;
         }
       }
       .good-right{
@@ -211,7 +246,6 @@ export default {
         font-size: 16px;
         padding-left: 10px;
         .good-name{
-          height: 40px;
           .order-type{
             margin-left: 10px;
             background: crimson;
@@ -230,15 +264,21 @@ export default {
         }
       }
       .good-bottom{
-        span{
-          width: 50%;
+        >div{
           display: inline-block;
+          color: #666
         }
-        span.price{
-          color: #df2525;
-          font-size: 16px;
+        div.price{
+          width: 80%;
+          font-size: 12px;
+          padding: 2px 0;
+          span{
+             color: #df2525;
+            font-size: 14px;
+          }
         }
-        span.number{
+        div.number{
+          width: 20%;
           color: #666;
           font-size: 14px;
           text-align: right;

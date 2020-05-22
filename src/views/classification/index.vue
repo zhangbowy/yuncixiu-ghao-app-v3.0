@@ -5,7 +5,8 @@
         shape="round"
         disabled
         background="#fff"
-        placeholder="搜索分类商品"
+        placeholder="搜索商品"
+        @click="toSearch"
       />
     </div>
     <div class="classify-content">
@@ -80,6 +81,9 @@ export default {
         }
         this.categories = res.data
       })
+    },
+    toSearch() {
+      this.$router.push({ path: `/goodsList` })
     },
     toGoodsList(id) {
       this.$router.push({ path: `/goodsList?category_id=${id}` })
