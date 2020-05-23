@@ -4,7 +4,8 @@
       <div class="list-item-header">
         <div class="order-number">订单号： <span>{{ item.order_no }}</span></div>
         <div class="order-status">
-          {{ item.status==1?'待支付': item.status==2?'待发货':item.status==3?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }}
+          {{ item._status }}
+          <!-- {{ item.status==1?'待支付': item.status==2?'待发货':item.status==3?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }} -->
         </div>
       </div>
       <div class="goods-info" @click="toDetail(item.order_no)">
@@ -104,7 +105,7 @@ export default {
         color: #333;
       }
       .order-status{
-        width: 20%;
+        width: 28%;
         text-align: right;
         color: coral;
         font-size: 14px;

@@ -66,7 +66,7 @@ export default {
     },
     loadMore($state) {
       goodsApi.getGoodsList({
-        category_id: '',
+        category_id: this.category_id || '',
         name: this.keyWords,
         page: this.page,
         pagesize: this.pagesize
@@ -91,7 +91,7 @@ export default {
     // 搜索事件
     onSearch(val) {
       this.keyWords = val
-      this.fetchData()
+      this.fetchData(this.category_id)
     },
     onCancel() {}
   }

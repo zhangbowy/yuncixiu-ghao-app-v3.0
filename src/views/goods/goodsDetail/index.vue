@@ -442,7 +442,7 @@ export default {
         position: relative;
         min-height: 25px;
         p{
-          width: 65%;
+          width: 80%;
           margin: 0;
           overflow: hidden;
         }

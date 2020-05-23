@@ -2,6 +2,7 @@
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
 const webpack = require('webpack')
+const WebpackBar = require('webpackbar')
 
 const autoprefixer = require('autoprefixer')
 const pxtorem = require('postcss-pxtorem')
@@ -51,6 +52,7 @@ module.exports = {
       }
     },
     plugins: [
+      new WebpackBar(),
       new webpack.ProvidePlugin({
         $: 'jquery',
         jQuery: 'jquery',

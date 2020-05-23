@@ -45,14 +45,13 @@
         <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
           <div class="top-input" :class="{'focus':topFocus==true}">
-            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}` }" @click="imgFocus(1)">
+            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @click="imgFocus(1)">
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
             </div>
             <div class="input-box">
-              <input v-if="topFocus==true" v-model="form.topText.content" type="text" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}` }" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)">
+              <input v-if="topFocus==true" v-model="form.topText.content" placeholder="点击输入文字" type="text" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)">
             </div>
-            <!-- <van-field v-if="topFocus==true" v-model="form.topText.content" maxlength="15" :input-align="form.topText.align" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)" /> -->
           </div>
           <!-- 中间图片 -->
           <div class="middle-img">
@@ -64,9 +63,8 @@
               <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
             </div>
-            <!-- <van-field v-if="bottomFocus==true" v-model="form.bottomText.content" maxlength="15" :input-align="form.bottomText.align" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)" /> -->
             <div class="input-box">
-              <input v-if="bottomFocus==true" v-model.lazy="form.bottomText.content" type="text" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`,background: 'none'}" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)">
+              <input v-if="bottomFocus==true" v-model="form.bottomText.content" placeholder="点击输入文字" type="text" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)">
             </div>
           </div>
         </div>
@@ -411,8 +409,17 @@ export default {
     },
     // 文字图片点击
     imgFocus(type) {
-      type === 1 ? this.topFocus = true : this.bottomFocus = true
-      type === 1 ? this.topInput = true : this.bottomInput = true
+      if (type === 1) {
+        this.topFocus = true
+        this.topInput = true
+        this.bottomFocus = false
+        this.bottomInput = false
+      } else {
+        this.topFocus = false
+        this.topInput = false
+        this.bottomFocus = true
+        this.bottomInput = true
+      }
     },
     getFontTop: debounce(function() {
       let arr = []
