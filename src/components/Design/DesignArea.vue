@@ -49,9 +49,9 @@ export default {
 <style lang="scss" scoped>
 // 设计区域
 .designArea{
-  height:70vh;
+  height: 60vh;
   position: absolute;
-  top: 17vh;
+  top: 23vh;
   width: 100%;
   left: 0;
   .bg-box{

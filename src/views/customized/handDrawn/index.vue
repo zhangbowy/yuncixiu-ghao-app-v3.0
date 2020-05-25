@@ -4,6 +4,18 @@
     <div class="drawn-config">
       <div class="config-box">
         <div class="config-item">
+          <span>笔画粗细：</span>
+          <div class="slider">
+            <van-stepper v-model="lineWidth" input-width="25px" button-size="22" min="1" max="50" />
+          </div>
+        </div>
+        <div class="config-item">
+          <span>笔锋粗细：</span>
+          <div class="slider">
+            <van-stepper v-model="minWidth" input-width="25px" button-size="22" min="1" max="5" />
+          </div>
+        </div>
+        <div class="config-item">
           <span>笔画颜色：</span>
           <div class="color_con" :style="{background:lineColor}" @click="handleShowColor">
             <div v-show="colorShow" class="sketch">
@@ -13,25 +25,24 @@
           </div>
         </div>
         <div class="config-item">
-          <span>笔画粗细：</span>
-          <div class="slider">
-            <van-stepper v-model="lineWidth" input-width="25px" button-size="22" disable-input min="1" max="50" />
-            <!-- <van-slider v-model="lineWidth" bar-height="10px" button-size="18px" :min="1" :max="40" @change="onChange" /> -->
+          <span>宽(mm)：</span>
+          <div class="input">
+            <input v-model.number="width" type="number" step="1" max="150" placeholder="宽度">
           </div>
         </div>
         <div class="config-item">
-          <span>笔锋粗细：</span>
-          <div class="slider">
-            <van-stepper v-model="minWidth" input-width="25px" button-size="22" disable-input min="1" max="5" />
-            <!-- <van-slider v-model="lineWidth" bar-height="10px" button-size="18px" :min="1" :max="40" @change="onChange" /> -->
+          <span>高(mm)：</span>
+          <div class="input">
+            <input v-model.number="height" type="number" step="1" max="150" placeholder="高度">
           </div>
         </div>
       </div>
     </div>
     <!-- 中间画板 -->
     <div v-if="design_box.design_H" class="drawn-content">
+      <!-- 设计区域  -->
       <design-area :area-info="designArea" :background="backgroundImg">
-        <!-- <vue-sign slot="design-content" ref="esign" :width="design_box.design_W" :height="design_box.design_H" :is-crop="isCrop" :line-width="lineWidth" :line-color="lineColor" :bg-color.sync="bgColor" /> -->
+        <!-- 画板 -->
         <VueSignaturePad
           slot="design-content"
           ref="signaturePad"
@@ -39,7 +50,6 @@
           :height="`${design_box.design_H}px`"
           :options="{ penColor:lineColor,maxWidth:lineWidth, minWidth:minWidth }"
         />
-        <!-- <sign-ture :width="design_box.design_W" :height="design_box.design_H" :line-width="lineWidth" :line-color="lineColor" /> -->
       </design-area>
     </div>
     <!-- 底部操作 -->
@@ -87,13 +97,30 @@ export default {
       loading: false,
       confirmModal: false, // 完成设计
       previewImg: '', // 预览图片
-      canvasTxt: null
+      canvasTxt: null,
+      width: '', // 手绘图宽度
+      height: '', // 手绘图高度
+      design_area_image: '' // 设计区域
     }
   },
   computed: {
     ...mapState([
       'design'
     ])
+  },
+  watch: {
+    width(newValue, oldValue) {
+      if (newValue > 150) {
+        Toast('宽度不能超过150mm')
+        this.width = 150
+      }
+    },
+    height(newValue, oldValue) {
+      if (newValue > 150) {
+        Toast('高度不能超过150mm')
+        this.height = 150
+      }
+    }
   },
   created() {
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
@@ -105,6 +132,7 @@ export default {
     this.customDetail(this.goods_id, this.sku_id)
   },
   methods: {
+    // 撤销
     undo() {
       this.$refs.signaturePad.undoSignature()
     },
@@ -115,7 +143,7 @@ export default {
         sku_id: sku_id
       }).then(res => {
         this.customInfo = res.data
-        this.backgroundImg = res.data.item.background
+        this.backgroundImg = res.data.item && res.data.item.background ? res.data.item.background : res.data.custom_info.design_bg
         this.initPage(res.data)
       })
     },
@@ -171,16 +199,17 @@ export default {
         draw_top_scale: draw_top_scale
       }).then(res => {
         this.loading = false
-        this.previewImg = res.data
+        this.previewImg = res.data.preview_image
+        this.design_area_image = res.data.design_area_image
       }).catch(() => {
         this.loading = false
-        Toast('网络错误 请返回重试')
       })
     },
     // 清空画布
     handleReset() {
       this.$refs.signaturePad.clearSignature()
     },
+    // 完成绘制
     handleGenerate() {
       const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
       if (isEmpty === true) {
@@ -215,8 +244,11 @@ export default {
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].shopping_type = 4
       goodsInfo[0].design_info = {
+        design_width: this.width,
+        design_height: this.height,
         preview_image: this.previewImg,
-        draw_image: this.resultImg
+        draw_image: this.resultImg,
+        design_area_image: this.design_area_image
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm' })
@@ -252,9 +284,10 @@ export default {
         .color_con{
           display: inline-block;
           vertical-align: middle;
-          width: 40px;
-          height: 14px;
-          border: 1px solid #dcdcdc;
+          width: 60px;
+          height: 20px;
+          border-radius: 3px;
+          border: 1px solid #ccc;
           position: relative;
         }
         .sketch{
@@ -262,6 +295,23 @@ export default {
           left: 0;
           top: 20px;
           z-index: 10;
+        }
+        .input{
+          display: inline-block;
+          vertical-align: middle;
+          input{
+            width: 60px;
+            outline-style: none ;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 12px;
+            font-family: "Microsoft soft";
+          }
+          input:focus{
+            border-color: #66afe9;
+            outline: 0;
+          }
         }
       }
     }

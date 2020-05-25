@@ -50,6 +50,8 @@ export default {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
+      width: 100%;
+      box-sizing: border-box;
     }
     .confirm-footer{
       position: absolute;

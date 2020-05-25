@@ -36,7 +36,8 @@ import {
   Icon,
   Slider,
   List,
-  Loading
+  Loading,
+  SwitchCell
 } from 'vant'
 
 Vue.use(
@@ -129,4 +130,6 @@ Vue.use(
   Slider
 ).use(List).use(
   Loading
+).use(
+  SwitchCell
 )

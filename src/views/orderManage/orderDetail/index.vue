@@ -8,7 +8,7 @@
       @click-left="onClickLeft"
     />
     <div class="detail-header">
-      <span>{{ orderDetail.status==1?'待支付': orderDetail.status==2?'待发货':orderDetail.status==3?'待收货':orderDetail.status==4?'已完成':orderDetail.status==5?'待回复':orderDetail.status==6?'已回复':orderDetail.status==-2?'已取消':'' }}</span>
+      <span>{{ orderDetail._status }}</span>
       <span>运费：{{ orderDetail.express_amount.toFixed(2) }}</span>
     </div>
     <div v-if="orderDetail.status==3 || orderDetail.status==4" class="express-info">
@@ -159,7 +159,7 @@ export default {
     font-size: 16px;
     padding: 20px 16px;
     color: #fff;
-    background: linear-gradient(to right,#ff7f50, rgba(255, 127, 80, 0.4));
+    background: linear-gradient(to top, #ff6034, #ee0a24);
     span{
       display: block;
     }

@@ -16,6 +16,9 @@
             </van-dropdown-item>
             <van-dropdown-item v-model="fontSize" :options="sizeOptions" />
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
+            <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
+              <van-switch-cell v-model="openArc" title="是否开启" />
+            </van-dropdown-item>
           </van-dropdown-menu>
         </div>
       </transition>
@@ -44,7 +47,7 @@
         <!-- 设计区域 -->
         <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
-          <div class="top-input" :class="{'focus':topFocus==true}">
+          <div v-if="currentTemplate.emb_template_id!==2" class="top-input" :class="{'focus':topFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}">
             <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @click="imgFocus(1)">
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
@@ -54,11 +57,11 @@
             </div>
           </div>
           <!-- 中间图片 -->
-          <div class="middle-img">
-            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{height: `${form.middleImg.height*design_box.design_scale}px`}" @click="showMiddleMemu()">
+          <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
+            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{maxWidth:`${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}" @click="showMiddleMemu()">
           </div>
           <!-- 下输入框 -->
-          <div class="bottom-input" :class="{'focus':bottomFocus==true}">
+          <div v-if="currentTemplate.emb_template_id==3" class="bottom-input" :class="{'focus':bottomFocus==true,'topBottom': currentTemplate.emb_template_id==3}">
             <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click="imgFocus(2)">
               <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
@@ -78,10 +81,10 @@
     <!-- 上传图片 -->
     <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
       <div class="modal">
-        <div class="modal-title">上传花样</div>
+        <div class="modal-title">上传图片</div>
         <div class="modal-content">
           <van-uploader v-model="patternPicture" multiple :max-count="1" />
-          <number-input
+          <!-- <number-input
             v-model="form.middleImg.width"
             width="80%"
             :value="form.middleImg.height"
@@ -98,10 +101,13 @@
             :max="middleImgHeight"
             placeholder="请输入高度"
             unit="mm"
-          />
+          /> -->
         </div>
-        <div class="modal-footer">
+        <!-- <div class="modal-footer">
           一次只能上传一张图片
+        </div> -->
+        <div class="footer-button">
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">确定</van-button>
         </div>
       </div>
     </van-popup>
@@ -115,7 +121,7 @@
     <!-- 修改图片尺寸 -->
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
-        <div class="modal-title">修改花样尺寸</div>
+        <div class="modal-title">修改图片尺寸</div>
         <div class="modal-content">
           <div class="img-size">
             <number-input
@@ -186,6 +192,7 @@ export default {
       bottomInput: false,
       loading: false, // 加载动画
       showInput: false, // 显示上传图片弹框
+      openArc: false, // 是否开启弧形
       figureList: [], // 花样库
       templateList: [], // 模板列表
       currentTemplate: {}, // 当前模板
@@ -199,15 +206,16 @@ export default {
       alignment: [{
         text: '左对齐', value: 'left'
       }, {
-        text: '居中对齐', value: 'center'
+        text: '居中', value: 'center'
       }, {
         text: '右对齐', value: 'right'
       }],
       fontColor: {
         hex: 'fff'
       },
-      fontSize: 12, // 字体大小
+      fontSize: 12, // 字体高度
       sizeOptions: [
+        { text: '8px', value: 8 },
         { text: '12px', value: 12 },
         { text: '18px', value: 18 },
         { text: '24px', value: 24 },
@@ -264,7 +272,8 @@ export default {
       },
       designImgStyle: {}, // 设计背景style
       designBoxStyle: {}, // 设计区域style
-      previewImg: '' // 预览图片
+      previewImg: '', // 预览图片
+      design_area_image: '' // 设计区域整体图片
     }
   },
   computed: {
@@ -294,13 +303,45 @@ export default {
         this.form.middleImg.design_id = ''
         this.form.middleImg.prev_png_path = ''
       }
+    },
+    // 是否启用弧形文字
+    openArc(newValue, oldValue) {
+      if (newValue === true) {
+        this.imgRotate(this.form.topText.fontSize)
+      }
+    },
+    // 监听当前模板变化
+    currentTemplate: {
+      deep: true,
+      immediate: true,
+      handler(newValue, old) {
+        const type = newValue.emb_template_id
+        if (type === 1) {
+          this.form.middleImg = {}
+          this.form.bottomText.content = ''
+          this.bottomImg = []
+          this.deleteMiddleImg()
+        }
+        if (type === 2) {
+          this.topImg = []
+          this.bottomImg = []
+          this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
+          this.form.middleImg.height = this.design_box.design_H / this.design_box.design_scale
+          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale
+          this.middleImgWidth = this.design_box.design_W / this.design_box.design_scale
+        }
+        if (type === 3) {
+          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale
+          this.form.middleImg.height = this.middleImgHeight
+        }
+      }
     }
   },
   created() {
     // 获取字体列表
     this.getFontList()
     // 弧形文字
-    this.imgRotate()
+    this.imgRotate(this.form.topText.fontSize)
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
@@ -309,7 +350,11 @@ export default {
     this.customDetail(this.goods_id, this.sku_id)
     this.getFigureList() // 获取花样库
     this.getTemplate() // 获取定制模板
+
+    // 初始化页面显示模板弹框
+    this.templateModal = true
   },
+
   methods: {
     // 获取字体列表
     getFontList() {
@@ -406,6 +451,9 @@ export default {
     // 输入框失去焦点
     inputBlur(type) {
       type === 1 ? this.topFocus = false : this.bottomFocus = false
+      // if (this.openArc === true) {
+      //   this.imgRotate(this.form.topText.fontSize)
+      // }
     },
     // 文字图片点击
     imgFocus(type) {
@@ -470,18 +518,19 @@ export default {
       this.middleVisible = false
     },
     // 图片旋转
-    imgRotate() {
+    imgRotate(height) {
       $(function() {
         $('.top-input span').arctext({
           radius: 360,
-          dir: 1,
+          dir: 5,
           rotate: true,
-          fitText: false
+          fitText: true,
+          height: height
         })
       })
       $(function() {
         $('.top-img-list').arctext({
-          radius: 360,
+          radius: 180,
           dir: 1,
           rotate: true,
           fitText: false
@@ -551,6 +600,7 @@ export default {
     // checked定制模板
     checkTeplateItem(item) {
       this.currentTemplate = item
+      this.templateModal = false
     },
     // 点击预览
     preview() {
@@ -561,7 +611,8 @@ export default {
     getPreview() {
       this.loading = true
       // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
-      const box_scale = 45 / this.design_box.design_H
+      const top_scale = 45 / this.design_box.design_H
+      const bottom_scale = 45 / this.design_box.design_H
       // 计算文字图片和文字输入框的比例
       const top_font_scale = this.form.topText.fontSize / 45
       const bottom_font_scale = this.form.bottomText.fontSize / 45
@@ -571,19 +622,23 @@ export default {
       designApi.getPreview({
         id: this.$route.query.goods_id,
         design_id: this.form.middleImg.design_id,
-        top_scale: box_scale,
+        top_scale: top_scale,
         top_font_scale: top_font_scale,
         top_font_content: this.topImg,
         top_font_color: this.form.topText.fontColor,
         font_id: this.fontType,
         middle_scale: middle_scale,
-        bottom_scale: box_scale,
+        bottom_scale: bottom_scale,
         bottom_font_scale: bottom_font_scale,
         bottom_font_content: this.bottomImg,
-        bottom_font_color: this.form.bottomText.fontColor
+        bottom_font_color: this.form.bottomText.fontColor,
+        custom_image: this.patternPicture[0] ? this.patternPicture[0].content : ''
       }).then(res => {
         this.loading = false
-        this.previewImg = res.data
+        this.previewImg = res.data.preview_image
+        this.design_area_image = res.data.design_area_image
+      }).catch(() => {
+        this.loading = false
       })
     },
     // 完成定制
@@ -609,7 +664,9 @@ export default {
         design_height: this.form.middleImg.height,
         is_choose_design: this.form.middleImg.design_id ? '1' : '0',
         custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
-        preview_image: this.previewImg
+        custom_template_id: this.currentTemplate.emb_template_id,
+        preview_image: this.previewImg,
+        design_area_image: this.design_area_image
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm' })
@@ -691,7 +748,6 @@ export default {
           border: 1px solid #4bb1ff00;
           input{
             background: none;
-            height: 45px;
             width: 100%;
             border: none;
             outline: none;
@@ -700,19 +756,25 @@ export default {
         &.focus{
           .input-box{
             border: 1px solid #4bb0ff;
-
+          }
+        }
+        &.topBottom{
+          height: 45px;
+          line-height: 45px;
+          input{
+            height: 45px;
+            line-height: 45px;
+          }
+          .top-img-list,.bottom-img-list{
+            height: 45px;
+            line-height: 45px;
           }
         }
       }
-      .top-img-list, .bottom-img-list{
+      .top-img-list,.bottom-img-list{
         width: 100%;
-        height: 45px;
-        line-height: 45px;
         span{
           padding: 0 5px;
-        }
-        img{
-          margin: 0 2px;
         }
       }
       .top-input{
@@ -720,6 +782,11 @@ export default {
         top: 0;
         left: 0;
         width: 100%;
+        &.middle{
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
       }
       .bottom-input{
         position: absolute;
@@ -777,11 +844,14 @@ export default {
         }
       }
     }
-    .modal-footer{
-      font-size: 14px;
-      border-top: 1px solid #f5f5f5;
-      padding: 18px;
-      text-align: center;
+    .footer-button{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px 0 10px;
+      button{
+        width: 70%;
+      }
     }
   }
 }

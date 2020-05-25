@@ -54,7 +54,6 @@
    *   add &nbsp; for empty chars.
    */
   function injector(t, splitter, klass, after) {
-    console.log(t)
     var inject = ''; var emptyclass
     if (t[0].tagName === 'SPAN') {
       var a = t.text().split(splitter)
@@ -73,13 +72,12 @@
       var src = t[0].children
       if (src.length) {
         $(src).each(function(i, item) {
-          console.log(item.src)
           emptyclass = ''
           if (item.src === ' ') {
             emptyclass = ' empty'
             item = '&nbsp;'
           }
-          inject += '<img src="' + item.src + '" class="' + klass + (i + 1) + emptyclass + '">' + after
+          inject += '<img src="' + item.src + '" class="' + klass + (i + 1) + emptyclass + '" height="12">' + after
         })
         t.empty().append(inject)
       }
@@ -140,7 +138,6 @@
   $.Arctext.prototype = {
     _init: function(options) {
       this.options = $.extend(true, {}, $.Arctext.defaults, options)
-
       // apply the lettering plugin.
       this._applyLettering()
 
