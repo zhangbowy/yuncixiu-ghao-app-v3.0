@@ -131,7 +131,7 @@ export default {
         border-bottom: 1px solid #f5f5f5;
         padding: 10px 0;
         .left-text{
-          color: #333;
+          color: #000;
           font-size: 16px;
         }
         .right-text{

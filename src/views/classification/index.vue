@@ -14,12 +14,12 @@
         <template #content>
           <div class="right-content">
             <img :src="currentImg" alt="" width="100%" @click="toGoodsList(currentId)">
-            <div v-for="(item,index) in subCategary" :key="index" class="sub-categary" @click="toGoodsList(item.id)">
-              <div class="sub-name">{{ item.category_name }}</div>
+            <div v-for="(item,index) in subCategary" :key="index" class="sub-categary">
+              <div class="sub-name" @click="toGoodsList(item.id)">{{ item.category_name }}</div>
               <div class="sub-child">
                 <ul>
-                  <li v-for="(child,i) in item.children" :key="i">
-                    <img :src="child.image_path" alt="">
+                  <li v-for="(child,i) in item.children" :key="i" @click="toGoodsList(child.id)">
+                    <img :src="child.logo" alt="">
                     <p>{{ child.category_name }}</p>
                   </li>
                 </ul>
@@ -98,13 +98,13 @@ export default {
    padding: 0 10px;
     img{
       width: 100%;
-      height: 120px;
+      height: 110px;
+      border-radius: 5px;
     }
     .sub-categary{
       padding: 5px 0;
-      margin-top: 10px;
       .sub-name{
-        padding: 10px 0;
+        padding: 8px 0;
         color: #333;
         font-size: 14px;
       }
@@ -112,22 +112,23 @@ export default {
         ul{
           display: flex;
           align-items: center;
+          flex-flow: wrap;
           li{
-            width: 28%;
-            margin-right: 8%;
+            width: 25%;
+            margin-right: 12%;
             img{
               width: 100%;
-              height: 70px;
+              height: 58px;
             }
             p{
-              margin: 0;
+              margin: 2px 0;
               font-size: 12px;
               text-align: center;
             }
-            &:last-child{
+          }
+          li:nth-child(3n){
               margin: 0;
             }
-          }
         }
       }
     }

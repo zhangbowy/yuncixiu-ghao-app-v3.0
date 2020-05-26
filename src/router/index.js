@@ -8,17 +8,17 @@ const constantRoutes = [
     path: '/',
     name: 'Index',
     component: () => import('@/views/index'),
-    meta: { title: '首页', keepAlive: false, showTabbar: true }
+    meta: { title: '首页', keepAlive: true, showTabbar: true }
   }, {
     path: '/user',
     name: 'User',
     component: () => import('@/views/user/index'),
-    meta: { title: '个人中心', showTabbar: true }
+    meta: { title: '个人中心', showTabbar: true, keepAlive: true }
   }, {
     path: '/classify',
     name: 'Classify',
     component: () => import('@/views/classification/index'),
-    meta: { title: '分类', keepAlive: false, showTabbar: true }
+    meta: { title: '分类', keepAlive: true, showTabbar: true }
   }, {
     path: '/cart',
     name: 'ShopCart',
@@ -83,7 +83,7 @@ const constantRoutes = [
     path: '/about',
     name: 'About',
     component: () => import('@/views/article/detail/about'),
-    meta: { title: '' }
+    meta: { title: '关于我们' }
   }, {
     path: '/authorize',
     name: 'Authorize',

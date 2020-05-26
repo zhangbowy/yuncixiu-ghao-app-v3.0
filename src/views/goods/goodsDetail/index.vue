@@ -460,7 +460,7 @@ export default {
         right: 0;
         top: 30px;
         font-size: 12px;
-        padding: 4px 6px;
+        padding: 5px 6px;
         border-radius: 20px 0 0 20px;
         background: rgba(65, 65, 65, 0.1);
       }
@@ -570,6 +570,7 @@ export default {
 </style>
 
 <style lang="scss">
+// 修改富文本样式
 .goods-detail{
   .detail{
     padding: 10px;

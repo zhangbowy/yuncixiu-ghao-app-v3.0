@@ -41,14 +41,14 @@
       <van-overlay z-index="10" class-name="top-mask" :show="middleVisible" @click="hiddenVisible" />
     </div>
     <div class="designArea">
-      <div class="bg-box">
+      <div class="bg-box" @click.stop="hiddenVisible">
         <!-- 背景图 -->
         <img class="bg-img" :src="customInfo.item && customInfo.item.background ?customInfo.item.background: customInfo.custom_info.design_bg" :style="designImgStyle" alt="">
         <!-- 设计区域 -->
         <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
           <div v-if="currentTemplate.emb_template_id!==2" class="top-input" :class="{'focus':topFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}">
-            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @click="imgFocus(1)">
+            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @click.stop="imgFocus(1)">
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
             </div>
@@ -58,11 +58,11 @@
           </div>
           <!-- 中间图片 -->
           <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
-            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{maxWidth:`${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}" @click="showMiddleMemu()">
+            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{maxWidth:`${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}" @click.stop="showMiddleMemu()">
           </div>
           <!-- 下输入框 -->
           <div v-if="currentTemplate.emb_template_id==3" class="bottom-input" :class="{'focus':bottomFocus==true,'topBottom': currentTemplate.emb_template_id==3}">
-            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click="imgFocus(2)">
+            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click.stop="imgFocus(2)">
               <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
             </div>
@@ -124,7 +124,7 @@
         <div class="modal-title">修改图片尺寸</div>
         <div class="modal-content">
           <div class="img-size">
-            <number-input
+            <!-- <number-input
               v-model="form.middleImg.width"
               width="100%"
               :value="form.middleImg.height"
@@ -132,7 +132,7 @@
               placeholder="请输入宽度"
               :max="middleImgWidth"
               unit="mm"
-            />
+            /> -->
             <number-input
               v-model="form.middleImg.height"
               width="100%"
@@ -741,6 +741,7 @@ export default {
       position: absolute;
       background: rgba(0, 0, 0, 0.5);
       border: 5px solid rgba(192, 192, 192, 0.5);
+      z-index: 999;
       .top-input,.bottom-input{
         font-size: 12px;
         z-index: 1;
@@ -783,8 +784,16 @@ export default {
         left: 0;
         width: 100%;
         &.middle{
+          min-height: 45px;
           top: 50%;
           transform: translateY(-50%);
+          input{
+            min-height: 45px;
+          }
+          .top-img-list,.bottom-img-list{
+            min-height: 45px;
+            line-height: 45px;
+          }
         }
 
       }

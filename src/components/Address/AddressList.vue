@@ -8,7 +8,7 @@
           <span v-if="item.is_default==1" class="is-default">{{ defaultTagText }}</span>
         </div>
         <div class="address-info">
-          {{ item.province }} {{ item.city }} {{ item.area }} {{ item.address }}
+          {{ item.province }}{{ item.city }}{{ item.area }}{{ item.address }}
         </div>
         <svg-icon class="edit-icon" icon-class="address-edit" @click.stop="editAddress(item)" />
       </div>
@@ -72,16 +72,22 @@ export default {
       text-align: left;
       vertical-align: middle;
       word-wrap: break-word;
-      color: #333;
+      color: #000;
       font-size: 14px;
       padding-right: 1.17333rem;
       .user-info{
         padding-bottom: 10px;
-        span{display: inline-block;
-        vertical-align: top;}
+        span{
+          display: inline-block;
+          vertical-align: bottom;
+        }
         .user-name{
           font-size: 16px;
           margin-right: 10px;
+        }
+        .user-phone{
+          color: #999;
+          font-size: 12px;
         }
         .is-default {
           margin-left: 10px;
@@ -93,6 +99,10 @@ export default {
           display: inline-block;
           vertical-align: top;
         }
+      }
+      .address-info{
+        font-size: 12px;
+        line-height: 18px;
       }
       .edit-icon{
         position: absolute;

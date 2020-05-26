@@ -17,7 +17,7 @@
       <div class="user-info">
         <span>{{ orderInfo.address.name }}</span>
         <span class="user-phone">{{ orderInfo.address.phone }}</span>
-        <span v-if="orderInfo.address.is_default==1" class="is-default">默认地址</span>
+        <span v-if="orderInfo.address.is_default==1" class="is-default">默认</span>
       </div>
       <div class="address-detail">
         <span>{{ orderInfo.address.province }}{{ orderInfo.address.city }}{{ orderInfo.address.area }}{{ orderInfo.address.address }}</span>
@@ -26,7 +26,7 @@
         <svg-icon icon-class="right-arrow" />
       </span>
     </div>
-    <div v-else class="order-address" @click="toAddress">
+    <div v-if="orderType.type==2 && !orderInfo.address.phone" class="order-address" @click="toAddress">
       <span class="site-icon">
         <svg-icon icon-class="order-site" />
       </span>
@@ -215,7 +215,7 @@ export default {
       color: #000000;
       font-size: 12px;
       width: 90%;
-      line-height: 1.5;
+      line-height: 18px;
     }
     .right-arrow{
       position: absolute;
