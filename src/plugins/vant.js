@@ -37,7 +37,8 @@ import {
   Slider,
   List,
   Loading,
-  SwitchCell
+  SwitchCell,
+  RadioGroup, Radio
 } from 'vant'
 
 Vue.use(
@@ -132,4 +133,8 @@ Vue.use(
   Loading
 ).use(
   SwitchCell
+).use(
+  RadioGroup
+).use(
+  Radio
 )

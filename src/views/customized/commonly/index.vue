@@ -50,10 +50,12 @@
           <div v-if="currentTemplate.emb_template_id!==2" class="top-input" :class="{'focus':topFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}">
             <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @click.stop="imgFocus(1)">
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
-              <img v-for="(item,index) in topImg" v-else :key="index" :height="form.topText.fontSize" :src="item" alt="">
+              <div v-else ref="topImgContent" class="top-img-content">
+                <img v-for="(item,index) in topImg" :key="index" :height="form.topText.fontSize" :src="item" alt="">
+              </div>
             </div>
-            <div class="input-box">
-              <input v-if="topFocus==true" v-model="form.topText.content" placeholder="点击输入文字" type="text" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)">
+            <div v-if="topFocus==true" class="input-box">
+              <input v-model="form.topText.content" placeholder="点击输入文字" type="text" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)">
             </div>
           </div>
           <!-- 中间图片 -->
@@ -64,10 +66,12 @@
           <div v-if="currentTemplate.emb_template_id==3" class="bottom-input" :class="{'focus':bottomFocus==true,'topBottom': currentTemplate.emb_template_id==3}">
             <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click.stop="imgFocus(2)">
               <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
-              <img v-for="(item,index) in bottomImg" v-else :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
+              <div v-else ref="bottomImgContent" class="bottom-img-content">
+                <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
+              </div>
             </div>
-            <div class="input-box">
-              <input v-if="bottomFocus==true" v-model="form.bottomText.content" placeholder="点击输入文字" type="text" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)">
+            <div v-if="bottomFocus==true" class="input-box">
+              <input v-model="form.bottomText.content" placeholder="点击输入文字" type="text" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)">
             </div>
           </div>
         </div>
@@ -84,28 +88,7 @@
         <div class="modal-title">上传图片</div>
         <div class="modal-content">
           <van-uploader v-model="patternPicture" multiple :max-count="1" />
-          <!-- <number-input
-            v-model="form.middleImg.width"
-            width="80%"
-            :value="form.middleImg.height"
-            label="图片宽度"
-            placeholder="请输入宽度"
-            :max="middleImgWidth"
-            unit="mm"
-          />
-          <number-input
-            v-model="form.middleImg.height"
-            width="80%"
-            :value="form.middleImg.height"
-            label="图片高度"
-            :max="middleImgHeight"
-            placeholder="请输入高度"
-            unit="mm"
-          /> -->
         </div>
-        <!-- <div class="modal-footer">
-          一次只能上传一张图片
-        </div> -->
         <div class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">确定</van-button>
         </div>
@@ -124,15 +107,6 @@
         <div class="modal-title">修改图片尺寸</div>
         <div class="modal-content">
           <div class="img-size">
-            <!-- <number-input
-              v-model="form.middleImg.width"
-              width="100%"
-              :value="form.middleImg.height"
-              label="图片宽度"
-              placeholder="请输入宽度"
-              :max="middleImgWidth"
-              unit="mm"
-            /> -->
             <number-input
               v-model="form.middleImg.height"
               width="100%"
@@ -307,7 +281,7 @@ export default {
     // 是否启用弧形文字
     openArc(newValue, oldValue) {
       if (newValue === true) {
-        this.imgRotate(this.form.topText.fontSize)
+        this.imgRotate()
       }
     },
     // 监听当前模板变化
@@ -341,7 +315,6 @@ export default {
     // 获取字体列表
     this.getFontList()
     // 弧形文字
-    this.imgRotate(this.form.topText.fontSize)
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
@@ -451,9 +424,9 @@ export default {
     // 输入框失去焦点
     inputBlur(type) {
       type === 1 ? this.topFocus = false : this.bottomFocus = false
-      // if (this.openArc === true) {
-      //   this.imgRotate(this.form.topText.fontSize)
-      // }
+      if (this.openArc === true) {
+        this.imgRotate()
+      }
     },
     // 文字图片点击
     imgFocus(type) {
@@ -518,26 +491,23 @@ export default {
       this.middleVisible = false
     },
     // 图片旋转
-    imgRotate(height) {
+    imgRotate() {
+      console.log(111)
       $(function() {
         $('.top-input span').arctext({
           radius: 360,
-          dir: 5,
+          dir: 1,
           rotate: true,
-          fitText: true,
-          height: height
+          fitText: true
         })
       })
       $(function() {
-        $('.top-img-list').arctext({
+        $('.top-img-list .topImgContent').arctext({
           radius: 180,
           dir: 1,
           rotate: true,
           fitText: false
         })
-      })
-      $('.top-img-list img').each(function() {
-        $(this).attr('height', this.fontSize)
       })
     },
     // 字体选择
@@ -632,6 +602,7 @@ export default {
         bottom_font_scale: bottom_font_scale,
         bottom_font_content: this.bottomImg,
         bottom_font_color: this.form.bottomText.fontColor,
+        custom_template_id: this.currentTemplate.emb_template_id,
         custom_image: this.patternPicture[0] ? this.patternPicture[0].content : ''
       }).then(res => {
         this.loading = false
@@ -649,13 +620,22 @@ export default {
     },
     // 立即购买
     buyNow() {
+      let top_w, bottom_w
+      if (this.currentTemplate.emb_template_id !== 2) {
+        top_w = this.$refs.topImgContent.offsetWidth
+      }
+      if (this.currentTemplate.emb_template_id === 3) {
+        bottom_w = this.$refs.bottomImgContent.offsetWidth
+      }
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].design_info = {
         design_id: this.form.middleImg.design_id,
-        top_font_size: this.form.topText.fontSize,
+        top_font_width: top_w,
+        top_font_height: this.form.topText.fontSize,
         top_font_content: this.form.topText.content,
         top_font_color: this.form.topText.fontColor,
-        bottom_font_size: this.form.bottomText.fontSize,
+        bottom_font_width: bottom_w,
+        bottom_font_height: this.form.bottomText.fontSize,
         bottom_font_content: this.form.bottomText.content,
         bottom_font_color: this.form.bottomText.fontColor,
         font_id: this.fontType,
@@ -770,6 +750,9 @@ export default {
             height: 45px;
             line-height: 45px;
           }
+        }
+        .top-img-content,.bottom-img-content{
+          display: inline;
         }
       }
       .top-img-list,.bottom-img-list{

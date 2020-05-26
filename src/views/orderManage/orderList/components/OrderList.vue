@@ -16,8 +16,7 @@
             <div class="sku-info">{{ goods.sku_name }}</div>
             <div class="price-info">
               <div class="price">
-                <div>商品价：<span>￥{{ goods.current_price.toFixed(2) }}</span></div>
-                <div v-if="goods.design_price">花样价：<span>￥{{ goods.design_price.toFixed(2) }}</span></div>
+                <div>商品总价：<span>￥{{ goods.item_total_price.toFixed(2) }}</span></div>
               </div>
               <div class="number">x{{ goods.buy_num }}</div>
             </div>
@@ -25,7 +24,7 @@
         </div>
       </div>
       <div class="list-operation">
-        <div v-if="item.status==1" class="button-box">
+        <div v-if="item.status==1 || item.status==5 || item.status==6" class="button-box">
           <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
           <van-button color="#ee0a24" round size="small" @click.stop="doPay(item.order_no)">立即支付</van-button>
         </div>

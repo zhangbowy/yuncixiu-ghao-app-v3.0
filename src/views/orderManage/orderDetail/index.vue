@@ -37,8 +37,7 @@
           <div class="price-info">
             <!-- <div class="price">￥<span>{{ goods.current_price.toFixed(2) }}</span></div> -->
             <div class="price">
-              <div>商品价：<span>￥{{ goods.current_price.toFixed(2) }}</span></div>
-              <div v-if="goods.design_price">花样价：<span>￥{{ goods.design_price.toFixed(2) }}</span></div>
+              <div>商品总价：<span>￥{{ goods.item_total_price.toFixed(2) }}</span></div>
             </div>
             <div class="number">x{{ goods.buy_num }}</div>
           </div>
