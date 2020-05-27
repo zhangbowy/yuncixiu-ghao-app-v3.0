@@ -164,7 +164,7 @@ export default {
       options: [
         { name: '微信', icon: 'wechat' }
       ], // 分享选项
-      goodsNumber: 0, // 购买数量
+      goodsNumber: 1, // 购买数量
       id: this.$route.query.goods_id,
       skuCustom: 0
     }
@@ -357,21 +357,22 @@ export default {
     // 去定制
     toCustomized(type) {
       this.skuCustom = type
-      if (!this.skuItem.sku_id && this.skuList.length > 0) {
-        this.changeSkuShow()
-      } else {
-        const goodsInfo = []
-        goodsInfo.push({
-          sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
-          item_id: this.goodsDetail.id,
-          buy_num: this.goodsNumber,
-          shopping_type: 2
-        })
-        store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
-          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
-          this.changeSkuShow()
-        })
-      }
+      this.changeSkuShow()
+      // if (!this.skuItem.sku_id && this.skuList.length > 0) {
+      //   this.changeSkuShow()
+      // } else {
+      //   const goodsInfo = []
+      //   goodsInfo.push({
+      //     sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
+      //     item_id: this.goodsDetail.id,
+      //     buy_num: this.goodsNumber,
+      //     shopping_type: 2
+      //   })
+      //   store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
+      //     this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
+      //     this.changeSkuShow()
+      //   })
+      // }
     },
     // sku去定制按钮
     skutoCustomized() {

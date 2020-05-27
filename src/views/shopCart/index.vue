@@ -5,6 +5,7 @@
         title="购物车"
         :right-text="isEdit==true?'完成':'管理'"
         left-arrow
+        :border="false"
         @click-right="onClickRight"
         @click-left="back"
       />
@@ -200,17 +201,21 @@ export default {
     padding: 50px 0;
   }
   .goods-list{
+    padding: 15px 15px 100px;
     padding-bottom: 100px;
     .goods-item{
       display: flex;
       padding: 15px 20px;
       font-size: 14px;
+      box-shadow: 0px 0 20px #f0efef;
+      border-radius: 10px;
+      margin-bottom: 15px;
       .good-info{
         width: 90%;
         display: flex;
         img{
-          width: 25%;
-          height: 75px;
+          width: 28%;
+          height: 77px;
           margin-left: 10px;
           border-radius: 6px;
         }
@@ -219,13 +224,11 @@ export default {
           padding-left: 10px;
           position: relative;
           .good-sku{
-            padding: 5px 0;
+            margin-top: 5px;
             color: #666;
-            font-size: 14px;
           }
           .good-price{
             width: 100%;
-            padding-top: 5px;
             position: absolute;
             bottom: 0;
             left: 10px;

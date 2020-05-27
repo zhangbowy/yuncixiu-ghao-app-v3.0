@@ -1,7 +1,7 @@
 <template>
   <div class="address-manage">
     <div class="address-navbar">
-      <top-bar title="地址列表" />
+      <top-bar title="地址列表" :border="false" />
     </div>
     <div class="addrss-content">
       <address-list
@@ -141,7 +141,6 @@ export default {
 
 <style lang="scss" scoped>
 .address-manage{
-  background: #f5f5f5;
   min-height: 100vh;
   .address-navbar{
     position: sticky;

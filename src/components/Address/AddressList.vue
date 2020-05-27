@@ -66,6 +66,7 @@ export default {
     padding: 12px;
     background-color: #fff;
     border-radius: 0.21333rem;
+    box-shadow: 0px 0 20px #f0efef;
     .address-left-box{
       position: relative;
       overflow: hidden;

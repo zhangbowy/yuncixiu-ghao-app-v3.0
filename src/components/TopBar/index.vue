@@ -6,6 +6,7 @@
       :left-text="leftText"
       :right-text="rightText"
       left-arrow
+      :border="border"
       @click-left="onClickLeft"
     />
   </div>
@@ -25,6 +26,10 @@ export default {
     rightText: {
       type: String,
       default: ''
+    },
+    border: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {

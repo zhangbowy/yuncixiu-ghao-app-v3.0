@@ -4,8 +4,8 @@
       <div class="list-item-header">
         <div class="order-number">订单号： <span>{{ item.order_no }}</span></div>
         <div class="order-status">
-          {{ item._status }}
-          <!-- {{ item.status==1?'待支付': item.status==2?'待发货':item.status==3?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }} -->
+          <!-- {{ item._status }} -->
+          {{ item.status==1?'待支付': item.status==2?'待发货':item.status==3||item.status==7||item.status==8||item.status==9||item.status==10?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }}
         </div>
       </div>
       <div class="goods-info" @click="toDetail(item.order_no)">
@@ -16,29 +16,39 @@
             <div class="sku-info">{{ goods.sku_name }}</div>
             <div class="price-info">
               <div class="price">
-                <div>商品总价：<span>￥{{ goods.item_total_price.toFixed(2) }}</span></div>
+                <div>￥<span>{{ goods.item_total_price.toFixed(2) }}</span></div>
               </div>
               <div class="number">x{{ goods.buy_num }}</div>
             </div>
           </div>
         </div>
       </div>
+      <div class="statistics">
+        <span>共计{{ item.order_item.length }}件商品 合计:￥</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span>(含运费￥{{ item.express_amount.toFixed(2) }})</span>
+      </div>
       <div class="list-operation">
-        <div v-if="item.status==1 || item.status==5 || item.status==6" class="button-box">
-          <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
-          <van-button color="#ee0a24" round size="small" @click.stop="doPay(item.order_no)">立即支付</van-button>
+        <div v-if="item.status==1 || item.status==5" class="button-box">
+          <van-button color="#999" round size="mini" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
+          <van-button color="#ee0a24" round size="mini" @click.stop="doPay(item.order_no)">立即支付</van-button>
         </div>
         <div v-if="item.status==3" class="button-box">
-          <van-button color="#ee0a24" round size="small" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
+          <van-button color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
+        </div>
+        <div v-if="item.status==6" class="button-box">
+          <van-button color="#999" round size="mini" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
+          <van-button color="#ee0a24" round size="mini" plain @click="replayOrder(item.order_no)">回复报价</van-button>
+          <van-button color="#ee0a24" round size="mini" @click.stop="doPay(item.order_no)">立即支付</van-button>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import { Dialog, Toast } from 'vant'
 import { orderApi } from '@/api/order'
+
 export default {
   props: {
     data: {
@@ -52,7 +62,8 @@ export default {
     },
     cancelOrder(order_no) {
       Dialog.confirm({
-        message: '是否取消该订单？'
+        message: '是否取消该订单？',
+        confirmButtonColor: '#df2525'
       }).then(() => {
         orderApi.orderCancel({
           order_no: order_no
@@ -65,7 +76,8 @@ export default {
     },
     confirmRceipt(order_no) {
       Dialog.confirm({
-        message: '是否确认收货？'
+        message: '是否确认收货？',
+        confirmButtonColor: '#df2525'
       }).then(() => {
         orderApi.confirmReceived({
           order_no: order_no
@@ -75,6 +87,9 @@ export default {
       }).catch(() => {
         Toast('您点击了取消')
       })
+    },
+    replayOrder(order_no) {
+      this.$emit('change', { name: 'replay', order_no: order_no })
     },
     toDetail(order_no) {
       this.$router.replace({ path: `/orderDetail?order_no=${order_no}` })
@@ -126,17 +141,21 @@ export default {
           width: 73%;
           font-size: 14px;
           padding-left: 10px;
-          color: #999;
+          color: #666;
           position: relative;
           height: 80px;
           .goods-name{
-            padding: 0 0 10px;
-            font-size: 16px;
+            margin-top: 5px;
+            font-size: 14px;
             color: #000;
-            overflow: hidden;
-            -ms-text-overflow: ellipsis;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            display:-webkit-box;
+            -webkit-box-orient:vertical;
+            -webkit-line-clamp:2;
+          }
+          .sku-info{
+            margin-top: 5px;
           }
           .price-info{
             display: flex;
@@ -156,6 +175,7 @@ export default {
               width: 80%;
               font-size: 12px;
               padding: 2px 0;
+              color: #df2525;
               span{
                 color: #df2525;
                 font-size: 14px;
@@ -171,16 +191,34 @@ export default {
         }
       }
     }
+    .statistics{
+      font-size: 12px;
+      color: #000;
+      text-align: right;
+      padding: 10px;
+      border-bottom: 1px solid #f5f5f5;
+      span{
+        display: inline-block;
+      }
+      .pay-amound{
+        font-size: 16px;
+        color: #df2525;
+      }
+    }
     .list-operation{
       text-align: right;
       .button-box{
         padding: 10px;
-        height: 30px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
         button{
-        vertical-align: top;
-        margin-left: 10px;
-        padding: 0 10px;
-      }
+          vertical-align: top;
+          margin-left: 10px;
+          padding: 5px 10px 2px;
+          font-size: 12px;
+          height: auto;
+        }
       }
 
     }

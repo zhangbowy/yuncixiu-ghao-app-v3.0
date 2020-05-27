@@ -622,10 +622,16 @@ export default {
     buyNow() {
       let top_w, bottom_w
       if (this.currentTemplate.emb_template_id !== 2) {
-        top_w = this.$refs.topImgContent.offsetWidth
+        if (typeof this.$refs.topImgContent !== 'undefined') {
+          top_w = this.$refs.topImgContent.offsetWidth
+        } else {
+          top_w = 0
+        }
       }
       if (this.currentTemplate.emb_template_id === 3) {
-        bottom_w = this.$refs.bottomImgContent.offsetWidth
+        if (typeof this.$refs.topImgContent !== 'undefined') {
+          bottom_w = this.$refs.bottomImgContent.offsetWidth
+        }
       }
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].design_info = {

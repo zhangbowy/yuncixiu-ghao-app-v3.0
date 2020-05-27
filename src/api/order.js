@@ -65,5 +65,17 @@ export const orderApi = {
       method: 'post',
       data
     })
+  },
+
+  /**
+   * 回复报价
+   * @param {*order_no buyer_message price} data
+   */
+  askOrder(data) {
+    return request({
+      url: '/order/askOrder',
+      method: 'post',
+      data
+    })
   }
 }

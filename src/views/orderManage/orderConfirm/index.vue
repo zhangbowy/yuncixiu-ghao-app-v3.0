@@ -73,7 +73,7 @@
       />
     </div>
     <div class="submit-order">
-      <van-submit-bar :price="orderInfo.total_price*100" button-text="提交订单" @submit="onSubmit" />
+      <van-submit-bar :price="orderInfo.total_price*100" :loading="submitLaoding" button-text="提交订单" @submit="onSubmit" />
     </div>
   </div>
 </template>
@@ -92,6 +92,7 @@ export default {
     return {
       loading: false,
       show: false,
+      submitLaoding: false,
       actions: [
         { name: '实体店铺', type: 1 },
         { name: '快递', type: 2 }
@@ -133,12 +134,14 @@ export default {
       })
     },
     onSubmit() {
+      this.submitLaoding = true
       orderApi.orderPay({
         cart_list: JSON.parse(this.order.cartList),
         address_id: this.orderInfo.address.address_id,
         buyer_message: this.message,
         shopping_type: this.orderInfo.shopping_type
       }).then(res => {
+        this.submitLaoding = false
         if (this.$route.query.from === 'shop_cart') {
           store.dispatch('shopCart/removeCartList')
         }
@@ -248,6 +251,14 @@ export default {
         font-size: 16px;
         padding-left: 10px;
         .good-name{
+          margin-top: 5px;
+          font-size: 14px;
+          color: #000;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          display:-webkit-box;
+          -webkit-box-orient:vertical;
+          -webkit-line-clamp:2;
           .order-type{
             margin-left: 10px;
             background: crimson;

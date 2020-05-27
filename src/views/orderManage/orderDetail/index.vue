@@ -37,12 +37,18 @@
           <div class="price-info">
             <!-- <div class="price">￥<span>{{ goods.current_price.toFixed(2) }}</span></div> -->
             <div class="price">
-              <div>商品总价：<span>￥{{ goods.item_total_price.toFixed(2) }}</span></div>
+              <div>￥<span>{{ goods.item_total_price.toFixed(2) }}</span></div>
             </div>
             <div class="number">x{{ goods.buy_num }}</div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="order-details">
+      <div class="order-details-item"><span>订单编号：</span>{{ orderDetail.order_no }}</div>
+      <div class="order-details-item"><span>下单时间：</span>{{ orderDetail.created_at }}</div>
+      <div class="order-details-item"><span>订单类型：</span>{{ orderDetail.order_type==1?'普通订单':orderDetail.order_type==2?'一般定制':orderDetail.order_type==3?'特殊定制':orderDetail.order_type==4?'手绘':'询价' }}</div>
+      <!-- <div class="order-details-item"><span>付款时间：</span>{{ orderDetail.created_at }}</div> -->
     </div>
     <div v-if="orderDetail.buyer_message!=''" class="buyer-message">
       <span>买家留言：</span>
@@ -56,12 +62,7 @@
         <p>需付款：<span>￥<b>{{ orderDetail.pay_amount.toFixed(2) }}</b></span></p>
       </div>
     </div>
-    <div class="order-details">
-      <div class="order-details-item">订单编号：{{ orderDetail.order_no }}</div>
-      <div class="order-details-item">下单时间：{{ orderDetail.created_at }}</div>
-      <div class="order-details-item">订单类型：{{ orderDetail.order_type==1?'普通订单':orderDetail.order_type==2?'一般定制':orderDetail.order_type==3?'特殊定制':orderDetail.order_type==4?'手绘':'询价' }}</div>
-      <div class="order-details-item">付款时间：{{ orderDetail.created_at }}</div>
-    </div>
+
     <div v-if="orderDetail.status!=-2" class="order-footer-btn">
       <div v-if="orderDetail.status==1">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
@@ -72,6 +73,7 @@
         <van-button color="#ee0a24" round size="small" @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
       </div>
     </div>
+
     <!-- 物流详情点击弹框 -->
     <van-popup v-model="showGoodsCheck" :style="{ width: '80%', borderRadius: '12px' }">
       <div class="trace-title">选择商品：</div>
@@ -149,13 +151,14 @@ export default {
 
 <style lang="scss" scoped>
 .order-detail{
+  padding-bottom: 50px;
   .top-bar{
     position: sticky;
     top: 0;
   }
   .detail-header{
     border-bottom: 10px solid #f5f5f5;
-    font-size: 16px;
+    font-size: 14px;
     padding: 20px 16px;
     color: #fff;
     background: linear-gradient(to top, #ff6034, #ee0a24);
@@ -241,14 +244,21 @@ export default {
         flex: 1;
         font-size: 14px;
         padding-left: 10px;
-        color: #999;
+        color: #666;
         position: relative;
         height: 80px;
         .goods-name{
-          padding: 0 0 10px;
-          font-size: 16px;
+          margin-top: 5px;
+          font-size: 14px;
           color: #000;
-          overflow: hidden;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          display:-webkit-box;
+          -webkit-box-orient:vertical;
+          -webkit-line-clamp:2;
+        }
+        .sku-info{
+          margin-top: 5px;
         }
         .price-info{
           display: flex;
@@ -260,10 +270,6 @@ export default {
           width: 100%;
           padding-right: 10px;
           box-sizing: border-box;
-          // .price{
-          //   width: 50%;
-          //   color: #ee0a24;
-          // }
           >div{
             display: inline-block;
             color: #666;
@@ -272,6 +278,7 @@ export default {
             width: 80%;
             font-size: 12px;
             padding: 2px 0;
+            color: #df2525;
             span{
               color: #df2525;
               font-size: 14px;
@@ -288,11 +295,16 @@ export default {
     }
   }
   .order-details{
-    padding: 20px 16px;
-    font-size: 14px;
-    padding-bottom: 45px;
+    padding: 10px 16px;
+    font-size: 12px;
+    border-bottom: 10px solid #f5f5f5;
     .order-details-item{
       padding: 5px 0;
+      color: #323233;
+      span{
+        color: #323233;
+        padding-right: 10px;
+      }
     }
   }
   .order-price-info{
@@ -303,7 +315,6 @@ export default {
       font-size: 12px;
       text-align: right;
       padding: 10px 16px;
-      border-bottom: 10px solid #f5f5f5;
       p{
         margin: 0;
         span{
@@ -319,12 +330,10 @@ export default {
     position: fixed;
     left: 0;
     bottom: 0;
-    height: 50px;
-    line-height: 50px;
     width: 100%;
     box-sizing: border-box;
     text-align: right;
-    padding: 0 16px;
+    padding: 10px 16px;
     background: #fff;
     z-index: 999;
     button{
