@@ -492,7 +492,6 @@ export default {
     },
     // 图片旋转
     imgRotate() {
-      console.log(111)
       $(function() {
         $('.top-input span').arctext({
           radius: 360,
@@ -633,6 +632,7 @@ export default {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
         }
       }
+      // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].design_info = {
         design_id: this.form.middleImg.design_id,

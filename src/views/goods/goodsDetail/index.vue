@@ -54,7 +54,7 @@
               <van-cell title="选择数量">
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template>
-                  <van-stepper v-model="goodsNumber" :min="goodsDetail.min_buy" :max="goodsDetail.max_buy" input-width="30px" button-size="22px" />
+                  <van-stepper v-model="goodsNumber" :min="1" :max="skuItem.num?skuItem.num: goodsDetail.sum_stock" input-width="30px" button-size="22px" />
                 </template>
               </van-cell>
             </div>
@@ -430,6 +430,7 @@ export default {
       img{
         width: 100%;
         height: 335px;
+        display: block;
       }
     }
     .goods-info{

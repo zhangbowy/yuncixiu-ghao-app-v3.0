@@ -56,8 +56,8 @@
       </div>
     </div>
     <div class="statistical">
-      <van-cell title="小计" :value="`￥${orderInfo.item_price}`" />
-      <van-cell v-if="orderType.type==2" title="运费" :value="`￥${orderInfo.express_amount}`" />
+      <van-cell title="小计" :value="`￥${orderInfo.item_price?orderInfo.item_price: 0.00}`" />
+      <van-cell v-if="orderType.type==2" title="运费" :value="`￥${orderInfo.express_amount?orderInfo.express_amount:0.00}`" />
     </div>
     <div class="order-mask">
       <van-field
@@ -73,7 +73,7 @@
       />
     </div>
     <div class="submit-order">
-      <van-submit-bar :price="orderInfo.total_price*100" :loading="submitLaoding" button-text="提交订单" @submit="onSubmit" />
+      <van-submit-bar :price="orderInfo.total_price?orderInfo.total_price*100:0" :loading="submitLaoding" button-text="提交订单" @submit="onSubmit" />
     </div>
   </div>
 </template>
