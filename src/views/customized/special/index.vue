@@ -42,7 +42,7 @@
           name="colorValidator"
           placeholder="建议小于等于12色"
           :rules="[
-            { required: true, message: '请填写您的手机号码！' },
+            { required: true, message: '请填写颜色数！' },
           ]"
         />
         <van-field
@@ -51,7 +51,7 @@
           name="timeValidator"
           placeholder="默认5个工作日"
           :rules="[
-            { required: true, message: '请填写您的手机号码！' },
+            { required: true, message: '请填写时间！' },
           ]"
         />
         <van-field name="switch" label="包含商品">
