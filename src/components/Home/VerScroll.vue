@@ -4,7 +4,7 @@
     <div ref="wrapper" class="wrapper">
       <ul ref="cont" class="content">
         <li v-for="(item,index) in data" :key="item.category_name+index" class="cont-item">
-          <img :src="item.logo" class="cont-img" alt="" @click="toCategory(item.id)">
+          <img v-lazy="item.logo" class="cont-img" alt="" @click="toCategory(item.id)">
           <p>{{ item.category_name }}</p>
         </li>
       </ul>

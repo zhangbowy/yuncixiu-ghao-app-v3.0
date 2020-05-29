@@ -6,7 +6,7 @@
       </div>
       <div class="goods-content">
         <div v-for="(item,index) in data" :key="item.id+index" class="goods-item" @click="toDetail(item.id)">
-          <img :src="item.src" alt="">
+          <img v-lazy="item.src" alt="">
           <p class="goods-name">{{ item.name }}</p>
           <p class="goods-price"><span>￥{{ item.price }}</span> </p>
         </div>

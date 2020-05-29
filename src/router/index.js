@@ -25,12 +25,12 @@ const constantRoutes = [
     component: () => import('@/views/shopCart/index'),
     meta: { title: '购物车', showTabbar: true }
   },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/authorize/login/login'),
-    meta: { title: '用户登录' }
-  },
+  // {
+  //   path: '/login',
+  //   name: 'Login',
+  //   component: () => import('@/views/authorize/login/login'),
+  //   meta: { title: '用户登录' }
+  // },
   {
     path: '/register',
     name: 'Register',

@@ -16,7 +16,7 @@
           <div v-for="(item,index) in cartList" :key="index" class="goods-item">
             <van-checkbox :name="item.sku_id" checked-color="#ff6034" />
             <div class="good-info">
-              <img :src="item.images" alt="" width="100">
+              <img v-lazy="item.images" alt="" width="100">
               <div class="good-info-right">
                 <div class="good-name">{{ item.goods_info.name }}</div>
                 <div class="good-sku">规格：<span v-for="sku in item.skus" :key="sku.k">{{ sku.v }} </span></div>

@@ -166,7 +166,8 @@ export default {
       ], // 分享选项
       goodsNumber: 1, // 购买数量
       id: this.$route.query.goods_id,
-      skuCustom: 0
+      skuCustom: 0,
+      instance: {}
     }
   },
   watch: {
@@ -242,13 +243,12 @@ export default {
     },
     // 预览图片
     preview(i) {
-      ImagePreview(
-        {
-          images: this.goodsDetail.images,
-          startPosition: i
-        }
-      )
+      this.instance = ImagePreview({
+        images: this.goodsDetail.images,
+        startPosition: i
+      })
     },
+
     // 显示sku列表
     changeSkuShow() {
       this.showSku = !this.showSku

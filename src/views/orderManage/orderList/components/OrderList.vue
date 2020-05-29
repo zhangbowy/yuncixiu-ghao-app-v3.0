@@ -10,7 +10,7 @@
       </div>
       <div class="goods-info" @click="toDetail(item.order_no)">
         <div v-for="(goods,index) in item.order_item" :key="`${index}-${goods.item_id}`" class="goods-item">
-          <img :src="goods.image" alt="">
+          <img v-lazy="goods.image" alt="">
           <div class="goods-info-right">
             <div class="goods-name">{{ goods.name }}</div>
             <div class="sku-info">{{ goods.sku_name }}</div>

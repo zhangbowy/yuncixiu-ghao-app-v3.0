@@ -244,8 +244,8 @@ export default {
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].shopping_type = 4
       goodsInfo[0].design_info = {
-        design_width: this.width,
-        design_height: this.height,
+        design_width: this.width ? this.width : this.cropInfo.width,
+        design_height: this.height ? this.height : this.cropInfo.height,
         preview_image: this.previewImg,
         draw_image: this.resultImg,
         design_area_image: this.design_area_image

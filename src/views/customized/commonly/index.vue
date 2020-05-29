@@ -4,7 +4,19 @@
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
-            <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" />
+            <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
+            <van-dropdown-item ref="fontType" title="字体">
+              <van-cell v-for="item in fontTypeOptions" :key="item.font_id" clickable class="font-dropdown" @click="fontChange(item.font_id)">
+                <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+                <template #title>
+                  <span class="custom-title" :class="{'active':fontType==item.font_id }">{{ item.font_name }}</span>
+                  <img :src="item.font_content['0']" alt="" class="font-icon">
+                </template>
+                <template #right-icon>
+                  <van-icon :name="fontType==item.font_id?'success': ''" color="#1989fa" style="line-height: inherit;" />
+                </template>
+              </van-cell>
+            </van-dropdown-item>
             <van-dropdown-item ref="fontColor" title="颜色">
               <van-tabs type="card" color="#333" background="#fff">
                 <van-tab title="标准色">
@@ -332,14 +344,8 @@ export default {
     // 获取字体列表
     getFontList() {
       designApi.getFontList().then(res => {
-        res.data.map(item => {
-          this.fontTypeOptions.push({
-            text: item.font_name,
-            value: item.font_id,
-            content: item.font_content
-          })
-          this.fontType = res.data[0].font_id
-        })
+        this.fontTypeOptions = res.data
+        this.fontType = res.data[0].font_id
       })
     },
     // 获取定制模板
@@ -511,6 +517,7 @@ export default {
     },
     // 字体选择
     fontChange(value) {
+      this.fontType = value
       if (this.topInput === true) {
         this.form.topText.fontType = value
         this.getFontTop()
@@ -519,6 +526,7 @@ export default {
         this.form.bottomText.fontType = value
         this.getFontBottom()
       }
+      this.$refs.fontType.toggle()
     },
     // 图片颜色选择
     imgColorChnage(e) {
@@ -681,6 +689,21 @@ export default {
         align-items: center;
         width: 100%;
         justify-content: space-around;
+      }
+      .font-dropdown{
+        .custom-title{
+          display: inline-block;
+          width: 130px
+        }
+        .custom-title.active{
+          color: #1989fa;
+        }
+        .font-icon{
+          height: 30px;
+          margin-left: 10px;
+          display: inline-block;
+          vertical-align: middle;
+        }
       }
     }
     .color-box{

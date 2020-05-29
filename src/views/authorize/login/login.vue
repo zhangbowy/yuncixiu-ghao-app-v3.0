@@ -13,7 +13,7 @@ export default {
     }
   },
   created() {
-    this.getCode()
+    // this.getCode()
   },
   methods: {
     getCode() { // 非静默授权，第一次有弹框

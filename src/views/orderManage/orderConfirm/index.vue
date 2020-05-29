@@ -45,10 +45,7 @@
           <div class="good-sku">已选规格：{{ item.sku_name }} </div>
           <div class="good-bottom">
             <div class="price">
-              <div>商品总价：<span>￥{{ item.item_total_price.toFixed(2) }}</span></div>
-              <!-- <div v-if="item.design_price">花样价：<span>￥{{ item.design_price.toFixed(2) }}</span></div>
-              <div v-if="item.emb_template_price">定制费：<span>￥{{ item.emb_template_price.toFixed(2) }}</span></div>
-              <div v-if="item.special_custom_price">定制费：<span>￥{{ item.special_custom_price.toFixed(2) }}</span></div> -->
+              <div>￥<span>{{ item.item_total_price.toFixed(2) }}</span></div>
             </div>
             <div class="number">x{{ item.buy_num }}</div>
           </div>
@@ -285,8 +282,8 @@ export default {
           width: 80%;
           font-size: 12px;
           padding: 2px 0;
+           color: #df2525;
           span{
-             color: #df2525;
             font-size: 14px;
           }
         }

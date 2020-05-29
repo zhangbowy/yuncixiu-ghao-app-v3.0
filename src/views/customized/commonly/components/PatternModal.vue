@@ -5,7 +5,7 @@
       <div class="modal-content figure-content">
         <div class="figure-list">
           <div v-for="(item,index) in figureList" :key="index" class="figure-item" :class="{checked: form.middleImg.design_id == item.design_id}">
-            <img :src="item.prev_png_path" alt="" @click="checkFigureItem(item)">
+            <img v-lazy="item.prev_png_path" alt="" @click="checkFigureItem(item)">
           </div>
         </div>
       </div>
