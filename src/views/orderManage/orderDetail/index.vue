@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="goods-info">
-      <div v-for="(goods,index) in orderDetail.order_item" :key="`${index}-${goods.item_id}`" class="goods-item">
+      <div v-for="(goods,index) in orderDetail.order_item" :key="`${index}-${goods.item_id}`" class="goods-item" @click="toGoodsDetail(goods.item_id)">
         <img :src="goods.image" alt="">
         <div class="goods-info-right">
           <div class="goods-name">{{ goods.name }}</div>
@@ -86,7 +86,8 @@
 
 <script>
 import { orderApi } from '@/api/order'
-import { Dialog } from 'vant'
+import { Dialog, Toast } from 'vant'
+import { wxPay } from '@/utils/wxPay'
 export default {
 
   data() {
@@ -113,8 +114,24 @@ export default {
         this.orderDetail = res.data
       })
     },
-    doPay(id) {
-
+    doPay(order_no) {
+      orderApi.orderPay({
+        order_no: order_no
+      }).then(res => {
+        wxPay(res.data, (success) => {
+          // 支付成功回调
+          Toast('支付成功')
+          this.getOrderDetail(this.order_no)
+        }, () => {
+          // 支付失败回调
+          Toast('支付失败')
+        })
+      }).catch(() => {
+        Toast('支付失败')
+      })
+    },
+    toGoodsDetail(id) {
+      this.$router.push({ path: `/goodsDetail?goods_id=${id}` })
     },
     // 取消订单
     cancelOrder(order_no) {

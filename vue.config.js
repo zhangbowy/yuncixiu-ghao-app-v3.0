@@ -11,7 +11,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || '云刺绣商城' // 页面标题
+const name = defaultSettings.title || '云易绣商城' // 页面标题
 
 // 如果端口设置为80，
 // 使用管理员权限执行命令行。

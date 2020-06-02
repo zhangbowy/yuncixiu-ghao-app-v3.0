@@ -12,12 +12,12 @@
     </div>
     <div class="content">
       <!-- 商品列表 -->
-      <goods-list :data="goodsList" />
+      <goods-list v-if="goodsList.length>0" :data="goodsList" />
       <!-- 加载更多 -->
-      <div v-if="goodsList.length>10" class="load-more">
+      <div v-if="goodsList.length>=12" class="load-more">
         <infinite-loading @infinite="loadMore">
-          <span slot="no-results" style="padding-bottom:50px;">没有更多了～</span>
-          <span slot="no-more">没有更多了～</span>
+          <span slot="no-results" style="padding-bottom:50px; font-size: 14px">没有更多了～</span>
+          <span slot="no-more" style="padding-bottom:50px; font-size: 14px">没有更多了～</span>
         </infinite-loading>
       </div>
       <div v-if="goodsList.length==0">
@@ -44,7 +44,7 @@ export default {
       keyWords: '', // 搜索关键词
       category_id: '', // 分类id
       page: 1,
-      pagesize: 10
+      pagesize: 12
     }
   },
   created() {
@@ -56,8 +56,8 @@ export default {
       goodsApi.getGoodsList({
         category_id: id || '',
         name: this.keyWords,
-        page: 1,
-        pagesize: this.pagesize
+        currentPage: 1,
+        pageSize: this.pagesize
       }).then(res => {
         if (res.code === 0) {
           this.goodsList = res.data.data
@@ -65,16 +65,16 @@ export default {
       })
     },
     loadMore($state) {
+      this.page++
       goodsApi.getGoodsList({
         category_id: this.category_id || '',
         name: this.keyWords,
-        page: this.page,
+        currentPage: this.page,
         pagesize: this.pagesize
       }).then(res => {
         if (res.code === 0) {
           if (res.data) {
             this.goodsList = this.goodsList.concat(res.data.data)
-            this.page++
             if (res.data.data.length === 10) {
               $state.loaded() // 加载完成
             } else {

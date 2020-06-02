@@ -92,7 +92,6 @@ const actions = {
   checkLogin({ commit, state }) {
     return new Promise((resolve, reject) => {
       checkLogin().then((response) => {
-        debugger
         if (response.code === 402) {
           resolve(false)
         } else {

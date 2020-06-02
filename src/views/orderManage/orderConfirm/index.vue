@@ -42,7 +42,7 @@
         <div class="good-img"><img :src="item.image" alt=""></div>
         <div class="good-right">
           <div class="good-name">{{ item.name }}<span v-if="item._order_type" class="order-type">{{ item._order_type }}</span></div>
-          <div class="good-sku">已选规格：{{ item.sku_name }} </div>
+          <div v-if="item.sku_id!=0" class="good-sku">已选规格：{{ item.sku_name }} </div>
           <div class="good-bottom">
             <div class="price">
               <div>￥<span>{{ item.item_total_price.toFixed(2) }}</span></div>
@@ -81,6 +81,7 @@ import { orderApi } from '@/api/order'
 import { mapState } from 'vuex'
 import store from '@/store'
 import { Toast } from 'vant'
+import { wxPay } from '@/utils/wxPay'
 export default {
   components: {
     TopBar
@@ -130,20 +131,53 @@ export default {
         Toast('网络异常!')
       })
     },
+    // 提交订单，创建订单
     onSubmit() {
       this.submitLaoding = true
-      orderApi.orderPay({
+      orderApi.orderCreate({
         cart_list: JSON.parse(this.order.cartList),
         address_id: this.orderInfo.address.address_id,
         buyer_message: this.message,
-        shopping_type: this.orderInfo.shopping_type
+        shopping_type: this.orderInfo.order_type
       }).then(res => {
         this.submitLaoding = false
-        if (this.$route.query.from === 'shop_cart') {
-          store.dispatch('shopCart/removeCartList')
-        }
-        store.dispatch('order/resetState')
-        this.$router.replace({ path: '/orderList' })
+        this.orderPay(res.data.order_no)
+        // if (this.$route.query.from === 'shop_cart') {
+        //   store.dispatch('shopCart/removeCartList')
+        // }
+        // store.dispatch('order/resetState')
+        // this.$router.replace({ path: '/orderList' })
+      })
+    },
+    // 订单支付
+    orderPay(order_no) {
+      orderApi.orderPay({
+        order_no: order_no
+      }).then(res => {
+        wxPay(res.data, (success) => {
+          // 支付成功回调
+          console.log(success)
+          Toast('支付成功')
+          setTimeout(() => {
+            if (this.$route.query.from === 'shop_cart') {
+              store.dispatch('shopCart/removeCartList')
+            }
+            store.dispatch('order/resetState')
+            this.$router.replace({ path: '/orderList' })
+          }, 1000)
+        }, () => {
+          // 支付失败回调
+          Toast('取消支付')
+          setTimeout(() => {
+            if (this.$route.query.from === 'shop_cart') {
+              store.dispatch('shopCart/removeCartList')
+            }
+            store.dispatch('order/resetState')
+            this.$router.replace({ path: '/orderList' })
+          }, 1000)
+        })
+      }).catch(() => {
+        Toast('支付失败')
       })
     },
     toAddress() {

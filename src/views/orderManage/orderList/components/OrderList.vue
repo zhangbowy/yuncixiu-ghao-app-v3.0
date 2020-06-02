@@ -5,7 +5,7 @@
         <div class="order-number">订单号： <span>{{ item.order_no }}</span></div>
         <div class="order-status">
           <!-- {{ item._status }} -->
-          {{ item.status==1?'待支付': item.status==2?'待发货':item.status==3||item.status==7||item.status==8||item.status==9||item.status==10?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }}
+          {{ item.status==1?'待支付': item.status==2||item.status==7||item.status==8||item.status==9||item.status==10?'待发货':item.status==3?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }}
         </div>
       </div>
       <div class="goods-info" @click="toDetail(item.order_no)">
@@ -13,7 +13,7 @@
           <img v-lazy="goods.image" alt="">
           <div class="goods-info-right">
             <div class="goods-name">{{ goods.name }}</div>
-            <div class="sku-info">{{ goods.sku_name }}</div>
+            <div v-if="goods.sku_id!=0" class="sku-info">{{ goods.sku_name }}</div>
             <div class="price-info">
               <div class="price">
                 <div>￥<span>{{ goods.item_total_price.toFixed(2) }}</span></div>
@@ -48,6 +48,7 @@
 <script>
 import { Dialog, Toast } from 'vant'
 import { orderApi } from '@/api/order'
+import { wxPay } from '@/utils/wxPay'
 
 export default {
   props: {
@@ -57,8 +58,21 @@ export default {
     }
   },
   methods: {
-    doPay(id) {
-
+    doPay(order_no) {
+      orderApi.orderPay({
+        order_no: order_no
+      }).then(res => {
+        wxPay(res.data, (success) => {
+          // 支付成功回调
+          Toast('支付成功')
+          this.$emit('getList')
+        }, () => {
+          // 支付失败回调
+          Toast('支付失败')
+        })
+      }).catch(() => {
+        Toast('支付失败')
+      })
     },
     cancelOrder(order_no) {
       Dialog.confirm({

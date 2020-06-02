@@ -6,13 +6,15 @@
         shape="round"
         background="#fff"
         placeholder="请输入搜索关键词"
+        disabled
+        @click="toSearch"
       />
     </div>
     <!-- 轮播 -->
     <div class="index-banner">
       <van-swipe class="my-swipe" :autoplay="3000" :indicator-color="indicatorColor">
         <van-swipe-item v-for="(image, index) in indexData.slider" :key="index">
-          <img v-lazy="image.image_path">
+          <img v-lazy="image.image_path" @click="linkJump(image.link)">
         </van-swipe-item>
       </van-swipe>
     </div>
@@ -31,7 +33,7 @@
     <!-- 样本 -->
     <div class="sample-box">
       <div v-for="(item,index) in samples" :key="index+item.src" class="sample-box-item">
-        <img :src="item.src" alt="">
+        <img :src="item.src" alt="" @click="patternDialog">
       </div>
     </div>
     <!-- 热销商品 -->
@@ -44,6 +46,7 @@
 import HotGoods from '@/components/Home/HotGoods'
 import VerScroll from '@/components/Home/VerScroll'
 import { indexApi } from '@/api/home'
+import { Dialog } from 'vant'
 export default {
   components: {
     HotGoods,
@@ -107,6 +110,22 @@ export default {
     getIndex() {
       indexApi.getIndex().then(res => {
         this.indexData = res.data
+      })
+    },
+    toSearch() {
+      this.$router.push({ path: `/goodsList` })
+    },
+    linkJump(url) {
+    },
+    patternDialog() {
+      Dialog.confirm({
+        title: '提示',
+        message: '请先选择定制商品，再选择定制花样。',
+        confirmButtonText: '选择商品',
+        confirmButtonColor: '#df2525'
+      }).then(() => {
+        this.$router.push({ path: '/goodsList' })
+      }).catch(() => {
       })
     }
   }

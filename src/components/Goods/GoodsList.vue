@@ -3,7 +3,7 @@
     <div class="recommend-goods">
       <div class="goods-list-content">
         <div v-for="(item,index) in data" :key="`${index}-${item.id}`" class="goods-item" @click="toDetail(item.id)">
-          <img :src="item.thumb_image_path" alt="">
+          <img v-lazy="item.thumb_image_path" alt="">
           <p class="goods-name">{{ item.name }}</p>
           <p class="goods-price"><span>￥{{ item.current_price.toFixed(2) }}</span> <span class="old-price">￥{{ item.old_price.toFixed(2) }}</span></p>
         </div>
@@ -45,7 +45,7 @@ export default {
         width: 48%;
         border: 1px solid #f5f5f5;
         box-shadow: 0px 10px 20px #f3f3f3;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         border-radius: 6px;
         img{
           width: 100%;

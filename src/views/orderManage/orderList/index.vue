@@ -84,10 +84,10 @@ export default {
         type: 1
       }, {
         name: '待发货',
-        type: 2
+        type: '2,7,8,9,10'
       }, {
         name: '待收货',
-        type: '3,7,8,9,10'
+        type: '3'
       }, {
         name: '已完成',
         type: 4
@@ -102,7 +102,6 @@ export default {
         type: -2
       }],
       orderList: [],
-      total: '',
       page: 1,
       pagesize: 10,
       order_no: '',
@@ -126,7 +125,6 @@ export default {
         status: this.tabs[this.active].type
       }).then(res => {
         this.orderList = res.data.data
-        this.total = res.data.count
         setTimeout(() => {
           this.isLoading = false
         }, 1000)

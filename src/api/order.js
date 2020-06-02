@@ -12,14 +12,22 @@ export const orderApi = {
       data
     })
   },
+  // 订单创建
+  orderCreate(data) {
+    return request({
+      url: '/order/create',
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      data
+    })
+  },
   // 订单支付
   orderPay(data) {
     return request({
       url: '/order/pay',
       method: 'post',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
       data
     })
   },

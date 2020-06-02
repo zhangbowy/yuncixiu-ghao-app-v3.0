@@ -97,7 +97,6 @@ export default {
       loading: false,
       confirmModal: false, // 完成设计
       previewImg: '', // 预览图片
-      canvasTxt: null,
       width: '', // 手绘图宽度
       height: '', // 手绘图高度
       design_area_image: '' // 设计区域

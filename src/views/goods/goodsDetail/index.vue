@@ -142,7 +142,7 @@ import { goodsApi } from '@/api/goods'
 import { ImagePreview, Toast } from 'vant'
 import { shopCart } from '@/utils/shopCart'
 import store from '@/store'
-import { wechatInterface } from '@/utils/wxUtils'
+import wechatInterface from '@/utils/wxUtils'
 export default {
   components: {
     TopBar
@@ -347,7 +347,8 @@ export default {
         cartList.push({
           sku_id: this.skuItem.sku_id ? this.skuItem.sku_id : 0,
           item_id: this.goodsDetail.id,
-          buy_num: this.goodsNumber
+          buy_num: this.goodsNumber,
+          shopping_type: 1
         })
         store.dispatch('order/setCartList', JSON.stringify(cartList)).then(() => {
           this.$router.push({ path: '/orderConfirm' })
@@ -396,21 +397,18 @@ export default {
     onSelect(option) {
       switch (option.name) {
         case '微信':
-          this.bindShareTimeLine()
+          this.doshare(0)
           break
         case '朋友圈':
-          this.bindShareAppMessage()
+          this.doshare(1)
           break
         case 'QQ':
           this.bindShareQQ()
           break
-        case 'QQ空间':
-          this.bindShareQzone()
-          break
       }
     },
-    bindShareTimeLine() {
-      wechatInterface({}, () => {}, () => {}, 'share')
+    doshare(type) {
+      wechatInterface({}, this.goodsDetail, type)
     }
   }
 }
@@ -440,7 +438,7 @@ export default {
       .goods-name{
         color: #333;
         font-weight: bold;
-        font-size: 22px;
+        font-size: 18px;
         position: relative;
         min-height: 25px;
         p{

@@ -6,7 +6,7 @@
       </div>
       <div class="confirm-footer">
         <van-button size="small" color="#333" plain type="primary" @click="hidden">返回修改</van-button>
-        <van-button size="small" color="linear-gradient(to right, #ffd01e,#ff8917)">加入购物车</van-button>
+        <!-- <van-button size="small" color="linear-gradient(to right, #ffd01e,#ff8917)">加入购物车</van-button> -->
         <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="dobuy">立即购买</van-button>
       </div>
     </div>

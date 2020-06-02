@@ -1,3 +1,3 @@
 module.exports = {
-  title: '云刺绣商城'
+  title: '云易绣商城'
 }

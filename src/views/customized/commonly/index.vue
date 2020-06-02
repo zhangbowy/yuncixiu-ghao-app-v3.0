@@ -6,11 +6,17 @@
           <van-dropdown-menu>
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
             <van-dropdown-item ref="fontType" title="字体">
-              <van-cell v-for="item in fontTypeOptions" :key="item.font_id" clickable class="font-dropdown" @click="fontChange(item.font_id)">
+              <van-cell
+                v-for="item in fontTypeOptions"
+                :key="item.font_id"
+                clickable
+                class="font-dropdown"
+                @click="fontChange(item.font_id)"
+              >
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template #title>
                   <span class="custom-title" :class="{'active':fontType==item.font_id }">{{ item.font_name }}</span>
-                  <img :src="item.font_content['0']" alt="" class="font-icon">
+                  <img :src="item.preview_image" alt="" class="font-icon">
                 </template>
                 <template #right-icon>
                   <van-icon :name="fontType==item.font_id?'success': ''" color="#1989fa" style="line-height: inherit;" />
@@ -55,35 +61,90 @@
     <div class="designArea">
       <div class="bg-box" @click.stop="hiddenVisible">
         <!-- 背景图 -->
-        <img class="bg-img" :src="customInfo.item && customInfo.item.background ?customInfo.item.background: customInfo.custom_info.design_bg" :style="designImgStyle" alt="">
+        <img
+          class="bg-img"
+          :src="customInfo.item && customInfo.item.background ?customInfo.item.background: customInfo.custom_info.design_bg"
+          :style="designImgStyle"
+          alt=""
+        >
         <!-- 设计区域 -->
         <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
-          <div v-if="currentTemplate.emb_template_id!==2" class="top-input" :class="{'focus':topFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}">
-            <div v-if="topFocus==false" class="top-img-list" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @click.stop="imgFocus(1)">
-              <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
+          <div
+            v-if="currentTemplate.emb_template_id!==2"
+            class="top-input"
+            :class="{'focus':topFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}"
+          >
+            <div
+              v-if="topFocus==false"
+              class="top-img-list"
+              :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
+              @click.stop="imgFocus(1)"
+            >
+              <span
+                v-if="topFocus==false && topInput==false && topImg.length==0"
+              >{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <div v-else ref="topImgContent" class="top-img-content">
                 <img v-for="(item,index) in topImg" :key="index" :height="form.topText.fontSize" :src="item" alt="">
               </div>
             </div>
             <div v-if="topFocus==true" class="input-box">
-              <input v-model="form.topText.content" placeholder="点击输入文字" type="text" :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}" @input="getFontTop()" @blur="inputBlur(1)" @focus="inpuFocus(1)">
+              <input
+                v-model="form.topText.content"
+                placeholder="点击输入文字"
+                type="text"
+                :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
+                @input="getFontTop()"
+                @blur="inputBlur(1)"
+                @focus="inpuFocus(1)"
+              >
             </div>
           </div>
           <!-- 中间图片 -->
           <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
-            <img v-if="patternPicture[0] || form.middleImg.prev_png_path" :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path" alt="" :style="{maxWidth:`${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}" @click.stop="showMiddleMemu()">
+            <img
+              v-if="patternPicture[0] || form.middleImg.prev_png_path"
+              :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path"
+              alt=""
+              :style="{maxWidth:`${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}"
+              @click.stop="showMiddleMemu()"
+            >
           </div>
           <!-- 下输入框 -->
-          <div v-if="currentTemplate.emb_template_id==3" class="bottom-input" :class="{'focus':bottomFocus==true,'topBottom': currentTemplate.emb_template_id==3}">
-            <div v-if="bottomFocus==false" class="bottom-img-list" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @click.stop="imgFocus(2)">
-              <span v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0">{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
+          <div
+            v-if="currentTemplate.emb_template_id==3"
+            class="bottom-input"
+            :class="{'focus':bottomFocus==true,'topBottom': currentTemplate.emb_template_id==3}"
+          >
+            <div
+              v-if="bottomFocus==false"
+              class="bottom-img-list"
+              :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}"
+              @click.stop="imgFocus(2)"
+            >
+              <span
+                v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0"
+              >{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <div v-else ref="bottomImgContent" class="bottom-img-content">
-                <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item" alt="">
+                <img
+                  v-for="(item,index) in bottomImg"
+                  :key="index"
+                  :height="form.bottomText.fontSize"
+                  :src="item"
+                  alt=""
+                >
               </div>
             </div>
             <div v-if="bottomFocus==true" class="input-box">
-              <input v-model="form.bottomText.content" placeholder="点击输入文字" type="text" :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}" @input="getFontBottom()" @blur="inputBlur(2)" @focus="inpuFocus(2)">
+              <input
+                v-model="form.bottomText.content"
+                placeholder="点击输入文字"
+                type="text"
+                :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}"
+                @input="getFontBottom()"
+                @blur="inputBlur(2)"
+                @focus="inpuFocus(2)"
+              >
             </div>
           </div>
         </div>
@@ -91,9 +152,17 @@
       </div>
     </div>
     <!-- 底部操作 -->
-    <bottom-options :current-template="currentTemplate" @change="bottomBtn" />
+    <bottom-options
+      :current-template="currentTemplate"
+      @change="bottomBtn"
+    />
     <!-- 选择定制模板 -->
-    <template-modal v-model="templateModal" :data-list="templateList" :current-template="currentTemplate" @change="checkTeplateItem" />
+    <template-modal
+      v-model="templateModal"
+      :data-list="templateList"
+      :current-template="currentTemplate"
+      @change="checkTeplateItem"
+    />
     <!-- 上传图片 -->
     <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
       <div class="modal">
@@ -108,11 +177,27 @@
     </van-popup>
 
     <!-- 花样库 -->
-    <pattern-modal v-model="patternModal" :figure-list="figureList" :form="form" @change="checkFigureItem" />
+    <pattern-modal
+      v-model="patternModal"
+      :figure-list="figureList"
+      :form="form"
+      @change="checkFigureItem"
+    />
     <!-- 预览设计 -->
-    <preview-modal v-model="previewModal" :loading="loading" :img="previewImg" @complete="complete" />
+    <preview-modal
+      v-model="previewModal"
+      :loading="loading"
+      :img="previewImg"
+      @complete="complete"
+    />
     <!-- 完成设计弹出层 -->
-    <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
+    <confirm-modal
+      v-model="confirmModal"
+      :loading="loading"
+      :img="previewImg"
+      @dobuy="buyNow"
+      @hidden="confirmModal=false"
+    />
     <!-- 修改图片尺寸 -->
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
@@ -170,6 +255,7 @@ export default {
       templateModal: false, // 模板选择弹框
       previewModal: false, // 预览弹框是否显示
       confirmModal: false, // 完成设计
+
       visible: false, // 顶部操作是否显示
       middleVisible: false, // 顶部图片属性是否显示
       topFocus: false, // 上输入框聚焦
@@ -244,7 +330,6 @@ export default {
         },
         item: {}
       },
-      // 提交表单
       design_box: {
         design_bg_width: 0, // 设计背景宽度
         design_bg_height: 0, // 设计背景高度
