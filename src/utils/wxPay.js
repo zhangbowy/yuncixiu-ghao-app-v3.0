@@ -1,5 +1,7 @@
+// 微信支付
 export const wxPay = (data, callback, error) => {
   function onBridgeReady() {
+    // eslint-disable-next-line no-undef
     WeixinJSBridge.invoke(
       'getBrandWCPayRequest', {
         'appId': data.appId, // 公众号名称，由商户传入
