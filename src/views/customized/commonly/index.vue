@@ -5,21 +5,21 @@
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
-            <van-dropdown-item ref="fontType" title="字体">
+            <van-dropdown-item ref="fontType" :title="fontType.font_name">
               <van-cell
                 v-for="item in fontTypeOptions"
                 :key="item.font_id"
                 clickable
                 class="font-dropdown"
-                @click="fontChange(item.font_id)"
+                @click="fontChange(item)"
               >
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template #title>
-                  <span class="custom-title" :class="{'active':fontType==item.font_id }">{{ item.font_name }}</span>
+                  <span class="custom-title" :class="{'active':fontType==item }">{{ item.font_name }}</span>
                   <img :src="item.preview_image" alt="" class="font-icon">
                 </template>
                 <template #right-icon>
-                  <van-icon :name="fontType==item.font_id?'success': ''" color="#1989fa" style="line-height: inherit;" />
+                  <van-icon :name="fontType==item?'success': ''" color="#1989fa" style="line-height: inherit;" />
                 </template>
               </van-cell>
             </van-dropdown-item>
@@ -32,7 +32,19 @@
                   <sketch-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
-            <van-dropdown-item v-model="fontSize" :options="sizeOptions" />
+            <van-dropdown-item ref="fontSize" :title="`${fontSize}mm`">
+              <number-input
+                v-model="fontSize"
+                width="100%"
+                :value="fontSize"
+                label="字体高度"
+                :min="fontType.min_height"
+                :max="fontType.max_height"
+                placeholder="请输入字体高度"
+                unit="mm"
+              />
+              <span style="font-size: 14px; color:#999;display: block;padding: 16px;">当前字体高度在{{ fontType.min_height }}mm至{{ fontType.max_height }}mm之间</span>
+            </van-dropdown-item>
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
             <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
               <van-switch-cell v-model="openArc" title="是否开启" />
@@ -272,7 +284,7 @@ export default {
       topImg: [], // 上图片
       bottomText: '', // 底部文本
       bottomImg: [], // 底部图片
-      fontType: '', // 字体类型
+      fontType: {}, // 字体类型
       fontTypeOptions: [], // 可选字体
       fontAlign: 'center', // 字体对齐方式
       alignment: [{
@@ -430,7 +442,9 @@ export default {
     getFontList() {
       designApi.getFontList().then(res => {
         this.fontTypeOptions = res.data
-        this.fontType = res.data[0].font_id
+        this.fontType = res.data[0]
+        this.form.topText.fontType = res.data[0].font_id
+        this.form.bottomText.fontType = res.data[0].font_id
       })
     },
     // 获取定制模板
@@ -538,7 +552,7 @@ export default {
       const text = this.form.topText.content
       arr = text.split('')
       designApi.getTextImage({
-        font_id: this.fontType,
+        font_id: this.form.topText.fontType,
         font_list: JSON.stringify(arr),
         color: this.form.topText.fontColor
       }).then(res => {
@@ -555,7 +569,7 @@ export default {
       const text = this.form.bottomText.content
       arr = text.split('')
       designApi.getTextImage({
-        font_id: this.fontType,
+        font_id: this.form.bottomText.fontType,
         font_list: JSON.stringify(arr),
         color: this.form.bottomText.fontColor
       }).then(res => {
@@ -601,14 +615,15 @@ export default {
       })
     },
     // 字体选择
-    fontChange(value) {
-      this.fontType = value
+    fontChange(item) {
+      this.fontType = item
+      this.fontSize = item.min_height
       if (this.topInput === true) {
-        this.form.topText.fontType = value
+        this.form.topText.fontType = item.font_id
         this.getFontTop()
       }
       if (this.bottomInput === true) {
-        this.form.bottomText.fontType = value
+        this.form.bottomText.fontType = item.font_id
         this.getFontBottom()
       }
       this.$refs.fontType.toggle()
@@ -714,14 +729,14 @@ export default {
     buyNow() {
       let top_w, bottom_w
       if (this.currentTemplate.emb_template_id !== 2) {
-        if (typeof this.$refs.topImgContent !== 'undefined') {
+        if (this.topImg.length > 0) {
           top_w = this.$refs.topImgContent.offsetWidth
         } else {
           top_w = 0
         }
       }
       if (this.currentTemplate.emb_template_id === 3) {
-        if (typeof this.$refs.topImgContent !== 'undefined') {
+        if (this.bottomImg.length > 0) {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
         }
       }

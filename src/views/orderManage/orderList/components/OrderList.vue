@@ -71,7 +71,6 @@ export default {
           Toast('支付失败')
         })
       }).catch(() => {
-        Toast('支付失败')
       })
     },
     cancelOrder(order_no) {

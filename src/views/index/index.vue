@@ -32,12 +32,12 @@
     <ver-scroll :data="indexData.category" title="种类推荐" />
     <!-- 样本 -->
     <div class="sample-box">
-      <div v-for="(item,index) in samples" :key="index+item.src" class="sample-box-item">
-        <img :src="item.src" alt="" @click="patternDialog">
+      <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
+        <img :src="item.prev_png_path" alt="" @click="patternDialog">
       </div>
     </div>
     <!-- 热销商品 -->
-    <hot-goods :data="goodsList" title="热销商品" />
+    <hot-goods :data="indexData.hot_goods" title="热销商品" />
   </div>
 </template>
 
@@ -56,50 +56,6 @@ export default {
     return {
       value: '',
       indexData: {},
-      samples: [
-        {
-          id: 1,
-          src: 'http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/15/2020-05-11/a3ed98a4-cd24-4fce-975a-757cdc485a53.png'
-        }, {
-          id: 2,
-          src: 'http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/15/2020-05-11/073606a2-397f-4f24-a6ad-c3e18ba98003.png'
-        }, {
-          id: 3,
-          src: 'http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/15/2020-05-11/f6431e37-76b9-4caf-ac83-118beda838a9.png'
-        }, {
-          id: 4,
-          src: 'https://s1.ax1x.com/2020/04/13/GjhCMd.gif'
-        }, {
-          id: 5,
-          src: 'https://s1.ax1x.com/2020/04/13/GjhPsA.gif'
-        }, {
-          id: 6,
-          src: 'https://s1.ax1x.com/2020/04/13/GjhEIf.gif'
-        }
-      ],
-      goodsList: [
-        {
-          id: 88,
-          src: 'http://img10.360buyimg.com/n1/jfs/t1144/221/780030540/153183/9cbd453e/5548385fN1fc13cc9.jpg',
-          name: '印花拎包',
-          price: 45
-        }, {
-          id: 2,
-          src: 'http://img4.imgtn.bdimg.com/it/u=3555418247,60757103&fm=26&gp=0.jpg',
-          name: '笔记本双肩包',
-          price: 69
-        }, {
-          id: 3,
-          src: 'http://img3.imgtn.bdimg.com/it/u=1918815643,3089648412&fm=26&gp=0.jpg',
-          name: '14寸笔记本电脑包',
-          price: 78
-        }, {
-          id: 4,
-          src: 'http://ec4.images-amazon.com/images/I/71gfm0gcb0L._UL1500_.jpg',
-          name: '黑色鸭舌帽',
-          price: 34
-        }
-      ],
       indicatorColor: '#000'
     }
   },
@@ -171,6 +127,7 @@ export default {
         max-height: 100px;
         min-height: 100px;
         border-radius: 6px;
+        display: block;
       }
     }
   }

@@ -27,7 +27,12 @@ router.beforeEach(async(to, from, next) => {
     } else {
       try {
         // 获取用户信息
-        await store.dispatch('user/getInfo')
+        await store.dispatch('user/getInfo').catch((err) => {
+          console.log(err)
+          store.dispatch('user/resetToken')
+          // Message.error(err || '验证失败，请重新登陆')
+          // next({ path: '/' })
+        })
         next()
       } catch (error) {
         // 获取用户信息失败

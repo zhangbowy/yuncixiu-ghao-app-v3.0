@@ -5,10 +5,10 @@
         <span>{{ title }}</span>
       </div>
       <div class="goods-content">
-        <div v-for="(item,index) in data" :key="item.id+index" class="goods-item" @click="toDetail(item.id)">
-          <img v-lazy="item.src" alt="">
+        <div v-for="(item,index) in data" :key="`${index}-${item.id}`" class="goods-item" @click="toDetail(item.id)">
+          <img v-lazy="item.thumb_image_path" alt="">
           <p class="goods-name">{{ item.name }}</p>
-          <p class="goods-price"><span>￥{{ item.price }}</span> </p>
+          <p class="goods-price"><span>￥{{ item.current_price }}</span> </p>
         </div>
       </div>
     </div>

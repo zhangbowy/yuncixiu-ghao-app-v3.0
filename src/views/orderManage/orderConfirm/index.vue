@@ -164,7 +164,7 @@ export default {
             }
             store.dispatch('order/resetState')
             this.$router.replace({ path: '/orderList' })
-          }, 1000)
+          }, 500)
         }, () => {
           // 支付失败回调
           Toast('取消支付')
@@ -174,10 +174,16 @@ export default {
             }
             store.dispatch('order/resetState')
             this.$router.replace({ path: '/orderList' })
-          }, 1000)
+          }, 500)
         })
       }).catch(() => {
-        Toast('支付失败')
+        setTimeout(() => {
+          if (this.$route.query.from === 'shop_cart') {
+            store.dispatch('shopCart/removeCartList')
+          }
+          store.dispatch('order/resetState')
+          this.$router.replace({ path: '/orderList' })
+        }, 500)
       })
     },
     toAddress() {

@@ -1,6 +1,6 @@
 <template>
   <div class="number-input" :style="{width: width, margin: '0 auto'}">
-    <van-field v-model="number" :placeholder="placeholder" type="number" :label="label" :rules="rules">
+    <van-field v-model="number" :placeholder="placeholder" type="number" :label="label" :rules="rules" @blur="fieldBlur">
       <template #button>
         <span>{{ unit }}</span>
       </template>
@@ -32,6 +32,10 @@ export default {
       type: [Number, String],
       default: ''
     },
+    min: {
+      type: [Number, String],
+      default: 0
+    },
     max: {
       type: [Number, String],
       default: ''
@@ -52,7 +56,6 @@ export default {
       deep: true,
       handler(newValue, oldValue) {
         if (this.max && newValue > this.max) {
-          Toast(`不得超过${this.max}${this.unit}`)
           this.number = this.max
         } else {
           this.number = newValue
@@ -64,12 +67,26 @@ export default {
       deep: true,
       handler(newValue, oldValue) {
         if (this.max && newValue > this.max) {
-          Toast(`不得超过${this.max}${this.unit}`)
           this.number = this.max
           this.$emit('input', this.max)
         } else {
           this.$emit('input', newValue)
         }
+      }
+    }
+  },
+  methods: {
+    fieldBlur(e) {
+      if (this.max && e.target.value > this.max) {
+        Toast(`高度不能超过${this.max}mm`)
+        this.number = this.max
+        this.$emit('input', this.max)
+      } else if (this.min && e.target.value < this.min) {
+        Toast(`高度不能低于${this.min}mm`)
+        this.number = this.min
+        this.$emit('input', this.min)
+      } else {
+        this.$emit('input', e.target.value)
       }
     }
   }

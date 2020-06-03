@@ -51,6 +51,7 @@ export default {
   },
   methods: {
     onNavClick(e) {
+      Object.assign(this.$route.query, { category_id: this.items[e].activeId })
       this.currentId = this.items[e].activeId
       this.currentImg = this.items[e].image_path
       this.subCategary = this.categories[e].children

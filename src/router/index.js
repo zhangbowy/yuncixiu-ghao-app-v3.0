@@ -18,7 +18,7 @@ const constantRoutes = [
     path: '/classify',
     name: 'Classify',
     component: () => import('@/views/classification/index'),
-    meta: { title: '分类', keepAlive: true, showTabbar: true }
+    meta: { title: '分类', showTabbar: true }
   }, {
     path: '/cart',
     name: 'ShopCart',
