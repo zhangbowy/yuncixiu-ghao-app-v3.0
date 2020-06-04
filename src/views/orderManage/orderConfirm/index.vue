@@ -13,7 +13,7 @@
       </van-cell>
       <van-action-sheet v-model="show" :actions="actions" @select="onSelect" />
     </div>
-    <div v-if="orderType.type==2 && orderInfo.address.phone" class="order-address" @click="toAddress">
+    <div v-if="orderType.type==1 && orderInfo.address.phone" class="order-address" @click="toAddress">
       <div class="user-info">
         <span>{{ orderInfo.address.name }}</span>
         <span class="user-phone">{{ orderInfo.address.phone }}</span>
@@ -26,7 +26,7 @@
         <svg-icon icon-class="right-arrow" />
       </span>
     </div>
-    <div v-if="orderType.type==2 && !orderInfo.address.phone" class="order-address" @click="toAddress">
+    <div v-if="orderType.type==1 && !orderInfo.address.phone" class="order-address" @click="toAddress">
       <span class="site-icon">
         <svg-icon icon-class="order-site" />
       </span>
@@ -54,7 +54,7 @@
     </div>
     <div class="statistical">
       <van-cell title="小计" :value="`￥${orderInfo.item_price?orderInfo.item_price: 0.00}`" />
-      <van-cell v-if="orderType.type==2" title="运费" :value="`￥${orderInfo.express_amount?orderInfo.express_amount:0.00}`" />
+      <van-cell v-if="orderType.type==1" title="运费" :value="`￥${orderInfo.express_amount?orderInfo.express_amount:0.00}`" />
     </div>
     <div class="order-mask">
       <van-field
@@ -91,12 +91,13 @@ export default {
       loading: false,
       show: false,
       submitLaoding: false,
+      address_id: '',
       actions: [
-        { name: '实体店铺', type: 1 },
-        { name: '快递', type: 2 }
+        { name: '快递', type: 1 },
+        { name: '实体店铺', type: 2 }
       ],
       orderType: {
-        name: '快递', type: 2
+        name: '快递', type: 1
       },
       orderInfo: {
         address: {
@@ -113,17 +114,19 @@ export default {
   },
   created() {
     if (this.$route.query.address_id) {
-      this.getConfirmData(this.$route.query.address_id)
+      this.address_id = this.$route.query.address_id
+      this.getConfirmData()
     } else {
       this.getConfirmData()
     }
   },
   methods: {
-    getConfirmData(address_id) {
+    getConfirmData() {
       this.loading = true
       orderApi.calculation({
-        address_id: address_id,
-        cart_list: JSON.parse(this.order.cartList)
+        address_id: this.address_id,
+        cart_list: JSON.parse(this.order.cartList),
+        logistics_type: this.orderType.type
       }).then(res => {
         this.loading = false
         this.orderInfo = res.data
@@ -138,15 +141,11 @@ export default {
         cart_list: JSON.parse(this.order.cartList),
         address_id: this.orderInfo.address.address_id,
         buyer_message: this.message,
+        logistics_type: this.orderType.type,
         shopping_type: this.orderInfo.order_type
       }).then(res => {
         this.submitLaoding = false
         this.orderPay(res.data.order_no)
-        // if (this.$route.query.from === 'shop_cart') {
-        //   store.dispatch('shopCart/removeCartList')
-        // }
-        // store.dispatch('order/resetState')
-        // this.$router.replace({ path: '/orderList' })
       })
     },
     // 订单支付
@@ -194,6 +193,7 @@ export default {
       // 可以通过 close-on-click-action 属性开启自动收起
       this.show = false
       this.orderType = item
+      this.getConfirmData()
     }
   }
 }

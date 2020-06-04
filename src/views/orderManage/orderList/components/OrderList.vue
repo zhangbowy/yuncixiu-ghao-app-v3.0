@@ -31,12 +31,16 @@
           <van-button color="#999" round size="mini" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
           <van-button color="#ee0a24" round size="mini" @click.stop="doPay(item.order_no)">立即支付</van-button>
         </div>
+        <div v-if="item.status==2 && item.order_type!=1" class="button-box">
+          <van-button color="#ee0a24" round size="mini" plain @click.stop="scanCode(item.order_no)">扫机器码</van-button>
+        </div>
         <div v-if="item.status==3" class="button-box">
+          <van-button v-if="item.order_type!=1" color="#ee0a24" round size="mini" plain @click.stop="scanCode(item.order_no)">扫机器码</van-button>
           <van-button color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
         </div>
         <div v-if="item.status==6" class="button-box">
           <van-button color="#999" round size="mini" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
-          <van-button color="#ee0a24" round size="mini" plain @click="replayOrder(item.order_no)">回复报价</van-button>
+          <van-button color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">回复报价</van-button>
           <van-button color="#ee0a24" round size="mini" @click.stop="doPay(item.order_no)">立即支付</van-button>
         </div>
       </div>
@@ -48,7 +52,9 @@
 <script>
 import { Dialog, Toast } from 'vant'
 import { orderApi } from '@/api/order'
+import { wxSdkApi } from '@/api/common'
 import { wxPay } from '@/utils/wxPay'
+import wechatInterface from '@/utils/wxUtils'
 
 export default {
   props: {
@@ -99,6 +105,18 @@ export default {
         })
       }).catch(() => {
         Toast('您点击了取消')
+      })
+    },
+    // 调用摄像头扫一扫
+    scanCode(order_no) {
+      wxSdkApi.getJsConfig({
+        url: window.location.origin
+      }).then(res => {
+        wechatInterface(res, 'scan', (res) => {
+          console.log(res)
+        }, (error) => {
+          console.log(error)
+        })
       })
     },
     replayOrder(order_no) {

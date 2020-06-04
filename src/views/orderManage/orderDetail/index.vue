@@ -19,7 +19,6 @@
           <span class="express-info-right">物流详情</span>
         </template>
       </van-cell>
-
     </div>
     <div class="address-info">
       <div class="site-icon"><svg-icon icon-class="order-site-icon" /></div>
@@ -68,6 +67,9 @@
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
       </div>
+      <div v-if="orderDetail.status==2">
+        <van-button color="#ee0a24" round size="small" plain @click.stop="scanCode(orderDetail.order_no)">扫机器码</van-button>
+      </div>
       <div v-if="orderDetail.status==3">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
@@ -87,7 +89,9 @@
 <script>
 import { orderApi } from '@/api/order'
 import { Dialog, Toast } from 'vant'
+import { wxSdkApi } from '@/api/common'
 import { wxPay } from '@/utils/wxPay'
+import wechatInterface from '@/utils/wxUtils'
 export default {
 
   data() {
@@ -143,6 +147,18 @@ export default {
           this.getOrderDetail(this.order_no)
         })
       }).catch(() => {
+      })
+    },
+    // 调用摄像头扫一扫
+    scanCode(order_no) {
+      wxSdkApi.getJsConfig({
+        url: window.location.origin
+      }).then(res => {
+        wechatInterface(res, 'scan', (res) => {
+          console.log(res)
+        }, (error) => {
+          console.log(error)
+        })
       })
     },
     // 确认收货

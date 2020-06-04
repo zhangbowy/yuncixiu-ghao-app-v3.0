@@ -54,6 +54,8 @@
     </div>
     <!-- 底部操作 -->
     <div class="footer-btn">
+      <van-button type="default" size="small" @click="fangda">放大</van-button>
+      <van-button type="default" size="small" @click="initPage(customInfo)">还原</van-button>
       <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
       <van-button type="default" size="small" @click="undo">撤销</van-button>
       <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
@@ -96,6 +98,7 @@ export default {
       colorShow: false,
       loading: false,
       confirmModal: false, // 完成设计
+      canvasChange: false,
       previewImg: '', // 预览图片
       width: '', // 手绘图宽度
       height: '', // 手绘图高度
@@ -146,6 +149,45 @@ export default {
         this.initPage(res.data)
       })
     },
+    async fangda() {
+      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
+      const design_scale = SCREEN_WIDTH / this.customInfo.custom_info.design_width
+      this.design_box.design_scale = design_scale
+      // 计算设计区背景实际宽高 ps:基本上是固定的
+      this.design_box.design_bg_width = design_scale * this.customInfo.custom_info.design_bg_width
+      this.design_box.design_bg_height = design_scale * this.customInfo.custom_info.design_bg_height
+      // 设计区域实际跨高和左上对齐位置
+      this.design_box.design_W = this.customInfo.custom_info.design_width * design_scale
+      this.design_box.design_H = this.customInfo.custom_info.design_height * design_scale
+      this.design_box.design_X = (SCREEN_WIDTH - this.design_box.design_W) / 2
+      this.design_box.design_Y = (SCREEN_WIDTH - this.design_box.design_H) / 2
+      // 计算设计区背景图的对齐位置
+      this.design_box.design_bg_X = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_X
+      this.design_box.design_bg_Y = this.customInfo.custom_info.design_top * design_scale - this.design_box.design_Y
+
+      // 背景图位置style
+      this.designArea.designImgStyle = {
+        position: 'absolute',
+        width: `${this.design_box.design_bg_width}px`,
+        height: `${this.design_box.design_bg_height}px`,
+        left: `-${this.design_box.design_bg_X}px`,
+        top: `-${this.design_box.design_bg_Y}px`
+      }
+      // 设计区域位置style
+      this.designArea.designBoxStyle = {
+        position: 'absolute',
+        width: `${this.design_box.design_W}px`,
+        height: `${this.design_box.design_H}px`,
+        left: `${this.design_box.design_X}px`,
+        top: '50%',
+        marginTop: `-${this.design_box.design_H / 2}px`
+      }
+      const that = this
+      setTimeout(() => {
+        // this.canvasChange = true
+        that.$refs.signaturePad.resizeCanvas()
+      }, 500)
+    },
     // 计算背景图位置 设计区域位置
     async initPage(item) {
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
@@ -181,6 +223,10 @@ export default {
         top: '50%',
         marginTop: `-${this.design_box.design_H / 2}px`
       }
+      setTimeout(() => {
+        // this.canvasChange = true
+        this.$refs.signaturePad.resizeCanvas()
+      }, 500)
     },
     // 获取预览图
     getPreview() {
@@ -327,7 +373,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 50px;
+    padding: 10px;
   }
   .confirm-modal{
     height: 100vh;

@@ -52,6 +52,9 @@ router.beforeEach(async(to, from, next) => {
             next(`${to.path}`)
           })
         }
+        // store.dispatch('user/loginDev').then(res => {
+        //   next(`${to.path}`)
+        // })
       } else {
         next()
       }
