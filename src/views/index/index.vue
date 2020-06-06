@@ -5,7 +5,7 @@
         v-model="value"
         shape="round"
         background="#fff"
-        placeholder="请输入搜索关键词"
+        placeholder="搜索商品"
         disabled
         @click="toSearch"
       />
@@ -14,19 +14,27 @@
     <div class="index-banner">
       <van-swipe class="my-swipe" :autoplay="3000" :indicator-color="indicatorColor">
         <van-swipe-item v-for="(image, index) in indexData.slider" :key="index">
-          <img v-lazy="image.image_path" @click="linkJump(image.link)">
+          <a :href="image.link" target="_blank">
+            <img v-lazy="image.image_path" @click="linkJump(image.link)">
+          </a>
         </van-swipe-item>
       </van-swipe>
     </div>
-    <div class="roll-ad">
-      <van-notice-bar
+    <div v-if="indexData.notice" class="roll-ad">
+      <!-- <van-notice-bar
         color="#1989fa"
         background="#ecf9ff"
         left-icon="volume-o"
         :scrollable="true"
       >
-        欢迎访问云刺绣商城！
-      </van-notice-bar>
+        {{ indexData.notice }}
+      </van-notice-bar> -->
+      <van-notice-bar
+        color="#1989fa"
+        background="#ecf9ff"
+        :text="indexData.notice"
+        left-icon="volume-o"
+      />
     </div>
     <!-- 推荐种类 -->
     <ver-scroll :data="indexData.category" title="种类推荐" />

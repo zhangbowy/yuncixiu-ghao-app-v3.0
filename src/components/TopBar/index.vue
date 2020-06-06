@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <van-nav-bar
-      style="color:#333"
-      :title="title"
-      :left-text="leftText"
-      :right-text="rightText"
-      left-arrow
-      :border="border"
-      @click-left="onClickLeft"
-    />
-  </div>
+  <van-nav-bar
+    style="color:#333"
+    :title="title"
+    :left-text="leftText"
+    :right-text="rightText"
+    left-arrow
+    :border="border"
+    @click-left="onClickLeft"
+  />
 </template>
 
 <script>

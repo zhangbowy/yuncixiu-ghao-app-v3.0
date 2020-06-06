@@ -50,7 +50,7 @@ service.interceptors.response.use(
         return res
       }
       Toast(res.msg || '请求异常')
-      return Promise.reject(new Error('Error'))
+      return Promise.reject(res)
     } else {
       return res
     }

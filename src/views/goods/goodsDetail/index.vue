@@ -20,14 +20,14 @@
       </div>
       <!-- 基础信息 -->
       <div class="goods-info">
+        <div class="goods-price">
+          ￥<span class="current-price">{{ parseFloat(goodsDetail.current_price).toFixed(2) }}</span>
+          <span class="old-price">￥{{ parseFloat(goodsDetail.old_price).toFixed(2) }}</span>
+          <span class="sale-num">{{ goodsDetail.sale_num }}人付款</span>
+        </div>
         <div class="goods-name">
           <p>{{ goodsDetail.name }}</p>
-          <span>{{ goodsDetail.sale_num }}人付款</span>
-        </div>
-        <div class="share-btn" @click="share = true"> <svg-icon icon-class="share" /> <span>分享</span></div>
-        <div class="goods-price">
-          ￥ <span class="current-price">{{ goodsDetail.current_price }}</span>
-          <span class="old-price">￥{{ goodsDetail.old_price }}</span>
+          <span>{{ goodsDetail.desc }}</span>
         </div>
       </div>
       <!-- 商品规格选择 -->
@@ -125,13 +125,6 @@
           />
         </van-goods-action>
       </div>
-      <!-- 分享组件 -->
-      <van-share-sheet
-        v-model="share"
-        title="立即分享给好友"
-        :options="options"
-        @select="onSelect"
-      />
     </div>
   </div>
 </template>
@@ -143,6 +136,7 @@ import { ImagePreview, Toast } from 'vant'
 import { shopCart } from '@/utils/shopCart'
 import store from '@/store'
 import wechatInterface from '@/utils/wxUtils'
+import { wxSdkApi } from '@/api/common'
 export default {
   components: {
     TopBar
@@ -161,9 +155,6 @@ export default {
       activeSku: [], // 选中的sku
       skuItem: {}, // 选中sku详细
       checkedSkuIds: '', // 选中sku组合id
-      options: [
-        { name: '微信', icon: 'wechat' }
-      ], // 分享选项
       goodsNumber: 1, // 购买数量
       id: this.$route.query.goods_id,
       skuCustom: 0,
@@ -218,6 +209,7 @@ export default {
       }
     }
   },
+
   created() {
     this.goodsId = this.$route.query.goods_id
     this.fetchData(this.goodsId)
@@ -235,6 +227,8 @@ export default {
         this.skuItem.current_price = res.data.current_price
         this.skuItem.num = res.data.sum_stock
         this.skuItem.images = res.data.thumb_image_path
+        // 调用微信分享
+        this.wxShare()
       })
     },
     // 滑动切换轮播
@@ -248,7 +242,6 @@ export default {
         startPosition: i
       })
     },
-
     // 显示sku列表
     changeSkuShow() {
       this.showSku = !this.showSku
@@ -308,10 +301,6 @@ export default {
           this.$router.push({ path: '/orderConfirm' })
         })
       }
-    },
-    // 分享面板是否显示
-    shareIsShow(val) {
-      this.share = val
     },
     // sku添加购物车按钮
     skuAddCart() {
@@ -393,23 +382,21 @@ export default {
         })
       }
     },
-    // 分享按钮选中
-    onSelect(option) {
-      switch (option.name) {
-        case '微信':
-          this.doshare(0)
-          break
-        case '朋友圈':
-          this.doshare(1)
-          break
-        case 'QQ':
-          this.bindShareQQ()
-          break
-      }
-    },
-    doshare(type) {
-      wechatInterface({}, this.goodsDetail, type)
+    // 微信分享
+    wxShare() {
+      wxSdkApi.getJsConfig({
+        url: window.location.origin
+      }).then(res => {
+        // this.doshare(res.data, 0)
+        const shareInfo = {}
+        shareInfo.data = res.data
+        shareInfo.shareInfo = this.goodsDetail
+        wechatInterface(shareInfo, 'share', success => {
+        }, fail => {
+        })
+      })
     }
+
   }
 }
 </script>
@@ -421,6 +408,8 @@ export default {
     position: fixed;
     top: 0;
     z-index: 999;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.2);
   }
   .goods-content{
     .goods-images{
@@ -435,39 +424,11 @@ export default {
       position: relative;
       padding: 5px 10px;
       border-bottom: 10px solid #f5f5f5;
-      .goods-name{
-        color: #333;
-        font-weight: bold;
-        font-size: 18px;
-        position: relative;
-        min-height: 25px;
-        p{
-          width: 80%;
-          margin: 0;
-          overflow: hidden;
-        }
-        span{
-          position: absolute;
-          right: 5px;
-          top: 0px;
-          color: #666;
-          font-size: 12px;
-        }
-      }
-      .share-btn{
-        position: absolute;
-        color: #666;
-        right: 0;
-        top: 30px;
-        font-size: 12px;
-        padding: 5px 6px;
-        border-radius: 20px 0 0 20px;
-        background: rgba(65, 65, 65, 0.1);
-      }
       .goods-price{
         margin-top: 10px;
         color: #ee0a24;
         font-size: 12px;
+        position: relative;
         span.current-price{
           font-size: 18px;
           font-weight: bold;
@@ -475,6 +436,30 @@ export default {
         span.old-price{
           padding-left: 10px;
           text-decoration: line-through;
+          color: #999;
+        }
+        span.sale-num{
+          position: absolute;
+          right: 5px;
+          top: 0px;
+          color: #666;
+          font-size: 12px;
+        }
+      }
+      .goods-name{
+        color: #333;
+        font-weight: bold;
+        font-size: 16px;
+        min-height: 25px;
+
+        p{
+          margin: 0;
+          overflow: hidden;
+          padding: 5px 0;
+        }
+        span{
+          padding: 5px 0;
+          font-size: 12px;
           color: #999;
         }
       }

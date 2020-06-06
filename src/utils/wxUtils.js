@@ -28,6 +28,9 @@ const wechatInterface = (data, type, resolve, reject) => {
   // const packages = data.package
 
   // const paySign = data.paySign
+  const url = window.location.href.split('#')[0] // 获取锚点之前的链接
+  // let links = url+'#/Food/' + this.$route.params.id;
+  const links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id
 
   wx.config({
 
@@ -41,38 +44,37 @@ const wechatInterface = (data, type, resolve, reject) => {
 
     signature: signature, // 必填，签名，见附录1
 
-    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    jsApiList: ['updateTimelineShareData', 'updateAppMessageShareData', 'scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
 
   })
-
-  if (type === 0) {
+  // 由于微信不让诱导分享，所以只能点击右上角三个点中的分享按钮
+  // 这里的分享只是修改了分享内容
+  if (type === 'share') {
     // 分享朋友
+    // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容（1.4.0）
     wx.ready(function() {
-      wx.onMenuShareAppMessage({
-        title: data.shareInfo.name, // 分享标题
+      wx.updateAppMessageShareData({
+        title: `${data.shareInfo.name}`, // 分享标题
         desc: data.shareInfo.desc, // 分享描述
-        link: `/goodsDetail?goods_id=${data.shareInfo.id}`, // 分享链接
+        link: links, // 分享链接
         imgUrl: data.shareInfo.thumb_image_path, // 分享图标
         type: '', // 分享类型,music、video或link，不填默认为link
         dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
         success: function() {
           // 用户确认分享后执行的回调函数
-          console.log('分享成功')
           resolve()
         },
         cancel: function() {
           // 用户取消分享后执行的回调函数
-          console.log('分享取消分享')
           reject()
         }
       })
     })
-  } if (type === 1) {
-    // 分享朋友圈
-    wx.ready(function() {
-      wx.onMenuShareTimeline({
-        title: data.shareInfo.name, // 分享标题
-        link: `/goodsDetail?goods_id=${data.shareInfo.id}`, // 分享链接
+    // 定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容（1.4.0）
+    wx.ready(function() { // 需在用户可能点击分享按钮前就先调用
+      wx.updateTimelineShareData({
+        title: `${data.shareInfo.name}`, // 分享标题
+        link: links, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
         imgUrl: data.shareInfo.thumb_image_path, // 分享图标
         success: function() {
           // 用户确认分享后执行的回调函数
@@ -84,7 +86,8 @@ const wechatInterface = (data, type, resolve, reject) => {
         }
       })
     })
-  } if (type === 'scan') {
+  }
+  if (type === 'scan') {
     wx.ready(function() {
       wx.scanQRCode({
         needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，

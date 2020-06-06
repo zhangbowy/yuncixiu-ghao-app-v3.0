@@ -33,7 +33,7 @@
                 </van-tab></van-tabs>
             </van-dropdown-item>
             <van-dropdown-item ref="fontSize" :title="`${fontSize}mm`">
-              <number-input
+              <!-- <number-input
                 v-model="fontSize"
                 width="100%"
                 :value="fontSize"
@@ -42,7 +42,14 @@
                 :max="fontType.max_height"
                 placeholder="请输入字体高度"
                 unit="mm"
-              />
+              /> -->
+              <van-cell title="字体高度">
+                <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+                <template #right-icon>
+                  <van-stepper v-model="fontSize" :min="fontType.min_height" :max="fontType.max_height" />
+                </template>
+              </van-cell>
+
               <span style="font-size: 14px; color:#999;display: block;padding: 16px;">当前字体高度在{{ fontType.min_height }}mm至{{ fontType.max_height }}mm之间</span>
             </van-dropdown-item>
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
@@ -214,9 +221,9 @@
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
         <div class="modal-title">修改图片尺寸</div>
-        <div class="modal-content">
+        <div class="modal-content" style="text-align: left">
           <div class="img-size">
-            <number-input
+            <!-- <number-input
               v-model="form.middleImg.height"
               width="100%"
               :value="form.middleImg.height"
@@ -224,7 +231,13 @@
               :max="middleImgHeight"
               placeholder="请输入高度"
               unit="mm"
-            />
+            /> -->
+            <van-cell title="图片高度">
+              <template #right-icon>
+                <van-stepper v-model="form.middleImg.height" :min="0" :max="middleImgHeight" />
+              </template>
+            </van-cell>
+            <span style="font-size: 14px; color:#999;display: block;padding: 10px 16px;">注：当前图片高度在0mm至{{ middleImgHeight }}mm之间</span>
           </div>
         </div>
       </div>
@@ -236,7 +249,6 @@
 import { designApi } from '@/api/design'
 import Sketch from '@/components/VueColorPicker/Sketch'
 import Compact from '@/components/VueColorPicker/Compact'
-import NumberInput from '@/components/Input/NumberInput'
 import ConfirmModal from './components/ConfirmModal'
 import PreviewModal from './components/PreviewModal'
 import TemplateModal from './components/TemplateModal'
@@ -252,7 +264,6 @@ export default {
   components: {
     'sketch-picker': Sketch,
     'compact-picker': Compact,
-    'number-input': NumberInput,
     'preview-modal': PreviewModal,
     'confirm-modal': ConfirmModal,
     'template-modal': TemplateModal,
@@ -298,13 +309,6 @@ export default {
         hex: 'fff'
       },
       fontSize: 12, // 字体高度
-      sizeOptions: [
-        { text: '8px', value: 8 },
-        { text: '12px', value: 12 },
-        { text: '18px', value: 18 },
-        { text: '24px', value: 24 },
-        { text: '45px', value: 45 }
-      ],
       form: {
         topText: {
           content: '',
@@ -445,6 +449,8 @@ export default {
         this.fontType = res.data[0]
         this.form.topText.fontType = res.data[0].font_id
         this.form.bottomText.fontType = res.data[0].font_id
+        this.form.topText.fontSize = res.data[0].min_height
+        this.form.bottomText.fontSize = res.data[0].min_height
       })
     },
     // 获取定制模板
@@ -620,10 +626,12 @@ export default {
       this.fontSize = item.min_height
       if (this.topInput === true) {
         this.form.topText.fontType = item.font_id
+        this.form.topText.fontSize = item.min_height
         this.getFontTop()
       }
       if (this.bottomInput === true) {
         this.form.bottomText.fontType = item.font_id
+        this.form.bottomText.fontSize = item.min_height
         this.getFontBottom()
       }
       this.$refs.fontType.toggle()
@@ -688,11 +696,11 @@ export default {
     getPreview() {
       this.loading = true
       // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
-      const top_scale = 45 / this.design_box.design_H
-      const bottom_scale = 45 / this.design_box.design_H
+      const top_scale = this.form.topText.fontSize > 45 ? this.form.topText.fontSize / this.design_box.design_H : 45 / this.design_box.design_H
+      const bottom_scale = this.form.bottomText.fontSize > 45 ? this.form.bottomText.fontSize / this.design_box.design_H : 45 / this.design_box.design_H
       // 计算文字图片和文字输入框的比例
-      const top_font_scale = this.form.topText.fontSize / 45
-      const bottom_font_scale = this.form.bottomText.fontSize / 45
+      const top_font_scale = this.form.topText.fontSize > 45 ? 1 : this.form.topText.fontSize / 45
+      const bottom_font_scale = this.form.bottomText.fontSize > 45 ? 1 : this.form.bottomText.fontSize / 45
       // 计算图片高度和设计区的比例
       const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
       // 请求预览图接口

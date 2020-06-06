@@ -9,6 +9,7 @@
           <img v-lazy="item.thumb_image_path" alt="">
           <p class="goods-name">{{ item.name }}</p>
           <p class="goods-price"><span>￥{{ item.current_price }}</span> </p>
+          <span v-if="item.is_custom==1" class="corner-mark">定制</span>
         </div>
       </div>
     </div>
@@ -58,6 +59,19 @@ export default {
         box-shadow: 0px 10px 20px #f3f3f3;
         margin-bottom: 15px;
         border-radius: 6px;
+        position: relative;
+        .corner-mark{
+          position: absolute;
+          left: 0;
+          top: 0;
+          background: #ff2828;
+          padding: 3px;
+          border-radius: 6px 0 6px 0 ;
+          font-size: 10px;
+          color: #fff;
+          transform: scale(0.8);
+          display: inline-block;
+        }
         img{
           width: 100%;
           height: 159px;

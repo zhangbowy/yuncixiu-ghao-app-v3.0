@@ -38,7 +38,13 @@ export function checkLogin(data) {
     data
   })
 }
-
+export function aboutUs(params) {
+  return request({
+    url: '/aboutUs',
+    method: 'get',
+    params
+  })
+}
 // 地址管理
 export const addressApi = {
   // 地址列表
