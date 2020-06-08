@@ -70,9 +70,10 @@ export default {
       }).then(res => {
         wxPay(res.data, (success) => {
           // 支付成功回调
-          Toast('支付成功')
+          Toast(success)
           this.$emit('getList')
-        }, () => {
+        }, (error) => {
+          console.log(error)
           // 支付失败回调
           Toast('支付失败')
         })

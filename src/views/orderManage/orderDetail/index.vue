@@ -47,7 +47,7 @@
       <div class="order-details-item"><span>订单编号：</span>{{ orderDetail.order_no }}</div>
       <div class="order-details-item"><span>下单时间：</span>{{ orderDetail.created_at }}</div>
       <div class="order-details-item"><span>订单类型：</span>{{ orderDetail.order_type==1?'普通订单':orderDetail.order_type==2?'一般定制':orderDetail.order_type==3?'特殊定制':orderDetail.order_type==4?'手绘':'询价' }}</div>
-      <!-- <div class="order-details-item"><span>付款时间：</span>{{ orderDetail.created_at }}</div> -->
+      <div class="order-details-item"><span>付款时间：</span>{{ orderDetail.pay_time }}</div>
     </div>
     <div v-if="orderDetail.buyer_message!=''" class="buyer-message">
       <span>买家留言：</span>
@@ -124,9 +124,10 @@ export default {
       }).then(res => {
         wxPay(res.data, (success) => {
           // 支付成功回调
-          Toast('支付成功')
+          Toast(success)
           this.getOrderDetail(this.order_no)
-        }, () => {
+        }, (error) => {
+          console.log(error)
           // 支付失败回调
           Toast('支付失败')
         })

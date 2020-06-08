@@ -200,7 +200,7 @@ export default {
             res.data,
             (success) => {
               // 支付成功回调
-              Toast('支付成功')
+              Toast(success)
               setTimeout(() => {
                 if (this.$route.query.from === 'shop_cart') {
                   store.dispatch('shopCart/removeCartList')
@@ -208,10 +208,10 @@ export default {
                 store.dispatch('order/resetState')
                 this.$router.replace({ path: '/orderList' })
               }, 500)
-            },
-            () => {
+            }, (error) => {
+              console.log(error)
               // 支付失败回调
-              Toast('取消支付')
+              Toast('支付失败')
               setTimeout(() => {
                 if (this.$route.query.from === 'shop_cart') {
                   store.dispatch('shopCart/removeCartList')

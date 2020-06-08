@@ -399,8 +399,6 @@ export default {
     },
     // 监听当前模板变化
     currentTemplate: {
-      deep: true,
-      immediate: true,
       handler(newValue, old) {
         const type = newValue.emb_template_id
         if (type === 1) {
@@ -418,7 +416,7 @@ export default {
           this.middleImgWidth = this.design_box.design_W / this.design_box.design_scale
         }
         if (type === 3) {
-          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale
+          this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale) - (90 / this.design_box.design_scale)
           this.form.middleImg.height = this.middleImgHeight
         }
       }
@@ -460,6 +458,7 @@ export default {
       }).then(res => {
         this.templateList = res.data
         this.currentTemplate = this.templateList[2]
+        this.form.middleImg.height = this.middleImgHeight
       })
     },
     // 获取花样库列表
@@ -519,6 +518,9 @@ export default {
         top: '50%',
         marginTop: `-${this.design_box.design_H / 2}px`
       }
+      this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale) - (90 / this.design_box.design_scale)
+      this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
+      this.form.middleImg.height = this.middleImgHeight
     },
     // 输入框聚焦
     inpuFocus(type) {
