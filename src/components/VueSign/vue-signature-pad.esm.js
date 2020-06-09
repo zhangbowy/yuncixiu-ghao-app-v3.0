@@ -99,6 +99,10 @@ var script = {
     }
   },
   methods: {
+    getBase64PNG() {
+      var canvas = this.$refs.signaturePadCanvas
+      return canvas.toDataURL('image/png')
+    },
     resizeCanvas: function resizeCanvas() {
       var canvas = this.$refs.signaturePadCanvas
       var data = this.signaturePad.toData()

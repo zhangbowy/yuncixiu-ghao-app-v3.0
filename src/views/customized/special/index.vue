@@ -15,7 +15,7 @@
         <number-input
           v-model="form.width"
           width="100%"
-          max="600"
+          :max="600"
           :value="form.width"
           label="宽度"
           :rules="[
@@ -27,7 +27,7 @@
         <number-input
           v-model="form.height"
           width="100%"
-          max="400"
+          :max="400"
           :value="form.height"
           label="高度"
           :rules="[

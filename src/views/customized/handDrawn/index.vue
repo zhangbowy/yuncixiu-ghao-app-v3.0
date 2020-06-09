@@ -15,8 +15,8 @@
             <van-stepper v-model="minWidth" input-width="25px" button-size="22" min="1" max="5" />
           </div>
         </div>
-        <div class="config-item">
-          <span>笔画颜色：</span>
+        <div class="config-item" style="width: 25%">
+          <span>颜色：</span>
           <div class="color_con" :style="{background:lineColor}" @click="handleShowColor">
             <div v-show="colorShow" class="sketch">
               <sketch-picker v-model="lineColor" style="z-index: 10" @input="updateValue" />
@@ -24,13 +24,13 @@
             </div>
           </div>
         </div>
-        <div class="config-item">
+        <div class="config-item" style="width: 32%">
           <span>宽(mm)：</span>
           <div class="input">
             <input v-model.number="width" type="number" step="1" max="150" placeholder="宽度">
           </div>
         </div>
-        <div class="config-item">
+        <div class="config-item" style="width: 32%">
           <span>高(mm)：</span>
           <div class="input">
             <input v-model.number="height" type="number" step="1" max="150" placeholder="高度">
@@ -54,8 +54,9 @@
     </div>
     <!-- 底部操作 -->
     <div class="footer-btn">
-      <van-button type="default" size="small" @click="fangda">放大</van-button>
-      <van-button type="default" size="small" @click="initPage(customInfo)">还原</van-button>
+      <van-button type="default" size="small" @click="initPage(1)">放大</van-button>
+      <!-- <van-button type="default" size="small" @click="fullpage">全屏</van-button> -->
+      <van-button type="default" size="small" @click="initPage(0.8)">还原</van-button>
       <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
       <van-button type="default" size="small" @click="undo">撤销</van-button>
       <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
@@ -99,6 +100,7 @@ export default {
       loading: false,
       confirmModal: false, // 完成设计
       canvasChange: false,
+      showFullPage: false, // 显示全屏
       previewImg: '', // 预览图片
       width: '', // 手绘图宽度
       height: '', // 手绘图高度
@@ -129,15 +131,11 @@ export default {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
     }
-
     // 获取定制信息
     this.customDetail(this.goods_id, this.sku_id)
   },
   methods: {
-    // 撤销
-    undo() {
-      this.$refs.signaturePad.undoSignature()
-    },
+
     // 获取定制分类模板信息
     async customDetail(id, sku_id) {
       await designApi.customDetail({
@@ -146,12 +144,17 @@ export default {
       }).then(res => {
         this.customInfo = res.data
         this.backgroundImg = res.data.item && res.data.item.background ? res.data.item.background : res.data.custom_info.design_bg
-        this.initPage(res.data)
+        this.initPage(0.8)
       })
     },
-    async fangda() {
+    fullpage() {
+      console.log(this.$refs.signaturePad)
+    },
+    // 计算背景图位置 设计区域位置
+    initPage(scale) {
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
-      const design_scale = SCREEN_WIDTH / this.customInfo.custom_info.design_width
+      // 计算比例 scale表示屏幕的宽度*scale
+      const design_scale = SCREEN_WIDTH * scale / this.customInfo.custom_info.design_width
       this.design_box.design_scale = design_scale
       // 计算设计区背景实际宽高 ps:基本上是固定的
       this.design_box.design_bg_width = design_scale * this.customInfo.custom_info.design_bg_width
@@ -164,47 +167,6 @@ export default {
       // 计算设计区背景图的对齐位置
       this.design_box.design_bg_X = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_X
       this.design_box.design_bg_Y = this.customInfo.custom_info.design_top * design_scale - this.design_box.design_Y
-
-      // 背景图位置style
-      this.designArea.designImgStyle = {
-        position: 'absolute',
-        width: `${this.design_box.design_bg_width}px`,
-        height: `${this.design_box.design_bg_height}px`,
-        left: `-${this.design_box.design_bg_X}px`,
-        top: `-${this.design_box.design_bg_Y}px`
-      }
-      // 设计区域位置style
-      this.designArea.designBoxStyle = {
-        position: 'absolute',
-        width: `${this.design_box.design_W}px`,
-        height: `${this.design_box.design_H}px`,
-        left: `${this.design_box.design_X}px`,
-        top: '50%',
-        marginTop: `-${this.design_box.design_H / 2}px`
-      }
-      const that = this
-      setTimeout(() => {
-        // this.canvasChange = true
-        that.$refs.signaturePad.resizeCanvas()
-      }, 500)
-    },
-    // 计算背景图位置 设计区域位置
-    async initPage(item) {
-      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
-      // 计算比例 * 0.8表示屏幕的宽度80%
-      const design_scale = SCREEN_WIDTH * 0.8 / item.custom_info.design_width
-      this.design_box.design_scale = design_scale
-      // 计算设计区背景实际宽高 ps:基本上是固定的
-      this.design_box.design_bg_width = design_scale * item.custom_info.design_bg_width
-      this.design_box.design_bg_height = design_scale * item.custom_info.design_bg_height
-      // 设计区域实际跨高和左上对齐位置
-      this.design_box.design_W = item.custom_info.design_width * design_scale
-      this.design_box.design_H = item.custom_info.design_height * design_scale
-      this.design_box.design_X = (SCREEN_WIDTH - this.design_box.design_W) / 2
-      this.design_box.design_Y = (SCREEN_WIDTH - this.design_box.design_H) / 2
-      // 计算设计区背景图的对齐位置
-      this.design_box.design_bg_X = item.custom_info.design_left * design_scale - this.design_box.design_X
-      this.design_box.design_bg_Y = item.custom_info.design_top * design_scale - this.design_box.design_Y
 
       // 背景图位置style
       this.designArea.designImgStyle = {
@@ -254,6 +216,10 @@ export default {
     handleReset() {
       this.$refs.signaturePad.clearSignature()
     },
+    // 撤销
+    undo() {
+      this.$refs.signaturePad.undoSignature()
+    },
     // 完成绘制
     handleGenerate() {
       const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
@@ -266,7 +232,6 @@ export default {
       this.getPreview()
       this.confirmModal = true
     },
-
     // 颜色选择器
     handleShowColor() {
       if (this.colorShow) {
@@ -289,8 +254,8 @@ export default {
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].shopping_type = 4
       goodsInfo[0].design_info = {
-        design_width: this.width ? this.width : this.cropInfo.width,
-        design_height: this.height ? this.height : this.cropInfo.height,
+        design_width: this.width ? this.width : this.cropInfo.width / this.design_box.design_scale,
+        design_height: this.height ? this.height : this.cropInfo.height / this.design_box.design_scale,
         preview_image: this.previewImg,
         draw_image: this.resultImg,
         design_area_image: this.design_area_image
@@ -315,7 +280,7 @@ export default {
       align-items: center;
       justify-content: space-between;
       .config-item{
-        width: 48%;
+        width: 43%;
         margin-bottom: 10px;
         .slider{
           width: 48%;
@@ -329,7 +294,7 @@ export default {
         .color_con{
           display: inline-block;
           vertical-align: middle;
-          width: 60px;
+          width: 30px;
           height: 20px;
           border-radius: 3px;
           border: 1px solid #ccc;
@@ -345,7 +310,7 @@ export default {
           display: inline-block;
           vertical-align: middle;
           input{
-            width: 60px;
+            width: 30px;
             outline-style: none ;
             border: 1px solid #ccc;
             border-radius: 3px;

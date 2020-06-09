@@ -212,3 +212,29 @@ export function debounce(fn, wait) {
     }, wait)
   }
 }
+
+// 获取图片原始宽高
+export function getNaturalImgSize(img, callback) {
+  /**
+  * img元素
+  * callback 回调函数
+  **/
+  var nWidth, nHeight
+  if (img.naturalWidth) { // 现代浏览器
+    nWidth = img.naturalWidth
+    nHeight = img.naturalHeight
+    callback({
+      w: nWidth,
+      h: nHeight
+    })
+  } else { // IE6/7/8
+    var image = new Image()
+    image.src = img
+    image.onload = function() {
+      callback({
+        w: image.width,
+        h: image.height
+      })
+    }
+  }
+}

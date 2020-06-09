@@ -254,7 +254,7 @@ import PreviewModal from './components/PreviewModal'
 import TemplateModal from './components/TemplateModal'
 import PatternModal from './components/PatternModal'
 import BottomOptions from './components/BottomOptions'
-import { debounce } from '@/utils'
+import { debounce, getNaturalImgSize } from '@/utils'
 import { mapState } from 'vuex'
 import $ from 'jquery'
 import './arctext'
@@ -412,8 +412,8 @@ export default {
           this.bottomImg = []
           this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
           this.form.middleImg.height = this.design_box.design_H / this.design_box.design_scale
-          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale
-          this.middleImgWidth = this.design_box.design_W / this.design_box.design_scale
+          this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale).toFixed(2)
+          this.middleImgWidth = (this.design_box.design_W / this.design_box.design_scale).toFixed(2)
         }
         if (type === 3) {
           this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale) - (90 / this.design_box.design_scale)
@@ -498,9 +498,6 @@ export default {
       this.design_box.design_bg_X = item.custom_info.design_left * design_scale - this.design_box.design_X
       this.design_box.design_bg_Y = item.custom_info.design_top * design_scale - this.design_box.design_Y
 
-      // 中间图片的最大宽高 单位毫米
-      this.middleImgWidth = this.design_box.design_W / design_scale
-      this.middleImgHeight = this.design_box.design_H / design_scale - 90 / design_scale
       // 背景图位置style
       this.designImgStyle = {
         position: 'absolute',
@@ -518,7 +515,9 @@ export default {
         top: '50%',
         marginTop: `-${this.design_box.design_H / 2}px`
       }
-      this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale) - (90 / this.design_box.design_scale)
+      // 中间图片的最大宽高 单位毫米
+      this.middleImgWidth = (this.design_box.design_W / design_scale).toFixed(2)
+      this.middleImgHeight = (this.design_box.design_H / design_scale - 90 / design_scale).toFixed(2)
       this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
       this.form.middleImg.height = this.middleImgHeight
     },
@@ -679,8 +678,20 @@ export default {
     checkFigureItem(item) {
       this.form.middleImg.design_id = item.design_id
       this.form.middleImg.prev_png_path = item.prev_png_path
+      // 获取花样宽高
+      if (this.currentTemplate.emb_template_id === 2) {
+        getNaturalImgSize(item.prev_png_path, (res) => {
+          console.log(res)
+          if ((res.w / res.h) > (this.design_box.design_W / this.design_box.design_H)) {
+            this.middleImgHeight = res.h / (res.w / this.design_box.design_W) / this.design_box.design_scale
+            this.form.middleImg.height = this.middleImgHeight
+          } else {
+            this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale
+            this.form.middleImg.height = this.middleImgHeight
+          }
+        })
+      }
       this.form.middleImg.width = this.middleImgWidth
-      this.form.middleImg.height = this.middleImgHeight
       this.patternModal = false
       this.patternPicture = [] // 上传的花样图片设为空
     },
