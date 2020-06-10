@@ -2,14 +2,14 @@
   <div class="special">
     <div class="special-form">
       <div class="template">
-        <van-radio-group v-model="result" direction="horizontal">
-          <van-radio v-for="(item,index) in templateList" :key="index" :name="item.emb_template_id">
+        <van-checkbox-group v-model="result" direction="horizontal" @change="chooseTemp">
+          <van-checkbox v-for="item in templateList" :key="item.emb_template_id" :name="item.emb_template_id">
             <div class="temp-item">
               <img :src="item.cover_image" alt="" width="60" height="60">
               <p>{{ item.template_name }}</p>
             </div>
-          </van-radio>
-        </van-radio-group>
+          </van-checkbox>
+        </van-checkbox-group>
       </div>
       <van-form @submit="submit">
         <number-input
@@ -111,7 +111,7 @@ export default {
       uploader: [],
       switchChecked: false,
       templateList: [],
-      result: '', // 选中的模板id
+      result: [], // 选中的模板id
       form: {
         width: '',
         height: '',
@@ -133,13 +133,20 @@ export default {
     uploadValidate(val) {
       console.val
     },
+    chooseTemp() {
+      const item = this.templateList[this.templateList.length - 1]
+      if (this.result.length > 1 && this.result.indexOf(item.emb_template_id) > -1) {
+        this.result = []
+        this.result.push(item.emb_template_id)
+      }
+    },
     // 获取定制模板
     getTemplate() {
       designApi.getEmbTemplate({
         template_type: 2 // 1 一般定制 2 特殊定制
       }).then(res => {
         this.templateList = res.data
-        this.result = res.data[0].emb_template_id
+        // this.result = res.data[0].emb_template_id
       })
     },
     // 提交
@@ -149,6 +156,10 @@ export default {
     },
     submit(values) {
       console.log(values)
+      if (this.result.length === 0) {
+        Toast('请勾选刺绣种类')
+        return false
+      }
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].shopping_type = 3
       goodsInfo[0].design_info = {
@@ -171,9 +182,9 @@ export default {
 .special{
   padding-top: 45px;
   .template{
-    .van-radio-group--horizontal{
+    .van-checkbox-group--horizontal{
       justify-content: space-around;
-      .van-radio--horizontal{
+      .van-checkbox--horizontal{
         width: 40%;
         justify-content: center;
       }

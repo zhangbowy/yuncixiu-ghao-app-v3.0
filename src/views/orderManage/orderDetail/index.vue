@@ -20,12 +20,19 @@
         </template>
       </van-cell>
     </div>
-    <div class="address-info">
+    <div v-if="orderDetail.logistics_type==1" class="address-info">
       <div class="site-icon"><svg-icon icon-class="order-site-icon" /></div>
       <div class="address-info-right">
         <div class="user-info"><span>{{ orderDetail.receiver_name }}</span> <span class="user-phone">{{ orderDetail.receiver_phone }}</span></div>
         <div class="address-detail">{{ orderDetail.receiver_address }}</div>
       </div>
+    </div>
+    <div v-else class="express-type">
+      <van-cell title="配送方式" style="line-height: 1" :border="false" @click="show = true">
+        <template #right-icon>
+          <span style="border:1px solid #ee0a24; color: #ee0a24;border-radius: 3px;padding: 2px 5px;font-size: 10px">{{ orderDetail._logistics_type }}</span>
+        </template>
+      </van-cell>
     </div>
     <div class="goods-info">
       <div v-for="(goods,index) in orderDetail.order_item" :key="`${index}-${goods.item_id}`" class="goods-item" @click="toGoodsDetail(goods.item_id)">
@@ -55,7 +62,7 @@
     </div>
     <div class="order-price-info">
       <van-cell title="商品总价" :value="`￥${orderDetail.item_amount.toFixed(2)}`" />
-      <van-cell title="运费" :value="`￥${orderDetail.express_amount.toFixed(2)}`" />
+      <van-cell v-if="orderDetail.logistics_type==1" title="运费" :value="`￥${orderDetail.express_amount.toFixed(2)}`" />
       <van-cell title="订单总价" :value="`￥${orderDetail.pay_amount.toFixed(2)}`" />
       <div class="pay-total">
         <p>需付款：<span>￥<b>{{ orderDetail.pay_amount.toFixed(2) }}</b></span></p>
@@ -73,6 +80,10 @@
       <div v-if="orderDetail.status==3">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
+      </div>
+      <div v-if="orderDetail.status==6">
+        <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
+        <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
       </div>
     </div>
 
@@ -220,6 +231,9 @@ export default {
       display: inline-block;
       vertical-align: middle;
     }
+  }
+  .express-type {
+    border-bottom: 1px solid #f5f5f5;
   }
   .address-info{
     display: flex;

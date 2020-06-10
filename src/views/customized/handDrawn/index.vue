@@ -41,13 +41,14 @@
     <!-- 中间画板 -->
     <div v-if="design_box.design_H" class="drawn-content">
       <!-- 设计区域  -->
-      <design-area :area-info="designArea" :background="backgroundImg">
+      <design-area :area-info="designArea" :background="backgroundImg" :full="isFullPage" @hidden="hiddenFullPage">
         <!-- 画板 -->
         <VueSignaturePad
           slot="design-content"
           ref="signaturePad"
           :width="`${design_box.design_W}px`"
           :height="`${design_box.design_H}px`"
+          :custom-style="customStyle"
           :options="{ penColor:lineColor,maxWidth:lineWidth, minWidth:minWidth }"
         />
       </design-area>
@@ -55,7 +56,7 @@
     <!-- 底部操作 -->
     <div class="footer-btn">
       <van-button type="default" size="small" @click="initPage(1)">放大</van-button>
-      <!-- <van-button type="default" size="small" @click="fullpage">全屏</van-button> -->
+      <!-- <van-button type="default" size="small" @click="showFullPage">全屏</van-button> -->
       <van-button type="default" size="small" @click="initPage(0.8)">还原</van-button>
       <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
       <van-button type="default" size="small" @click="undo">撤销</van-button>
@@ -89,7 +90,7 @@ export default {
       },
       cropInfo: {},
       backgroundImg: '',
-      lineWidth: 6, // 笔画粗细
+      lineWidth: 3, // 笔画粗细
       minWidth: 1, // 笔锋粗细
       lineColor: '#fff',
       bgColor: '',
@@ -100,11 +101,13 @@ export default {
       loading: false,
       confirmModal: false, // 完成设计
       canvasChange: false,
-      showFullPage: false, // 显示全屏
+      isFullPage: false, // 显示全屏
       previewImg: '', // 预览图片
       width: '', // 手绘图宽度
       height: '', // 手绘图高度
-      design_area_image: '' // 设计区域
+      design_area_image: '', // 设计区域
+      customStyle: {},
+      canvasItem: ''
     }
   },
   computed: {
@@ -135,7 +138,6 @@ export default {
     this.customDetail(this.goods_id, this.sku_id)
   },
   methods: {
-
     // 获取定制分类模板信息
     async customDetail(id, sku_id) {
       await designApi.customDetail({
@@ -148,7 +150,14 @@ export default {
       })
     },
     fullpage() {
-      console.log(this.$refs.signaturePad)
+      this.customStyle = {
+        position: 'fixed',
+        width: `${this.design_box.design_bg_width}px`,
+        height: `${this.design_box.design_bg_height}px`,
+        left: `-${this.design_box.design_bg_X}px`,
+        top: `-${this.design_box.design_bg_Y}px`,
+        background: '#000'
+      }
     },
     // 计算背景图位置 设计区域位置
     initPage(scale) {
@@ -187,8 +196,24 @@ export default {
       }
       setTimeout(() => {
         // this.canvasChange = true
-        this.$refs.signaturePad.resizeCanvas()
+        this.$refs.signaturePad.resizeCanvas(scale)
       }, 500)
+    },
+    showFullPage() {
+      if (this.design_box.design_W / this.design_box.design_H > 1) {
+        this.design_box.design_H = 375 / this.design_box.design_H * this.design_box.design_W
+        this.design_box.design_W = 375
+      }
+      this.canvasItem = this.$refs.signaturePad.saveCanvas()
+      this.isFullPage = true
+      setTimeout(() => {
+        // this.canvasChange = true
+        this.$refs.signaturePad.resizeCanvas(1)
+      }, 500)
+    },
+    hiddenFullPage() {
+      this.isFullPage = false
+      this.initPage(0.8)
     },
     // 获取预览图
     getPreview() {
@@ -326,9 +351,6 @@ export default {
       }
     }
   }
-  .drawn-content{
-    padding: 10px;
-  }
   .footer-btn{
     position: fixed;
     bottom: 0;
@@ -343,6 +365,8 @@ export default {
   .confirm-modal{
     height: 100vh;
     position: relative;
+    padding-top: 46px;
+    box-sizing: border-box;
     .confirm-content{
       padding: 12px;
       text-align: center;

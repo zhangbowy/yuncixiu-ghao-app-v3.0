@@ -103,6 +103,22 @@ var script = {
       var canvas = this.$refs.signaturePadCanvas
       return canvas.toDataURL('image/png')
     },
+    saveCanvas: function saveCanvas() {
+      var canvas = this.$refs.signaturePadCanvas
+      var data = this.signaturePad.toData()
+      const item = {}
+      item.data = data
+      item.canvas = canvas
+      return item
+    },
+    redrawCanvas: function redrawCanvas(item, xratio, yratio) {
+      var canvas = this.$refs.signaturePadCanvas
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      canvas.getContext('2d').scale(xratio, yratio)
+      this.signaturePad.clear()
+      this.signaturePad.fromData(item.data)
+    },
     resizeCanvas: function resizeCanvas() {
       var canvas = this.$refs.signaturePadCanvas
       var data = this.signaturePad.toData()

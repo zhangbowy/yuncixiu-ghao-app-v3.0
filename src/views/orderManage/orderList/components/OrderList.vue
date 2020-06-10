@@ -24,24 +24,37 @@
         </div>
       </div>
       <div class="statistics">
-        <span>共计{{ item.order_item.length }}件商品 合计:￥</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span>(含运费￥{{ item.express_amount.toFixed(2) }})</span>
+        <span class="logistics-type">{{ item._logistics_type }}</span> <span>共计{{ item.order_item.length }}件商品 合计:￥</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span v-if="item.logistics_type==1">(含运费￥{{ item.express_amount.toFixed(2) }})</span>
       </div>
       <div class="list-operation">
-        <div v-if="item.status==1 || item.status==5" class="button-box">
-          <van-button color="#999" round size="mini" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
-          <van-button color="#ee0a24" round size="mini" @click.stop="doPay(item.order_no)">立即支付</van-button>
-        </div>
-        <div v-if="item.status==2 && item.order_type!=1" class="button-box">
-          <van-button color="#ee0a24" round size="mini" plain @click.stop="scanCode(item.order_no)">扫机器码</van-button>
-        </div>
-        <div v-if="item.status==3" class="button-box">
-          <van-button v-if="item.order_type!=1" color="#ee0a24" round size="mini" plain @click.stop="scanCode(item.order_no)">扫机器码</van-button>
-          <van-button color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
-        </div>
-        <div v-if="item.status==6" class="button-box">
-          <van-button color="#999" round size="mini" plain @click.stop="cancelOrder(item.order_no)">取消订单</van-button>
-          <van-button color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">回复报价</van-button>
-          <van-button color="#ee0a24" round size="mini" @click.stop="doPay(item.order_no)">立即支付</van-button>
+        <div class="button-box">
+          <van-button
+            v-if="item.status==1 || item.status==5 || item.status==6"
+            color="#999"
+            round
+            size="mini"
+            plain
+            @click.stop="cancelOrder(item.order_no)"
+          >取消订单</van-button>
+
+          <van-button
+            v-if="item.status==1 || item.status==5 || item.status==6"
+            color="#ee0a24"
+            round
+            size="mini"
+            @click.stop="doPay(item.order_no)"
+          >立即支付</van-button>
+
+          <van-button
+            v-if="item.order_type!=1 && item.logistics_type==2 && item.status == 10"
+            color="#ee0a24"
+            round
+            size="mini"
+            plain
+            @click.stop="scanCode(item.order_no)"
+          >扫机器码</van-button>
+          <van-button v-if="item.status==3" color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
+          <van-button v-if="item.status==6" color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">回复报价</van-button>
         </div>
       </div>
     </div>
@@ -113,8 +126,16 @@ export default {
       wxSdkApi.getJsConfig({
         url: window.location.origin
       }).then(res => {
-        wechatInterface(res, 'scan', (res) => {
-          console.log(res)
+        wechatInterface(res, 'scan', (result) => {
+          if (result) {
+            var code = result.split(' ')[0]
+            orderApi.scanMachine({
+              order_no: order_no,
+              machine_code: code
+            }).then(res => {
+              Toast(res.msg)
+            })
+          }
         }, (error) => {
           console.log(error)
         })
@@ -229,6 +250,13 @@ export default {
       text-align: right;
       padding: 10px;
       border-bottom: 1px solid #f5f5f5;
+      .logistics-type{
+        float: left;
+        border-radius: 3px;
+        padding:3px;
+        color: #ee0a24;
+        border:1px solid #ee0a24;
+      }
       span{
         display: inline-block;
       }

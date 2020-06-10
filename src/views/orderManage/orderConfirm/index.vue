@@ -5,10 +5,10 @@
       <top-bar title="确认订单" />
     </div>
     <div class="express-type">
-      <van-cell title="配送方式" @click="show = true">
+      <van-cell title="配送方式" style="line-height: 1" :border="false" @click="show = true">
         <template #right-icon>
           <span
-            style="background: #ee0a24; color: #fff;border-radius: 8px;padding: 0 5px 0;font-size: 10px"
+            style="border:1px solid #ee0a24; color: #ee0a24;border-radius: 3px;padding: 2px 5px;font-size: 10px"
           >{{ orderType.name }}</span>
         </template>
       </van-cell>
@@ -129,11 +129,11 @@ export default {
       submitLaoding: false,
       address_id: '',
       actions: [
-        { name: '快递', type: 1 },
-        { name: '实体店铺', type: 2 }
+        { name: '快递发货', type: 1 },
+        { name: '门店自提', type: 2 }
       ],
       orderType: {
-        name: '快递',
+        name: '快递发货',
         type: 1
       },
       orderInfo: {

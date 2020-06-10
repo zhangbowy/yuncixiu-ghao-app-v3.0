@@ -27,11 +27,6 @@ const wechatInterface = (data, type, resolve, reject) => {
 
   // const packages = data.package
 
-  // const paySign = data.paySign
-  const url = window.location.href.split('#')[0] // 获取锚点之前的链接
-  // let links = url+'#/Food/' + this.$route.params.id;
-  const links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id
-
   wx.config({
 
     debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -50,6 +45,10 @@ const wechatInterface = (data, type, resolve, reject) => {
   // 由于微信不让诱导分享，所以只能点击右上角三个点中的分享按钮
   // 这里的分享只是修改了分享内容
   if (type === 'share') {
+    // const paySign = data.paySign
+    const url = window.location.href.split('#')[0] // 获取锚点之前的链接
+    // let links = url+'#/Food/' + this.$route.params.id;
+    const links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id
     // 分享朋友
     // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容（1.4.0）
     wx.ready(function() {

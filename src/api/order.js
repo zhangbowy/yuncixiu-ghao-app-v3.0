@@ -85,5 +85,16 @@ export const orderApi = {
       method: 'post',
       data
     })
+  },
+  /**
+   * 保存机器码
+   * @param {*order_no machine_code} data
+   */
+  scanMachine(data) {
+    return request({
+      url: '/order/scanMachine',
+      method: 'post',
+      data
+    })
   }
 }
