@@ -55,8 +55,8 @@
     </div>
     <!-- 底部操作 -->
     <div class="footer-btn">
-      <!-- <van-button type="default" size="small" @click="initPage(1)">放大</van-button> -->
-      <van-button type="default" size="small" @click="showFullPage">全屏</van-button>
+      <van-button type="default" size="small" @click="initPage(1)">放大</van-button>
+      <!-- <van-button type="default" size="small" @click="showFullPage">全屏</van-button> -->
       <van-button type="default" size="small" @click="initPage(0.8)">还原</van-button>
       <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
       <van-button type="default" size="small" @click="undo">撤销</van-button>
@@ -127,10 +127,6 @@ export default {
         Toast('高度不能超过150mm')
         this.height = 150
       }
-    },
-    stateLed(newValue, oldValue) {
-      console.log(newValue)
-      this.initPage(0.8)
     }
   },
   created() {
@@ -142,10 +138,6 @@ export default {
     this.customDetail(this.goods_id, this.sku_id)
   },
   methods: {
-    showFullPage() {
-      document.body.parentNode.setAttribute('class', 'landscape')
-      this.initPage2(0.8)
-    },
     // 获取定制分类模板信息
     async customDetail(id, sku_id) {
       await designApi.customDetail({
@@ -169,7 +161,6 @@ export default {
     },
     // 计算背景图位置 设计区域位置
     initPage(scale) {
-      document.body.parentNode.setAttribute('class', 'portrait')
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
       // 计算比例 scale表示屏幕的宽度*scale
       const design_scale = SCREEN_WIDTH * scale / this.customInfo.custom_info.design_width
@@ -202,53 +193,23 @@ export default {
         left: `${this.design_box.design_X}px`,
         top: '50%',
         marginTop: `-${this.design_box.design_H / 2}px`,
-        background: `rgba(0, 0, 0, 0.5)`,
-        border: `5px solid rgba(192, 192, 192, 0.5)`
+        background: `rgba(0, 0, 0, 0.5)`
       }
       setTimeout(() => {
         // this.canvasChange = true
         this.$refs.signaturePad.resizeCanvas(scale)
       }, 500)
     },
-    // 全屏模式下计算背景图位置 设计区域位置
-    initPage2(scale) {
-      const SCREEN_WIDTH = window.screen.height // 获取屏幕宽度
-      // 计算比例 scale表示屏幕的宽度*scale
-      const design_scale = SCREEN_WIDTH * scale / this.customInfo.custom_info.design_width
-      this.design_box.design_scale = design_scale
-      // 计算设计区背景实际宽高 ps:基本上是固定的
-      this.design_box.design_bg_width = design_scale * this.customInfo.custom_info.design_bg_width
-      this.design_box.design_bg_height = design_scale * this.customInfo.custom_info.design_bg_height
-      // 设计区域实际宽高和左上对齐位置
-      this.design_box.design_W = this.customInfo.custom_info.design_width * design_scale
-      this.design_box.design_H = this.customInfo.custom_info.design_height * design_scale
-      this.design_box.design_X = (SCREEN_WIDTH - this.design_box.design_W) / 2
-      this.design_box.design_Y = (SCREEN_WIDTH - this.design_box.design_H) / 2
-      // 计算设计区背景图的对齐位置
-      this.design_box.design_bg_X = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_Y
-      this.design_box.design_bg_Y = this.customInfo.custom_info.design_top * design_scale - this.design_box.design_X
-
-      // 背景图位置style
-      this.designArea.designImgStyle = {
-        position: 'absolute',
-        width: `${this.design_box.design_bg_height}px`,
-        height: `${this.design_box.design_bg_width}px`,
-        left: `-${this.design_box.design_bg_X * 2}px`,
-        top: `-${this.design_box.design_bg_Y}px`
+    showFullPage() {
+      if (this.design_box.design_W / this.design_box.design_H > 1) {
+        this.design_box.design_H = 375 / this.design_box.design_H * this.design_box.design_W
+        this.design_box.design_W = 375
       }
-      // 设计区域位置style
-      this.designArea.designBoxStyle = {
-        position: 'absolute',
-        width: `${this.design_box.design_H}px`,
-        height: `${this.design_box.design_W}px`,
-        left: `${this.design_box.design_X / 2}px`,
-        top: '50%',
-        marginTop: `-${375 / 2}px`,
-        background: `rgba(0, 0, 0, 0.5)`
-      }
+      this.canvasItem = this.$refs.signaturePad.saveCanvas()
+      this.isFullPage = true
       setTimeout(() => {
         // this.canvasChange = true
-        this.$refs.signaturePad.resizeCanvas(scale)
+        this.$refs.signaturePad.resizeCanvas(1)
       }, 500)
     },
     hiddenFullPage() {
@@ -431,38 +392,6 @@ export default {
       button{
         width: 30%;
       }
-    }
-  }
-}
-</style>
-<style lang="scss">
-.portrait body{
-  .navbar {
-    display: block;
-  }
-  .drawn-config{
-    display: block;
-  }
-}
-.landscape body{
-  .navbar {
-    display: none;
-  }
-  .customized-content{
-    overflow: hidden;
-  }
-  .bg-img{
-    transform: rotate(90deg);
-  }
-  .drawn-config{
-    display: none;
-  }
-  .designArea {
-    .bg-box{
-      height: 100%;
-      overflow: unset;
-      position: static;
-      transform: translateY(0);
     }
   }
 }

@@ -57,7 +57,7 @@
         <van-field name="switch" label="包含商品">
           <template #input>
             <van-switch
-              v-model="switchChecked"
+              v-model="form.is_only_design"
               size="20"
             />
           </template>
@@ -116,6 +116,7 @@ export default {
         width: '',
         height: '',
         time: '',
+        is_only_design: true,
         colorNum: '',
         desc: ''
       }
@@ -168,6 +169,7 @@ export default {
         special_custom_height: this.form.height,
         special_color_num: this.form.colorNum,
         special_custom_desc: this.form.desc,
+        is_only_design: this.form.is_only_design === true ? 0 : 1,
         special_custom_image: this.uploader[0].content ? this.uploader[0].content : ''
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {

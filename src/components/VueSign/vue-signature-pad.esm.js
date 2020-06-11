@@ -131,6 +131,9 @@ var script = {
       this.signatureData = TRANSPARENT_PNG
       this.signaturePad.fromData(data)
     },
+    getHorizontal() {
+
+    },
     saveSignature: function saveSignature(type, encoderOptions) {
       if (type === void 0) type = IMAGE_TYPES[0]
 
