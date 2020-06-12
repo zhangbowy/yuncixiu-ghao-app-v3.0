@@ -99,26 +99,6 @@ var script = {
     }
   },
   methods: {
-    getBase64PNG() {
-      var canvas = this.$refs.signaturePadCanvas
-      return canvas.toDataURL('image/png')
-    },
-    saveCanvas: function saveCanvas() {
-      var canvas = this.$refs.signaturePadCanvas
-      var data = this.signaturePad.toData()
-      const item = {}
-      item.data = data
-      item.canvas = canvas
-      return item
-    },
-    redrawCanvas: function redrawCanvas(item, xratio, yratio) {
-      var canvas = this.$refs.signaturePadCanvas
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-      canvas.getContext('2d').scale(xratio, yratio)
-      this.signaturePad.clear()
-      this.signaturePad.fromData(item.data)
-    },
     resizeCanvas: function resizeCanvas() {
       var canvas = this.$refs.signaturePadCanvas
       var data = this.signaturePad.toData()
@@ -169,7 +149,7 @@ var script = {
         cropInfo.height = crop_area[3] - crop_area[1]
         cropInfo.site = crop_area
         return Object.assign({}, status,
-          { data: this.signatureData, cropInfo: cropInfo })
+          { res: resImgData, data: this.signatureData, cropInfo: cropInfo })
       }
     },
     getCropArea(imgData) {

@@ -42,8 +42,13 @@
     <div v-if="design_box.design_H" class="drawn-content">
       <!-- 设计区域  -->
       <design-area :area-info="designArea" :background="backgroundImg" :full="isFullPage" @hidden="hiddenFullPage">
-        <!-- 画板 -->
+        <!-- 非全屏 -->
+        <div v-if="!isFullPage" slot="design-content" :style="designArea.designBoxStyle" class="design-img-box">
+          <img :src="resultImg" :style="designImg" alt="">
+        </div>
+        <!-- 全屏画板 -->
         <VueSignaturePad
+          v-show="isFullPage"
           slot="design-content"
           ref="signaturePad"
           :width="`${design_box.design_W}px`"
@@ -56,11 +61,11 @@
     <!-- 底部操作 -->
     <div class="footer-btn">
       <!-- <van-button type="default" size="small" @click="initPage(1)">放大</van-button> -->
-      <van-button type="default" size="small" @click="showFullPage">全屏</van-button>
-      <van-button type="default" size="small" @click="initPage(0.8)">还原</van-button>
-      <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
-      <van-button type="default" size="small" @click="undo">撤销</van-button>
-      <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
+      <van-button v-if="!isFullPage" type="default" size="small" @click="showFullPage">开始手绘</van-button>
+      <van-button v-if="isFullPage" type="default" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="initPage(0.8)">完成</van-button>
+      <van-button type="default" size="small" @click="handleReset">清空</van-button>
+      <van-button v-if="isFullPage" type="default" size="small" @click="undo">撤销</van-button>
+      <van-button v-if="!isFullPage" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
     </div>
     <!-- 完成设计弹出层 -->
     <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
@@ -107,7 +112,8 @@ export default {
       height: '', // 手绘图高度
       design_area_image: '', // 设计区域
       customStyle: {},
-      canvasItem: ''
+      canvasItem: '',
+      designImg: {}
     }
   },
   computed: {
@@ -127,11 +133,8 @@ export default {
         Toast('高度不能超过150mm')
         this.height = 150
       }
-    },
-    stateLed(newValue, oldValue) {
-      console.log(newValue)
-      this.initPage(0.8)
     }
+
   },
   created() {
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
@@ -143,36 +146,28 @@ export default {
   },
   methods: {
     showFullPage() {
+      this.isFullPage = true
       document.body.parentNode.setAttribute('class', 'landscape')
-      this.initPage2(0.8)
+      this.initPage2()
     },
     // 获取定制分类模板信息
-    async customDetail(id, sku_id) {
-      await designApi.customDetail({
+    customDetail(id, sku_id) {
+      designApi.customDetail({
         id: id,
         sku_id: sku_id
       }).then(res => {
         this.customInfo = res.data
         this.backgroundImg = res.data.item && res.data.item.background ? res.data.item.background : res.data.custom_info.design_bg
-        this.initPage(0.8)
+        this.initPage()
       })
     },
-    fullpage() {
-      this.customStyle = {
-        position: 'fixed',
-        width: `${this.design_box.design_bg_width}px`,
-        height: `${this.design_box.design_bg_height}px`,
-        left: `-${this.design_box.design_bg_X}px`,
-        top: `-${this.design_box.design_bg_Y}px`,
-        background: '#000'
-      }
-    },
     // 计算背景图位置 设计区域位置
-    initPage(scale) {
+    initPage() {
+      this.isFullPage = false
       document.body.parentNode.setAttribute('class', 'portrait')
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
       // 计算比例 scale表示屏幕的宽度*scale
-      const design_scale = SCREEN_WIDTH * scale / this.customInfo.custom_info.design_width
+      const design_scale = SCREEN_WIDTH * 0.8 / this.customInfo.custom_info.design_width
       this.design_box.design_scale = design_scale
       // 计算设计区背景实际宽高 ps:基本上是固定的
       this.design_box.design_bg_width = design_scale * this.customInfo.custom_info.design_bg_width
@@ -202,65 +197,70 @@ export default {
         left: `${this.design_box.design_X}px`,
         top: '50%',
         marginTop: `-${this.design_box.design_H / 2}px`,
-        background: `rgba(0, 0, 0, 0.5)`,
-        border: `5px solid rgba(192, 192, 192, 0.5)`
+        background: `rgba(0, 0, 0, 0.5)`
       }
+      this.getDrawImg()
       setTimeout(() => {
         // this.canvasChange = true
-        this.$refs.signaturePad.resizeCanvas(scale)
+        this.$refs.signaturePad.resizeCanvas()
       }, 500)
     },
     // 全屏模式下计算背景图位置 设计区域位置
-    initPage2(scale) {
-      const SCREEN_WIDTH = window.screen.height // 获取屏幕宽度
+    initPage2() {
+      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度 375
+      const SCREEN_HEIGHT = window.screen.height // 获取屏幕高度 667
       // 计算比例 scale表示屏幕的宽度*scale
-      const design_scale = SCREEN_WIDTH * scale / this.customInfo.custom_info.design_width
+      const design_scale = SCREEN_WIDTH / this.customInfo.custom_info.design_height // 屏幕宽度/ 高度的比例
       this.design_box.design_scale = design_scale
       // 计算设计区背景实际宽高 ps:基本上是固定的
       this.design_box.design_bg_width = design_scale * this.customInfo.custom_info.design_bg_width
       this.design_box.design_bg_height = design_scale * this.customInfo.custom_info.design_bg_height
       // 设计区域实际宽高和左上对齐位置
-      this.design_box.design_W = this.customInfo.custom_info.design_width * design_scale
-      this.design_box.design_H = this.customInfo.custom_info.design_height * design_scale
-      this.design_box.design_X = (SCREEN_WIDTH - this.design_box.design_W) / 2
-      this.design_box.design_Y = (SCREEN_WIDTH - this.design_box.design_H) / 2
-      // 计算设计区背景图的对齐位置
-      this.design_box.design_bg_X = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_Y
-      this.design_box.design_bg_Y = this.customInfo.custom_info.design_top * design_scale - this.design_box.design_X
+      this.design_box.design_W = SCREEN_WIDTH // 屏幕宽度
+      this.design_box.design_H = this.customInfo.custom_info.design_width * design_scale // 比例*设计区域宽度
 
+      // 计算设计区背景图的对齐位置
+      this.design_box.design_bg_X = this.design_box.design_bg_width - (this.customInfo.custom_info.design_top * design_scale) - SCREEN_WIDTH
+
+      this.design_box.design_X = 0 // x轴位置
+      this.design_box.design_Y = (SCREEN_HEIGHT - this.design_box.design_H) / 2 // y轴
+      if (this.design_box.design_Y < 0) {
+        this.design_box.design_Y = 0
+        this.design_box.design_H = SCREEN_HEIGHT
+      }
+      this.design_box.design_bg_Y = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_Y
       // 背景图位置style
       this.designArea.designImgStyle = {
         position: 'absolute',
         width: `${this.design_box.design_bg_height}px`,
         height: `${this.design_box.design_bg_width}px`,
-        left: `-${this.design_box.design_bg_X * 2}px`,
+        left: `-${this.design_box.design_bg_X}px`,
         top: `-${this.design_box.design_bg_Y}px`
       }
       // 设计区域位置style
       this.designArea.designBoxStyle = {
         position: 'absolute',
-        width: `${this.design_box.design_H}px`,
-        height: `${this.design_box.design_W}px`,
-        left: `${this.design_box.design_X / 2}px`,
-        top: '50%',
-        marginTop: `-${375 / 2}px`,
+        width: `${this.design_box.design_W}px`,
+        height: `${this.design_box.design_H}px`,
+        left: `${this.design_box.design_X}px`,
+        top: `${this.design_box.design_Y}px`,
         background: `rgba(0, 0, 0, 0.5)`
       }
       setTimeout(() => {
         // this.canvasChange = true
-        this.$refs.signaturePad.resizeCanvas(scale)
+        this.$refs.signaturePad.resizeCanvas()
       }, 500)
     },
     hiddenFullPage() {
       this.isFullPage = false
-      this.initPage(0.8)
+      this.initPage()
     },
     // 获取预览图
     getPreview() {
       this.loading = true
       const draw_height_scale = this.cropInfo.height / this.design_box.design_H
-      const draw_left_scale = this.cropInfo.site[0] / this.design_box.design_W
-      const draw_top_scale = this.cropInfo.site[1] / this.design_box.design_H
+      const draw_left_scale = this.cropInfo.left / this.design_box.design_W
+      const draw_top_scale = this.cropInfo.top / this.design_box.design_H
       // 请求预览图接口
       designApi.getPreview({
         id: this.$route.query.goods_id,
@@ -280,20 +280,75 @@ export default {
     // 清空画布
     handleReset() {
       this.$refs.signaturePad.clearSignature()
+      this.getDrawImg()
     },
     // 撤销
     undo() {
       this.$refs.signaturePad.undoSignature()
+      this.getDrawImg()
+    },
+    // 获取绘制的图片
+    getDrawImg() {
+      const { res, data, cropInfo } = this.$refs.signaturePad.saveSignature()
+      if (data) {
+        const CANVAS_W = res.width
+        const CANVAS_H = res.height
+        const IMG_W = cropInfo.width
+        const IMG_H = cropInfo.height
+        const scale = CANVAS_H / (CANVAS_W * 0.8)
+        this.designImg = {
+          width: `${IMG_H / scale}px`,
+          height: `${IMG_W / scale}px`,
+          position: 'absolute',
+          left: `${cropInfo.site[1] / scale}px`,
+          bottom: `${cropInfo.site[0] / scale}px`
+        }
+        this.cropInfo.left = cropInfo.site[1] / scale
+        this.cropInfo.height = IMG_W / scale
+        this.cropInfo.top = this.design_box.design_H - (IMG_W / scale) - (cropInfo.site[0] / scale)
+        // designImg
+
+        this.rotate90(data, IMG_W, IMG_H).then(res => {
+          this.resultImg = res
+        })
+      } else {
+        this.resultImg = ''
+      }
+    },
+    rotate90(imgUrl, width, height) {
+      return new Promise(function(resolve, reject) {
+        try {
+          // 1. 创建图片，canvas,获取画布
+          var img = new Image()
+          var canvas = document.createElement('canvas')
+          var ctx = canvas.getContext('2d')
+          img.src = imgUrl
+          // 2. 图片加载完成进行图片编辑
+          img.onload = function() {
+            // 2.1 设置canvas宽高，旋转90° ，宽高互换
+            canvas.width = height
+            canvas.height = width
+            // 2.2 画布中心点(也是起始点)平移至中心(0,0)->(x,y)
+            ctx.translate(canvas.width / 2, canvas.height / 2)
+            // 2.3 画布旋转90°
+            ctx.rotate(-90 * Math.PI / 180)
+            // 2.4 绘制图像 图像起始点需偏移负宽高
+            ctx.drawImage(img, -width / 2, -height / 2)
+            // 2.5返回结果(base64)
+            resolve(canvas.toDataURL())
+          }
+        } catch (error) {
+          reject(error)
+        }
+      })
     },
     // 完成绘制
     handleGenerate() {
-      const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
-      if (isEmpty === true) {
-        alert('请绘制内容')
-        return false
-      }
-      this.resultImg = data
-      this.cropInfo = cropInfo
+      // const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
+      // if (isEmpty === true) {
+      //   alert('请绘制内容')
+      //   return false
+      // }
       this.getPreview()
       this.confirmModal = true
     },
@@ -311,8 +366,9 @@ export default {
     // 画笔颜色选择
     updateValue(val) {
       this.lineColor = val.hex
-    },
-    onChange(value) {
+      setTimeout(() => {
+        this.$refs.signaturePad.resizeCanvas()
+      }, 500)
     },
     // 立即购买
     buyNow() {
@@ -451,11 +507,14 @@ export default {
   .customized-content{
     overflow: hidden;
   }
-  .bg-img{
-    transform: rotate(90deg);
-  }
   .drawn-config{
     display: none;
+  }
+  .hand-drawn{
+    padding: 0
+  }
+  .bg-img{
+    transform: rotate(90deg);
   }
   .designArea {
     .bg-box{
