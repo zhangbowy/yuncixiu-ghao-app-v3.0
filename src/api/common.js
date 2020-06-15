@@ -9,3 +9,13 @@ export const wxSdkApi = {
     })
   }
 }
+// 代理图片
+export const commonApi = {
+  getImage(params) {
+    return request({
+      url: '/custom/getImage',
+      method: 'get',
+      params
+    })
+  }
+}

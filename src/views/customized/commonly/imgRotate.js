@@ -54,33 +54,27 @@
    *   add &nbsp; for empty chars.
    */
   function injector(t, splitter, klass, after) {
-    var inject = ''; var emptyclass
-    if (t[0].tagName === 'SPAN') {
-      var a = t.text().split(splitter)
-      if (a.length) {
-        $(a).each(function(i, item) {
-          emptyclass = ''
-          if (item === ' ') {
-            emptyclass = ' empty'
-            item = '&nbsp;'
-          }
-          inject += '<span class="' + klass + (i + 1) + emptyclass + '">' + item + '</span>' + after
-        })
-        t.empty().append(inject)
-      }
+    var a
+    if (t.text().split(splitter).length > 0) {
+      a = t.text().split(splitter)
     } else {
-      var src = t[0].children
-      if (src.length) {
-        $(src).each(function(i, item) {
-          emptyclass = ''
-          if (item.src === ' ') {
-            emptyclass = ' empty'
-            item = '&nbsp;'
-          }
-          inject += '<img src="' + item.src + '" class="' + klass + (i + 1) + emptyclass + '" height="12">' + after
-        })
-        t.empty().append(inject)
-      }
+      a = t[0].children
+    }
+    var inject = ''; var emptyclass
+    if (a.length) {
+      $(a).each(function(i, item) {
+        emptyclass = ''
+        if (item === ' ') {
+          emptyclass = ' empty'
+          item = '&nbsp;'
+        }
+        if (item.tagName && item.tagName === 'IMG') {
+          inject += '<span class="' + klass + (i + 1) + emptyclass + '">' + '<img src="' + item.src + '" height="' + item.height + '" />' + '</span>' + after
+        } else {
+          inject += '<span class="' + klass + (i + 1) + emptyclass + '">' + item + '</span>' + after
+        }
+      })
+      t.empty().append(inject)
     }
   }
 
@@ -138,6 +132,7 @@
   $.Arctext.prototype = {
     _init: function(options) {
       this.options = $.extend(true, {}, $.Arctext.defaults, options)
+
       // apply the lettering plugin.
       this._applyLettering()
 
@@ -158,7 +153,6 @@
       if (this.options.fitText) { this.$el.fitText() }
 
       this.$letters = this.$el.find('span').css('display', 'inline-block')
-      this.$letters = this.$el.find('img').css('display', 'inline-block')
     },
     _calc: function() {
       if (this.options.radius === -1) { return false }

@@ -5,21 +5,21 @@
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
-            <van-dropdown-item ref="fontType" title="字体">
+            <van-dropdown-item ref="fontType" :title="fontType.font_name">
               <van-cell
                 v-for="item in fontTypeOptions"
                 :key="item.font_id"
                 clickable
                 class="font-dropdown"
-                @click="fontChange(item.font_id)"
+                @click="fontChange(item)"
               >
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template #title>
-                  <span class="custom-title" :class="{'active':fontType==item.font_id }">{{ item.font_name }}</span>
+                  <span class="custom-title" :class="{'active':fontType==item }">{{ item.font_name }}</span>
                   <img :src="item.preview_image" alt="" class="font-icon">
                 </template>
                 <template #right-icon>
-                  <van-icon :name="fontType==item.font_id?'success': ''" color="#1989fa" style="line-height: inherit;" />
+                  <van-icon :name="fontType==item?'success': ''" color="#1989fa" style="line-height: inherit;" />
                 </template>
               </van-cell>
             </van-dropdown-item>
@@ -32,10 +32,29 @@
                   <sketch-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
-            <van-dropdown-item v-model="fontSize" :options="sizeOptions" @change="fontSizeChange" />
+            <van-dropdown-item ref="fontSize" :title="`${fontSize}mm`">
+              <!-- <number-input
+                v-model="fontSize"
+                width="100%"
+                :value="fontSize"
+                label="字体高度"
+                :min="fontType.min_height"
+                :max="fontType.max_height"
+                placeholder="请输入字体高度"
+                unit="mm"
+              /> -->
+              <van-cell title="字体高度">
+                <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+                <template #right-icon>
+                  <van-stepper v-model="fontSize" :min="fontType.min_height" :max="fontType.max_height" />
+                </template>
+              </van-cell>
+
+              <span style="font-size: 14px; color:#999;display: block;padding: 16px;">当前字体高度在{{ fontType.min_height }}mm至{{ fontType.max_height }}mm之间</span>
+            </van-dropdown-item>
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
             <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
-              <van-switch-cell v-model="openArc" title="是否开启" @change="changeOpenArc" />
+              <van-switch-cell v-model="openArc" title="是否开启" />
             </van-dropdown-item>
           </van-dropdown-menu>
         </div>
@@ -68,7 +87,7 @@
           alt=""
         >
         <!-- 设计区域 -->
-        <div ref="designBox" class="design-box" :style="designBoxStyle">
+        <div class="design-box" :style="designBoxStyle">
           <!-- 上输入框  -->
           <div
             v-if="currentTemplate.emb_template_id!==2"
@@ -85,9 +104,7 @@
                 v-if="topFocus==false && topInput==false && topImg.length==0"
               >{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
               <div v-else ref="topImgContent" class="top-img-content">
-                <span id="test">
-                  <img v-for="(item,index) in topImg" :key="index" :height="form.topText.fontSize" :src="item" alt="">
-                </span>
+                <img v-for="(item,index) in topImg" :key="index" :height="form.topText.fontSize" :src="item" alt="">
               </div>
             </div>
             <div v-if="topFocus==true" class="input-box">
@@ -112,14 +129,6 @@
               @click.stop="showMiddleMemu()"
             >
           </div>
-          <!-- <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
-            <img
-              src="https://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/design/15/7/2020-05-28-17:15:33/Car2.PNG"
-              alt=""
-              width="100"
-              @click.stop="showMiddleMemu()"
-            >
-          </div> -->
           <!-- 下输入框 -->
           <div
             v-if="currentTemplate.emb_template_id==3"
@@ -136,7 +145,13 @@
                 v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0"
               >{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
               <div v-else ref="bottomImgContent" class="bottom-img-content">
-                <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item">
+                <img
+                  v-for="(item,index) in bottomImg"
+                  :key="index"
+                  :height="form.bottomText.fontSize"
+                  :src="item"
+                  alt=""
+                >
               </div>
             </div>
             <div v-if="bottomFocus==true" class="input-box">
@@ -206,9 +221,9 @@
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
         <div class="modal-title">修改图片尺寸</div>
-        <div class="modal-content">
+        <div class="modal-content" style="text-align: left">
           <div class="img-size">
-            <number-input
+            <!-- <number-input
               v-model="form.middleImg.height"
               width="100%"
               :value="form.middleImg.height"
@@ -216,7 +231,13 @@
               :max="middleImgHeight"
               placeholder="请输入高度"
               unit="mm"
-            />
+            /> -->
+            <van-cell title="图片高度">
+              <template #right-icon>
+                <van-stepper v-model="form.middleImg.height" :min="0" :max="middleImgHeight" />
+              </template>
+            </van-cell>
+            <span style="font-size: 14px; color:#999;display: block;padding: 10px 16px;">注：当前图片高度在0mm至{{ middleImgHeight }}mm之间</span>
           </div>
         </div>
       </div>
@@ -226,27 +247,23 @@
 
 <script>
 import { designApi } from '@/api/design'
-import { commonApi } from '@/api/common'
 import Sketch from '@/components/VueColorPicker/Sketch'
 import Compact from '@/components/VueColorPicker/Compact'
-import NumberInput from '@/components/Input/NumberInput'
 import ConfirmModal from './components/ConfirmModal'
 import PreviewModal from './components/PreviewModal'
 import TemplateModal from './components/TemplateModal'
 import PatternModal from './components/PatternModal'
 import BottomOptions from './components/BottomOptions'
-import { debounce } from '@/utils'
+import { debounce, getNaturalImgSize } from '@/utils'
 import { mapState } from 'vuex'
-import html2canvas from 'html2canvas'
 import $ from 'jquery'
-import './imgRotate'
+import './arctext'
 import { Toast } from 'vant'
 import store from '@/store'
 export default {
   components: {
     'sketch-picker': Sketch,
     'compact-picker': Compact,
-    'number-input': NumberInput,
     'preview-modal': PreviewModal,
     'confirm-modal': ConfirmModal,
     'template-modal': TemplateModal,
@@ -261,6 +278,7 @@ export default {
       templateModal: false, // 模板选择弹框
       previewModal: false, // 预览弹框是否显示
       confirmModal: false, // 完成设计
+
       visible: false, // 顶部操作是否显示
       middleVisible: false, // 顶部图片属性是否显示
       topFocus: false, // 上输入框聚焦
@@ -269,7 +287,7 @@ export default {
       bottomInput: false,
       loading: false, // 加载动画
       showInput: false, // 显示上传图片弹框
-      openArc: true, // 是否开启弧形
+      openArc: false, // 是否开启弧形
       figureList: [], // 花样库
       templateList: [], // 模板列表
       currentTemplate: {}, // 当前模板
@@ -277,7 +295,7 @@ export default {
       topImg: [], // 上图片
       bottomText: '', // 底部文本
       bottomImg: [], // 底部图片
-      fontType: '', // 字体类型
+      fontType: {}, // 字体类型
       fontTypeOptions: [], // 可选字体
       fontAlign: 'center', // 字体对齐方式
       alignment: [{
@@ -291,13 +309,6 @@ export default {
         hex: 'fff'
       },
       fontSize: 12, // 字体高度
-      sizeOptions: [
-        { text: '8px', value: 8 },
-        { text: '12px', value: 12 },
-        { text: '18px', value: 18 },
-        { text: '24px', value: 24 },
-        { text: '45px', value: 45 }
-      ],
       form: {
         topText: {
           content: '',
@@ -349,8 +360,7 @@ export default {
       designImgStyle: {}, // 设计背景style
       designBoxStyle: {}, // 设计区域style
       previewImg: '', // 预览图片
-      design_area_image: '', // 设计区域整体图片
-      design_image: '' // 设计区域整体图片
+      design_area_image: '' // 设计区域整体图片
     }
   },
   computed: {
@@ -381,10 +391,14 @@ export default {
         this.form.middleImg.prev_png_path = ''
       }
     },
+    // 是否启用弧形文字
+    openArc(newValue, oldValue) {
+      if (newValue === true) {
+        this.imgRotate()
+      }
+    },
     // 监听当前模板变化
     currentTemplate: {
-      deep: true,
-      immediate: true,
       handler(newValue, old) {
         const type = newValue.emb_template_id
         if (type === 1) {
@@ -398,11 +412,11 @@ export default {
           this.bottomImg = []
           this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
           this.form.middleImg.height = this.design_box.design_H / this.design_box.design_scale
-          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale
-          this.middleImgWidth = this.design_box.design_W / this.design_box.design_scale
+          this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale).toFixed(2)
+          this.middleImgWidth = (this.design_box.design_W / this.design_box.design_scale).toFixed(2)
         }
         if (type === 3) {
-          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale
+          this.middleImgHeight = (this.design_box.design_H / this.design_box.design_scale) - (90 / this.design_box.design_scale)
           this.form.middleImg.height = this.middleImgHeight
         }
       }
@@ -426,12 +440,15 @@ export default {
   },
 
   methods: {
-
     // 获取字体列表
     getFontList() {
       designApi.getFontList().then(res => {
         this.fontTypeOptions = res.data
-        this.fontType = res.data[0].font_id
+        this.fontType = res.data[0]
+        this.form.topText.fontType = res.data[0].font_id
+        this.form.bottomText.fontType = res.data[0].font_id
+        this.form.topText.fontSize = res.data[0].min_height
+        this.form.bottomText.fontSize = res.data[0].min_height
       })
     },
     // 获取定制模板
@@ -441,6 +458,7 @@ export default {
       }).then(res => {
         this.templateList = res.data
         this.currentTemplate = this.templateList[2]
+        this.form.middleImg.height = this.middleImgHeight
       })
     },
     // 获取花样库列表
@@ -480,9 +498,6 @@ export default {
       this.design_box.design_bg_X = item.custom_info.design_left * design_scale - this.design_box.design_X
       this.design_box.design_bg_Y = item.custom_info.design_top * design_scale - this.design_box.design_Y
 
-      // 中间图片的最大宽高 单位毫米
-      this.middleImgWidth = this.design_box.design_W / design_scale
-      this.middleImgHeight = this.design_box.design_H / design_scale - 90 / design_scale
       // 背景图位置style
       this.designImgStyle = {
         position: 'absolute',
@@ -500,30 +515,30 @@ export default {
         top: '50%',
         marginTop: `-${this.design_box.design_H / 2}px`
       }
+      // 中间图片的最大宽高 单位毫米
+      this.middleImgWidth = (this.design_box.design_W / design_scale).toFixed(2)
+      this.middleImgHeight = (this.design_box.design_H / design_scale - 90 / design_scale).toFixed(2)
+      this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
+      this.form.middleImg.height = this.middleImgHeight
     },
     // 输入框聚焦
     inpuFocus(type) {
-      return new Promise((resolve, reject) => {
-        this.visible = true
-        this.middleVisible = false
-        if (type === 1) {
-          this.fontSize = this.form.topText.fontSize
-          this.topFocus = true
-        } else {
-          this.fontSize = this.form.bottomText.fontSize
-          this.bottomFocus = true
-        }
-        resolve()
-      })
+      this.visible = true
+      this.middleVisible = false
+      if (type === 1) {
+        this.fontSize = this.form.topText.fontSize
+        this.topFocus = true
+      } else {
+        this.fontSize = this.form.bottomText.fontSize
+        this.bottomFocus = true
+      }
     },
     // 输入框失去焦点
     inputBlur(type) {
-      return new Promise((resolve, reject) => {
-        type === 1 ? this.topFocus = false : this.bottomFocus = false
-        if (this.openArc === true) {
-          this.imgRotate()
-        }
-      })
+      type === 1 ? this.topFocus = false : this.bottomFocus = false
+      if (this.openArc === true) {
+        this.imgRotate()
+      }
     },
     // 文字图片点击
     imgFocus(type) {
@@ -539,81 +554,29 @@ export default {
         this.bottomInput = true
       }
     },
-    async fontSizeChange(value) {
-      this.fontSize = value
-      if (this.topInput === true) {
-        this.form.topText.fontSize = value
-        await this.getFontTop()
-        if (this.openArc === true) {
-          this.inpuFocus(1).then(() => {
-            this.inputBlur(1).then(() => {
-              this.imgRotate()
-            })
-          })
-        } else {
-          this.inpuFocus(1).then(() => {
-            this.inputBlur(1).then(() => {
-              this.getFontTop()
-            })
-          })
-        }
-      }
-      if (this.bottomInput === true) {
-        this.form.bottomText.fontSize = value
-        this.getFontBottom()
-      }
-    },
-    // 是否弧形
-    changeOpenArc() {
-      if (this.openArc === true) {
-        this.inpuFocus(1).then(() => {
-          this.inputBlur(1).then(() => {
-            this.imgRotate()
-          })
-        })
-      } else {
-        this.inpuFocus(1).then(() => {
-          this.inputBlur(1).then(() => {
-            this.getFontTop()
-          })
-        })
-      }
-    },
     getFontTop: debounce(function() {
       let arr = []
       const text = this.form.topText.content
       arr = text.split('')
       designApi.getTextImage({
-        font_id: this.fontType,
+        font_id: this.form.topText.fontType,
         font_list: JSON.stringify(arr),
         color: this.form.topText.fontColor
       }).then(res => {
         if (res.code === 0) {
           this.topImg = res.data
-          if (this.openArc === true) {
-            this.inpuFocus(1).then(() => {
-              this.inputBlur(1).then(() => {
-                this.imgRotate()
-              })
-            })
-          } else {
-            this.inpuFocus(1).then(() => {
-              this.inputBlur(1).then(() => {
-                this.topImg = res.data
-              })
-            })
-          }
+          this.imgRotate()
         } else {
           Toast(res.msg)
         }
       })
-    }, 0),
+    }, 500),
     getFontBottom: debounce(function() {
       let arr = []
       const text = this.form.bottomText.content
       arr = text.split('')
       designApi.getTextImage({
-        font_id: this.fontType,
+        font_id: this.form.bottomText.fontType,
         font_list: JSON.stringify(arr),
         color: this.form.bottomText.fontColor
       }).then(res => {
@@ -641,19 +604,17 @@ export default {
     },
     // 图片旋转
     imgRotate() {
-      // 文字旋转
       $(function() {
         $('.top-input span').arctext({
-          radius: 120,
+          radius: 360,
           dir: 1,
           rotate: true,
           fitText: true
         })
       })
-      // 图片旋转
       $(function() {
-        $('.top-img-list .top-img-content span').arctext({
-          radius: 120,
+        $('.top-img-list .topImgContent').arctext({
+          radius: 180,
           dir: 1,
           rotate: true,
           fitText: false
@@ -661,14 +622,17 @@ export default {
       })
     },
     // 字体选择
-    fontChange(value) {
-      this.fontType = value
+    fontChange(item) {
+      this.fontType = item
+      this.fontSize = item.min_height
       if (this.topInput === true) {
-        this.form.topText.fontType = value
+        this.form.topText.fontType = item.font_id
+        this.form.topText.fontSize = item.min_height
         this.getFontTop()
       }
       if (this.bottomInput === true) {
-        this.form.bottomText.fontType = value
+        this.form.bottomText.fontType = item.font_id
+        this.form.bottomText.fontSize = item.min_height
         this.getFontBottom()
       }
       this.$refs.fontType.toggle()
@@ -682,13 +646,6 @@ export default {
           image: this.topImg
         }).then(res => {
           this.topImg = res.data
-          if (this.openArc === true) {
-            this.inpuFocus(1).then(() => {
-              this.inputBlur(1).then(() => {
-                this.imgRotate()
-              })
-            })
-          }
         })
       } else {
         this.form.bottomText.fontColor = e.hex
@@ -718,16 +675,25 @@ export default {
       this.bottomInput = false
     },
     // 选中花样图片
-    async checkFigureItem(item) {
+    checkFigureItem(item) {
       this.form.middleImg.design_id = item.design_id
-      this.patternPicture = [] // 上传的花样图片设为空
-      // 解决花样图片跨域问题
-      await commonApi.getImage({ url: item.prev_png_path }).then(res => {
-        this.form.middleImg.prev_png_path = res.data
-      })
+      this.form.middleImg.prev_png_path = item.prev_png_path
+      // 获取花样宽高
+      if (this.currentTemplate.emb_template_id === 2) {
+        getNaturalImgSize(item.prev_png_path, (res) => {
+          console.log(res)
+          if ((res.w / res.h) > (this.design_box.design_W / this.design_box.design_H)) {
+            this.middleImgHeight = res.h / (res.w / this.design_box.design_W) / this.design_box.design_scale
+            this.form.middleImg.height = this.middleImgHeight
+          } else {
+            this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale
+            this.form.middleImg.height = this.middleImgHeight
+          }
+        })
+      }
       this.form.middleImg.width = this.middleImgWidth
-      this.form.middleImg.height = this.middleImgHeight
       this.patternModal = false
+      this.patternPicture = [] // 上传的花样图片设为空
     },
     // checked定制模板
     checkTeplateItem(item) {
@@ -739,70 +705,39 @@ export default {
       this.getPreview()
       this.previewModal = true
     },
-    // 将dom转成图片
-    setImage() {
-      return new Promise((resolve, reject) => {
-        this.$refs.designBox.style.background = 'none'
-        this.$refs.designBox.style.border = 'none'
-        html2canvas(this.$refs.designBox, {
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null,
-          proxy: 'http://cxgh.tecqm.club'
-        }).then(canvas => {
-          const dataURL = canvas.toDataURL('image/png')
-          this.design_image = dataURL
-          this.$refs.designBox.style.background = 'rgba(0, 0, 0, 0.5)'
-          this.$refs.designBox.style.border = '5px solid rgba(192, 192, 192, 0.5)'
-          resolve(dataURL)
-        })
-      })
-    },
     // 获取预览图
-    async getPreview() {
-      if (this.this.currentTemplate.emb_template_id === 1 && this.topImg.length === 0) {
-        Toast('请输入文字内容')
-        return false
-      }
+    getPreview() {
       this.loading = true
-      // 获取设计区图片
-      this.setImage().then((design_image) => {
-        this.setImage()
-        // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
-        const top_scale = 45 / this.design_box.design_H
-        const bottom_scale = 45 / this.design_box.design_H
-        // 计算文字图片和文字输入框的比例
-        const top_font_scale = this.form.topText.fontSize / 45
-        const bottom_font_scale = this.form.bottomText.fontSize / 45
-        // 计算图片高度和设计区的比例
-        const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
-        // 请求预览图接口
-        designApi.getPreview({
-          id: this.$route.query.goods_id,
-          design_id: this.form.middleImg.design_id,
-          design_image: design_image,
-          top_scale: top_scale,
-          top_font_scale: top_font_scale,
-          top_font_content: this.topImg,
-          top_font_color: this.form.topText.fontColor,
-          font_id: this.fontType,
-          middle_scale: middle_scale,
-          bottom_scale: bottom_scale,
-          bottom_font_scale: bottom_font_scale,
-          bottom_font_content: this.bottomImg,
-          bottom_font_color: this.form.bottomText.fontColor,
-          custom_template_id: this.currentTemplate.emb_template_id,
-          custom_image: this.patternPicture[0] ? this.patternPicture[0].content : ''
-        }).then(res => {
-          this.loading = false
-          this.previewImg = res.data.preview_image
-          this.design_area_image = res.data.design_area_image
-        }).catch(() => {
-          Toast('预览图生成失败!')
-          this.loading = false
-        })
+      // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
+      const top_scale = this.form.topText.fontSize > 45 ? this.form.topText.fontSize / this.design_box.design_H : 45 / this.design_box.design_H
+      const bottom_scale = this.form.bottomText.fontSize > 45 ? this.form.bottomText.fontSize / this.design_box.design_H : 45 / this.design_box.design_H
+      // 计算文字图片和文字输入框的比例
+      const top_font_scale = this.form.topText.fontSize > 45 ? 1 : this.form.topText.fontSize / 45
+      const bottom_font_scale = this.form.bottomText.fontSize > 45 ? 1 : this.form.bottomText.fontSize / 45
+      // 计算图片高度和设计区的比例
+      const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
+      // 请求预览图接口
+      designApi.getPreview({
+        id: this.$route.query.goods_id,
+        design_id: this.form.middleImg.design_id,
+        top_scale: top_scale,
+        top_font_scale: top_font_scale,
+        top_font_content: this.topImg,
+        top_font_color: this.form.topText.fontColor,
+        font_id: this.fontType,
+        middle_scale: middle_scale,
+        bottom_scale: bottom_scale,
+        bottom_font_scale: bottom_font_scale,
+        bottom_font_content: this.bottomImg,
+        bottom_font_color: this.form.bottomText.fontColor,
+        custom_template_id: this.currentTemplate.emb_template_id,
+        custom_image: this.patternPicture[0] ? this.patternPicture[0].content : ''
+      }).then(res => {
+        this.loading = false
+        this.previewImg = res.data.preview_image
+        this.design_area_image = res.data.design_area_image
       }).catch(() => {
-        Toast('定制图案生成失败!')
+        this.loading = false
       })
     },
     // 完成定制
@@ -815,14 +750,14 @@ export default {
     buyNow() {
       let top_w, bottom_w
       if (this.currentTemplate.emb_template_id !== 2) {
-        if (typeof this.$refs.topImgContent !== 'undefined') {
+        if (this.topImg.length > 0) {
           top_w = this.$refs.topImgContent.offsetWidth
         } else {
           top_w = 0
         }
       }
       if (this.currentTemplate.emb_template_id === 3) {
-        if (typeof this.$refs.topImgContent !== 'undefined') {
+        if (this.bottomImg.length > 0) {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
         }
       }
@@ -972,7 +907,9 @@ export default {
       }
       .top-img-list,.bottom-img-list{
         width: 100%;
-
+        span{
+          padding: 0 5px;
+        }
       }
       .top-input{
         position: absolute;
