@@ -66,7 +66,7 @@
 
       </div>
     </van-form>
-    <div class="form-action">
+    <div v-if="addressInfo.address_id" class="form-action">
       <van-button round block type="danger" @click.stop="deleteAddress">
         删除
       </van-button>
