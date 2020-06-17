@@ -45,7 +45,7 @@ export default {
     flex-flow: wrap;
     .figure-item{
       width: 30%;
-      margin-right: 3.8%;
+      margin-right: 3.5%;
       margin-bottom: 10px;
       border-radius: 10px;
       box-shadow: 0px 0px 20px #f5f5f5;
