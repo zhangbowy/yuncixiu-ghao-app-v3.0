@@ -394,12 +394,15 @@ export default {
   padding-top: 45px;
   .drawn-config{
     font-size: 14px;
-    padding: 10px;
     .config-box{
       display: flex;
       flex-flow: wrap;
       align-items: center;
       justify-content: space-between;
+      background: #fff;
+      padding: 10px;
+      position: relative;
+      z-index: 9;
       .config-item{
         width: 43%;
         margin-bottom: 10px;
