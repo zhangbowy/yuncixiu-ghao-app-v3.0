@@ -96,5 +96,16 @@ export const orderApi = {
       method: 'post',
       data
     })
+  },
+  /**
+   * 删除订单
+   * @param {*order_no machine_code} data
+   */
+  deleteOrder(data) {
+    return request({
+      url: '/order/delOrder',
+      method: 'post',
+      data
+    })
   }
 }

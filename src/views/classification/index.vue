@@ -101,6 +101,7 @@ export default {
       width: 100%;
       height: 110px;
       border-radius: 5px;
+      object-fit: cover;
     }
     .sub-categary{
       padding: 5px 0;

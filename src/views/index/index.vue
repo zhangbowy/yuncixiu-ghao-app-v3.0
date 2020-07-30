@@ -41,7 +41,7 @@
     <!-- 样本 -->
     <div class="sample-box">
       <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
-        <img :src="item.prev_png_path" alt="" @click="patternDialog">
+        <img :src="item.prev_png_path" alt="" @click="patternDialog(item)">
       </div>
     </div>
     <!-- 热销商品 -->
@@ -81,14 +81,14 @@ export default {
     },
     linkJump(url) {
     },
-    patternDialog() {
+    patternDialog(item) {
       Dialog.confirm({
         title: '提示',
         message: '请先选择定制商品，再选择定制花样。',
         confirmButtonText: '选择商品',
         confirmButtonColor: '#df2525'
       }).then(() => {
-        this.$router.push({ path: '/goodsList' })
+        this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})
       }).catch(() => {
       })
     }
@@ -130,10 +130,14 @@ export default {
       box-shadow: 0px 10px 20px #f3f3f3;
       margin-bottom: 15px;
       border-radius: 6px;
+      // width: 100px;
+      // height: 100px;
+      box-sizing: border-box;
+      padding: 10px;
       img{
-        width: 100%;
-        max-height: 100px;
-        min-height: 100px;
+        width: 90%;
+        // max-height: 100px;
+        // min-height: 100px;
         border-radius: 6px;
         display: block;
       }

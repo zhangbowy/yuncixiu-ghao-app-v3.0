@@ -52,7 +52,8 @@
             size="mini"
             plain
             @click.stop="scanCode(item.order_no)"
-          >扫机器码</van-button>
+          >扫描机器</van-button>
+          <van-button v-if="item.status==4 || item.status==-2" color="#ee0a24" round size="mini" plain @click.stop="deleteOrder(item.order_no)">删除订单</van-button>
           <van-button v-if="item.status==3" color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
           <van-button v-if="item.status==6" color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">回复报价</van-button>
         </div>
@@ -146,6 +147,19 @@ export default {
     },
     toDetail(order_no) {
       this.$router.replace({ path: `/orderDetail?order_no=${order_no}` })
+    },
+    // 删除订单
+    deleteOrder(order_no) {
+      Dialog.confirm({
+        message: '是否确认删除？'
+      }).then(() => {
+        orderApi.deleteOrder({
+          order_no: order_no
+        }).then(res => {
+          this.$emit('getList')
+        })
+      }).catch(() => {
+      })
     }
   }
 }

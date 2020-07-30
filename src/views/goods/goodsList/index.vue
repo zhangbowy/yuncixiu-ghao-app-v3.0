@@ -12,7 +12,7 @@
     </div>
     <div class="content">
       <!-- 商品列表 -->
-      <goods-list v-if="goodsList.length>0" :data="goodsList" />
+      <goods-list v-if="goodsList.length>0" :data="goodsList" :design-id="design_id" />
       <!-- 加载更多 -->
       <div v-if="goodsList.length>=12" class="load-more">
         <infinite-loading @infinite="loadMore">
@@ -44,11 +44,14 @@ export default {
       keyWords: '', // 搜索关键词
       category_id: '', // 分类id
       page: 1,
-      pagesize: 12
+      pagesize: 12,
+      design_id: '' // 选中的花样
     }
   },
   created() {
     this.category_id = this.$route.query.category_id
+    const { design_id = null } = this.$route.query || {}
+    this.design_id = design_id
     this.fetchData(this.category_id)
   },
   methods: {

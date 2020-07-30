@@ -23,11 +23,15 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    designId: {
+      type: String,
+      default: ''
     }
   },
   methods: {
     toDetail(id) {
-      this.$router.push({ path: 'goodsDetail', query: { goods_id: id }})
+      this.$router.push({ path: 'goodsDetail', query: { goods_id: id, design_id: this.designId }})
     }
   }
 }

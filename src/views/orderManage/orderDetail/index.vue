@@ -68,19 +68,22 @@
         <p>需付款：<span>￥<b>{{ orderDetail.pay_amount.toFixed(2) }}</b></span></p>
       </div>
     </div>
-
     <div v-if="orderDetail.status!=-2" class="order-footer-btn">
       <div v-if="orderDetail.status==1">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
       </div>
       <div v-if="orderDetail.status==2">
-        <van-button color="#ee0a24" round size="small" plain @click.stop="scanCode(orderDetail.order_no)">扫机器码</van-button>
+        <van-button color="#ee0a24" round size="small" plain @click.stop="scanCode(orderDetail.order_no)">扫描机器</van-button>
       </div>
       <div v-if="orderDetail.status==3">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="confirmRceipt(orderDetail.order_no)">确认收货</van-button>
       </div>
+      <div v-if="orderDetail.status==4">
+        <van-button color="#ee0a24" round size="small" plain @click.stop="deleteOrder(orderDetail.order_no)">删除订单</van-button>
+      </div>
+      
       <div v-if="orderDetail.status==6">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
@@ -179,6 +182,19 @@ export default {
         message: '是否确认收货？'
       }).then(() => {
         orderApi.confirmReceived({
+          order_no: order_no
+        }).then(res => {
+          this.getOrderDetail(this.order_no)
+        })
+      }).catch(() => {
+      })
+    },
+    // 删除订单
+    deleteOrder(order_no) {
+      Dialog.confirm({
+        message: '是否确认删除？'
+      }).then(() => {
+        orderApi.deleteOrder({
           order_no: order_no
         }).then(res => {
           this.getOrderDetail(this.order_no)

@@ -50,9 +50,13 @@ export default {
       border-radius: 10px;
       box-shadow: 0px 0px 20px #f5f5f5;
       border: 1px solid #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       img{
         width: 100%;
-        height: 70px;
+        // height: 70px;
         border-radius: 10px 10px 0 0;
       }
       .temp-name{

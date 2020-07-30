@@ -158,7 +158,8 @@ export default {
       goodsNumber: 1, // 购买数量
       id: this.$route.query.goods_id,
       skuCustom: 0,
-      instance: {}
+      instance: {},
+      design_id: ''
     }
   },
   watch: {
@@ -212,7 +213,10 @@ export default {
 
   created() {
     this.goodsId = this.$route.query.goods_id
+    const { design_id } = this.$route.query || {}
+
     this.fetchData(this.goodsId)
+    this.design_id = design_id
   },
   methods: {
     // 获取商品详情
@@ -377,7 +381,7 @@ export default {
           shopping_type: 2
         })
         store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
-          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}` })
+          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}&design_id=${this.design_id}` })
           this.changeSkuShow()
         })
       }

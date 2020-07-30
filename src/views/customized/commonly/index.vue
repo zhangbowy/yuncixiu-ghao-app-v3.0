@@ -41,13 +41,13 @@
         </div>
       </transition>
       <transition name="van-slide-down">
-        <div v-show="middleVisible" class="operate-btn">
+        <div v-show="middleVisible" class="operate-btn img-btns">
           <van-dropdown-menu>
-            <div class="middle-img-menu">
-              <div class="menu-item">
+            <div class="middle-img-menu" :overlay="false">
+              <div class="menu-item  img-btn">
                 <van-button icon="edit" size="small" plain type="default" @click="showInput=true">尺寸</van-button>
               </div>
-              <div class="menu-item">
+              <div class="menu-item  img-btn">
                 <van-button icon="delete" size="small" plain type="default" @click="deleteMiddleImg">删除</van-button>
               </div>
             </div>
@@ -55,8 +55,8 @@
         </div>
       </transition>
       <!-- 遮罩层 -->
-      <van-overlay z-index="10" class-name="top-mask" :show="visible" @click="hiddenVisible" />
-      <van-overlay z-index="10" class-name="top-mask" :show="middleVisible" @click="hiddenVisible" />
+      <!-- <van-overlay z-index="10" class-name="top-mask" :show="visible" @click="hiddenVisible" /> -->
+      <!-- <van-overlay z-index="10" class-name="tsop-mask" :show="middleVisible" @click="hiddenVisible" /> -->
     </div>
     <div class="designArea">
       <div class="bg-box" @click.stop="hiddenVisible">
@@ -280,6 +280,7 @@ export default {
       fontType: '', // 字体类型
       fontTypeOptions: [], // 可选字体
       fontAlign: 'center', // 字体对齐方式
+      design_id: '', // 当前选中的花样id
       alignment: [{
         text: '左对齐', value: 'left'
       }, {
@@ -396,13 +397,13 @@ export default {
         if (type === 2) {
           this.topImg = []
           this.bottomImg = []
-          this.form.middleImg.width = this.design_box.design_W / this.design_box.design_scale
-          this.form.middleImg.height = this.design_box.design_H / this.design_box.design_scale
-          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale
-          this.middleImgWidth = this.design_box.design_W / this.design_box.design_scale
+          this.form.middleImg.width = this.formatNumber(this.design_box.design_W / this.design_box.design_scale)
+          this.form.middleImg.height = this.formatNumber(this.design_box.design_H / this.design_box.design_scale)
+          this.middleImgHeight = this.formatNumber(this.design_box.design_H / this.design_box.design_scale)
+          this.middleImgWidth = this.formatNumber(this.design_box.design_W / this.design_box.design_scale)
         }
         if (type === 3) {
-          this.middleImgHeight = this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale
+          this.middleImgHeight = this.formatNumber(this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale)
           this.form.middleImg.height = this.middleImgHeight
         }
       }
@@ -416,6 +417,8 @@ export default {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
     }
+    const { design_id } = this.$route.query || {}
+    this.design_id = design_id
     // 获取定制信息
     this.customDetail(this.goods_id, this.sku_id)
     this.getFigureList() // 获取花样库
@@ -426,7 +429,11 @@ export default {
   },
 
   methods: {
-
+    // 数字同一位小数点后两位
+    formatNumber(number) {
+      if (typeof number !== 'number') return number
+      return parseFloat(number.toFixed(2))
+    },
     // 获取字体列表
     getFontList() {
       designApi.getFontList().then(res => {
@@ -449,6 +456,14 @@ export default {
         pageSize: 1000
       }).then(res => {
         this.figureList = res.data.data
+        if (this.design_id) {
+          this.figureList.forEach(item => {
+            if (Number(this.design_id) === item.design_id) {
+              this.checkFigureItem(item)
+              return
+            }
+          })
+        }
       })
     },
     // 获取定制分类模板信息
@@ -505,7 +520,7 @@ export default {
     inpuFocus(type) {
       return new Promise((resolve, reject) => {
         this.visible = true
-        this.middleVisible = false
+        // this.middleVisible = false
         if (type === 1) {
           this.fontSize = this.form.topText.fontSize
           this.topFocus = true
@@ -581,6 +596,7 @@ export default {
     },
     getFontTop: debounce(function() {
       let arr = []
+      console.log('dddddd')
       const text = this.form.topText.content
       arr = text.split('')
       designApi.getTextImage({
@@ -607,7 +623,7 @@ export default {
           Toast(res.msg)
         }
       })
-    }, 0),
+    }, 6000),
     getFontBottom: debounce(function() {
       let arr = []
       const text = this.form.bottomText.content
@@ -710,12 +726,12 @@ export default {
     },
     // 隐藏遮罩
     hiddenVisible() {
-      this.visible = false
-      this.middleVisible = false
-      this.topFocus = false
-      this.bottomFocus = false
-      this.topInput = false
-      this.bottomInput = false
+      // this.visible = false
+      // this.middleVisible = false
+      // this.topFocus = false
+      // this.bottomFocus = false
+      // this.topInput = false
+      // this.bottomInput = false
     },
     // 选中花样图片
     async checkFigureItem(item) {
@@ -728,11 +744,19 @@ export default {
       this.form.middleImg.width = this.middleImgWidth
       this.form.middleImg.height = this.middleImgHeight
       this.patternModal = false
+      this.middleVisible = true
     },
     // checked定制模板
     checkTeplateItem(item) {
       this.currentTemplate = item
       this.templateModal = false
+      if (item.emb_template_id !== 1) {
+        this.middleVisible = true
+        this.visible = false
+      } else {
+        this.middleVisible = false
+        this.visible = true
+      }
     },
     // 点击预览
     preview() {
@@ -792,7 +816,8 @@ export default {
           bottom_font_content: this.bottomImg,
           bottom_font_color: this.form.bottomText.fontColor,
           custom_template_id: this.currentTemplate.emb_template_id,
-          custom_image: this.patternPicture[0] ? this.patternPicture[0].content : ''
+          custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
+          background: this.customInfo.item?.background
         }).then(res => {
           this.loading = false
           this.previewImg = res.data.preview_image
@@ -859,6 +884,13 @@ export default {
 .commonly{
   position: relative;
   height: 100%;
+  .img-btn {
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  }
+  .img-btns  .van-dropdown-menu__bar {
+    height: 0;
+    margin-bottom: 12px;
+  }
   .topOptions{
     position: absolute;
     top: 0;

@@ -268,7 +268,8 @@ export default {
         draw_image: this.resultImg,
         draw_height_scale: draw_height_scale,
         draw_left_scale: draw_left_scale,
-        draw_top_scale: draw_top_scale
+        draw_top_scale: draw_top_scale,
+        background: this.customInfo.item?.background
       }).then(res => {
         this.loading = false
         this.previewImg = res.data.preview_image
