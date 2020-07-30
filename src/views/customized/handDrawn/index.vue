@@ -165,7 +165,7 @@ export default {
     initPage() {
       this.isFullPage = false
       document.body.parentNode.setAttribute('class', 'portrait')
-      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
+      const SCREEN_WIDTH = window.screen.width // 获取  屏幕宽度
       // 计算比例 scale表示屏幕的宽度*scale
       const design_scale = SCREEN_WIDTH * 0.8 / this.customInfo.custom_info.design_width
       this.design_box.design_scale = design_scale
@@ -203,7 +203,7 @@ export default {
       setTimeout(() => {
         // this.canvasChange = true
         this.$refs.signaturePad.resizeCanvas()
-      }, 500)
+      }, 1000)
     },
     // 全屏模式下计算背景图位置 设计区域位置
     initPage2() {
@@ -249,15 +249,16 @@ export default {
       setTimeout(() => {
         // this.canvasChange = true
         this.$refs.signaturePad.resizeCanvas()
+        this.$forceUpdate()
       }, 500)
     },
     hiddenFullPage() {
-      this.isFullPage = false
+      this.isFullPage = false;
       this.initPage()
     },
     // 获取预览图
     getPreview() {
-      this.loading = true
+      this.loading = true;
       const draw_height_scale = this.cropInfo.height / this.design_box.design_H
       const draw_left_scale = this.cropInfo.left / this.design_box.design_W
       const draw_top_scale = this.cropInfo.top / this.design_box.design_H
@@ -365,15 +366,17 @@ export default {
     },
     // 画笔颜色选择
     updateValue(val) {
-      this.lineColor = val.hex
-      setTimeout(() => {
-        this.$refs.signaturePad.resizeCanvas()
-      }, 500)
+      this.lineColor = val.hex;
+      this.$forceUpdate()
+      // this.initPage()
+      // setTimeout(() => {
+      //   this.$refs.signaturePad.resizeCanvas()
+      // }, 500)
     },
     // 立即购买
     buyNow() {
       var goodsInfo = JSON.parse(this.design.goodsInfo)
-      goodsInfo[0].shopping_type = 4
+      goodsInfo[0].shopping_type = 4;
       goodsInfo[0].design_info = {
         design_width: this.width ? this.width : this.cropInfo.width / this.design_box.design_scale,
         design_height: this.height ? this.height : this.cropInfo.height / this.design_box.design_scale,
