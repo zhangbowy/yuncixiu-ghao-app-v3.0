@@ -83,7 +83,6 @@
       <div v-if="orderDetail.status==4">
         <van-button color="#ee0a24" round size="small" plain @click.stop="deleteOrder(orderDetail.order_no)">删除订单</van-button>
       </div>
-      
       <div v-if="orderDetail.status==6">
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>

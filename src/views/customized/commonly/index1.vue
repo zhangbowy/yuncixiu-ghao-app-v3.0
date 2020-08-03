@@ -731,7 +731,8 @@ export default {
         bottom_font_content: this.bottomImg,
         bottom_font_color: this.form.bottomText.fontColor,
         custom_template_id: this.currentTemplate.emb_template_id,
-        custom_image: this.patternPicture[0] ? this.patternPicture[0].content : ''
+        custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
+        background: this.customInfo.item?.background
       }).then(res => {
         this.loading = false
         this.previewImg = res.data.preview_image

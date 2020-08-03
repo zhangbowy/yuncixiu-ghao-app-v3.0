@@ -59,6 +59,13 @@ export default {
     width: 100%;
     left: 0;
     z-index: 9999;
+    .van-nav-bar__right {
+      padding-right: 0.6rem;
+    }
+    .van-dropdown-menu__bar {
+      height: 100%;
+      box-shadow: none;
+    }
   }
   .customized-content{
     height: 100vh;

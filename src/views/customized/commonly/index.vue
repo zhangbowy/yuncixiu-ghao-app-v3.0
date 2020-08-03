@@ -59,7 +59,7 @@
       <!-- <van-overlay z-index="10" class-name="tsop-mask" :show="middleVisible" @click="hiddenVisible" /> -->
     </div>
     <div class="designArea">
-      <div class="bg-box" @click.stop="hiddenVisible">
+      <div class="commonly-bg-box" @click.stop="hiddenVisible">
         <!-- 背景图 -->
         <img
           class="bg-img"
@@ -952,11 +952,12 @@ export default {
   // 设计区域
   .designArea{
     height:70vh;
+    min-height: 520px;
     position: absolute;
     top: 13vh;
     width: 100%;
     left: 0;
-    .bg-box{
+    .commonly-bg-box{
       width: 100%;
       height: 375px;
       overflow: hidden;

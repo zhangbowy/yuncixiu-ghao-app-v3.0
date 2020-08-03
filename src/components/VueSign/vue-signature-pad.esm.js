@@ -57,21 +57,22 @@ var script = {
       cacheImages: [],
       signatureData: TRANSPARENT_PNG,
       onResizeHandler: null,
-      canvasTxt: null
+      canvasTxt: null,
+      oldWidth: 0,
+      signTime: 0,
+      oldScale: 1
     })
   },
   computed: {
     propsImagesAndCustomImages: function propsImagesAndCustomImages() {
       var nonReactiveProrpImages = convert2NonReactive(this.images)
       var nonReactiveCachImages = convert2NonReactive(this.cacheImages)
-
       return nonReactiveProrpImages.concat(nonReactiveCachImages)
     }
   },
   watch: {
     options: function(nextOptions) {
       var this$1 = this
-
       Object.keys(nextOptions).forEach(function(option) {
         if (this$1.signaturePad[option]) {
           this$1.signaturePad[option] = nextOptions[option]
@@ -89,7 +90,7 @@ var script = {
 
     this.onResizeHandler = this.resizeCanvas.bind(this)
 
-    window.addEventListener('resize', this.onResizeHandler, false)
+    // window.addEventListener('resize', this.onResizeHandler, false)
 
     this.resizeCanvas()
   },
@@ -99,17 +100,39 @@ var script = {
     }
   },
   methods: {
-    resizeCanvas: function resizeCanvas() {
+    resizeCanvas: function resizeCanvas(isHorizontal) {
       var canvas = this.$refs.signaturePadCanvas
-      var data = this.signaturePad.toData()
-      var ratio = 1
-      canvas.width = canvas.offsetWidth * ratio
-      canvas.height = canvas.offsetHeight * ratio
-      canvas.getContext('2d').scale(ratio, ratio)
-      this.canvasTxt = canvas.getContext('2d')
+      const data = this.signaturePad.toData()
+      const ratio =  1;
+      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
+      const SCREEN_HEIGHT = window.screen.height // 获取屏幕高度
+      let scale = 1
+      if (isHorizontal) {
+        scale = SCREEN_HEIGHT / canvas.offsetWidth / ratio
+        canvas.width = SCREEN_HEIGHT * ratio
+        canvas.height = SCREEN_HEIGHT * ratio * (canvas.offsetHeight / canvas.offsetWidth)
+      } else {
+        canvas.width = SCREEN_WIDTH * ratio
+        canvas.height = SCREEN_WIDTH * ratio * (canvas.offsetHeight / canvas.offsetWidth)
+        scale = canvas.offsetWidth / SCREEN_WIDTH / ratio
+        if (!this.signaturePad.isEmpty()) {
+          for (const item of data) {
+            if (this.signTime && item.points[0].time > this.signTime) {
+              item.points.forEach(item => {
+                item.x = item.x * this.oldScale
+                item.y = item.y * this.oldScale
+              })
+            }
+          }
+        }
+      }
+      this.signTime = +new Date()
+      this.oldScale = scale
       this.signaturePad.clear()
+      this.canvasTxt = canvas.getContext('2d')
       this.signatureData = TRANSPARENT_PNG
       this.signaturePad.fromData(data)
+      canvas.getContext('2d').scale(ratio * scale, ratio * scale)
     },
     getHorizontal() {
 
@@ -120,7 +143,6 @@ var script = {
       var ref = this
       var signaturePad = ref.signaturePad
       var status = { isEmpty: false, data: undefined }
-
       if (!checkSaveType(type)) {
         var imageTypesString = IMAGE_TYPES.join(', ')
         throw new Error(
@@ -153,23 +175,23 @@ var script = {
       }
     },
     getCropArea(imgData) {
-      var topX = this.$refs.signaturePadCanvas.width; var btmX = 0; var topY = this.$refs.signaturePadCanvas.height; var btnY = 0
+      var topX = this.$refs.signaturePadCanvas.width; var btmX = 0; var topY = this.$refs.signaturePadCanvas.height; var btmY = 0
       for (var i = 0; i < this.$refs.signaturePadCanvas.width; i++) {
         for (var j = 0; j < this.$refs.signaturePadCanvas.height; j++) {
           var pos = (i + this.$refs.signaturePadCanvas.width * j) * 4
           if (imgData[pos] > 0 || imgData[pos + 1] > 0 || imgData[pos + 2] || imgData[pos + 3] > 0) {
-            btnY = Math.max(j, btnY)
-            btmX = Math.max(i, btmX)
-            topY = Math.min(j, topY)
             topX = Math.min(i, topX)
+            topY = Math.min(j, topY)
+            btmX = Math.max(i, btmX)
+            btmY = Math.max(j, btmY)
           }
         }
       }
       topX++
       btmX++
       topY++
-      btnY++
-      const data = [topX, topY, btmX, btnY]
+      btmY++
+      const data = [topX, topY, btmX, btmY]
       return data
     },
     undoSignature: function undoSignature() {

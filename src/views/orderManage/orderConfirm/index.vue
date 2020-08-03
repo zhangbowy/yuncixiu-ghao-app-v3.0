@@ -6,13 +6,16 @@
     </div>
     <div class="express-type">
       <van-cell title="配送方式" style="line-height: 1" :border="false" @click="show = true">
-        <template #right-icon>
+        <!-- <template #right-icon>
           <span
             style="border:1px solid #ee0a24; color: #ee0a24;border-radius: 3px;padding: 2px 5px;font-size: 10px"
           >{{ orderType.name }}</span>
-        </template>
+        </template> -->
       </van-cell>
-      <van-action-sheet v-model="show" :actions="actions" @select="onSelect" />
+      <van-tabs v-model="active" type="line" sticky title-active-color="#1989fa" title-inactive-color="rgba(150, 150, 105, 0.6)" color="rgba(25, 137, 250, 0.4)" @click="onTabChange">
+        <van-tab v-for="(item, index) in actions" :key="index" :title="item.name" :name="item.type" />
+      </van-tabs>
+      <!-- <van-action-sheet v-model="show" :actions="actions" @select="onSelect" /> -->
     </div>
     <div
       v-if="orderType.type == 1 && orderInfo.address.phone"
@@ -128,6 +131,7 @@ export default {
       show: false,
       submitLaoding: false,
       address_id: '',
+      active: 1,
       actions: [
         { name: '快递发货', type: 1 },
         { name: '门店自提', type: 2 }
@@ -156,6 +160,12 @@ export default {
     }
   },
   methods: {
+    // 配送方式改变
+    onTabChange(tab) {
+      console.log(tab)
+      this.orderType = this.actions[tab - 1]
+      this.getConfirmData()
+    },
     getConfirmData() {
       this.loading = true
       orderApi
