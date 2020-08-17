@@ -48,7 +48,7 @@ const wechatInterface = (data, type, resolve, reject) => {
     // const paySign = data.paySign
     const url = window.location.href.split('#')[0] // 获取锚点之前的链接
     // let links = url+'#/Food/' + this.$route.params.id;
-    const links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id
+    const links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id + '&design_id=' + (data.shareInfo.design_id || '')
     // 分享朋友
     // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容（1.4.0）
     wx.ready(function() {
@@ -57,8 +57,8 @@ const wechatInterface = (data, type, resolve, reject) => {
         desc: data.shareInfo.desc, // 分享描述
         link: links, // 分享链接
         imgUrl: data.shareInfo.thumb_image_path, // 分享图标
-        type: '', // 分享类型,music、video或link，不填默认为link
-        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+        // type: '', // 分享类型,music、video或link，不填默认为link
+        // dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
         success: function() {
           // 用户确认分享后执行的回调函数
           resolve()

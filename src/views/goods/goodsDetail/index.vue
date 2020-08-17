@@ -396,6 +396,7 @@ export default {
         shareInfo.data = res.data
         shareInfo.shareInfo = this.goodsDetail
         wechatInterface(shareInfo, 'share', success => {
+          
         }, fail => {
         })
       })

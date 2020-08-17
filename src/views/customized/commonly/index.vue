@@ -193,6 +193,7 @@
       :loading="loading"
       :img="previewImg"
       @complete="complete"
+      @change='value => previewModal = value'
     />
     <!-- 完成设计弹出层 -->
     <confirm-modal
@@ -407,6 +408,15 @@ export default {
           this.form.middleImg.height = this.middleImgHeight
         }
       }
+    },
+    previewModal: {
+      handler(newValue, old) {
+        if (newValue) {
+          document.getElementsByClassName('navbar')[0].style.display = 'none'
+        } else {
+          document.getElementsByClassName('navbar')[0].style.display = 'block'
+        }
+      }
     }
   },
   created() {
@@ -596,7 +606,6 @@ export default {
     },
     getFontTop: debounce(function() {
       let arr = []
-      console.log('dddddd')
       const text = this.form.topText.content
       arr = text.split('')
       designApi.getTextImage({
