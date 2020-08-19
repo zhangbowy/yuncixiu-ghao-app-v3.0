@@ -1,43 +1,15 @@
 <template>
   <div class="hand-drawn">
-    <!-- 画笔配置 -->
-    <div class="drawn-config">
-      <div class="config-box">
-        <div class="config-item">
-          <span>笔画粗细：</span>
-          <div class="slider">
-            <van-stepper v-model="lineWidth" input-width="25px" button-size="22" min="1" max="50" />
-          </div>
-        </div>
-        <div class="config-item">
-          <span>笔锋粗细：</span>
-          <div class="slider">
-            <van-stepper v-model="minWidth" input-width="25px" button-size="22" min="1" max="5" />
-          </div>
-        </div>
-        <div class="config-item" style="width: 25%">
-          <span>颜色：</span>
-          <div class="color_con" :style="{background:lineColor}" @click="handleShowColor">
-            <div v-show="colorShow" class="sketch">
-              <sketch-picker v-model="lineColor" style="z-index: 10" @input="updateValue" />
-              <van-overlay z-index="1" class-name="top-mask" :show="colorShow" @click.stop="hiddenVisible" />
-            </div>
-          </div>
-        </div>
-        <div class="config-item" style="width: 32%">
-          <span>宽(mm)：</span>
-          <div class="input">
-            <input v-model.number="width" type="number" step="1" max="150" placeholder="宽度">
-          </div>
-        </div>
-        <div class="config-item" style="width: 32%">
-          <span>高(mm)：</span>
-          <div class="input">
-            <input v-model.number="height" type="number" step="1" max="150" placeholder="高度">
-          </div>
-        </div>
-      </div>
-    </div>
+    <setting-board
+      :line-width="lineWidth"
+      :min-width="minWidth"
+      :line-color="lineColor"
+      :width="width"
+      :height="height"
+      :is-full-page='isFullPage'
+      :is_horizontal='is_horizontal'
+      @prop-change="onPropChange"
+    />
     <!-- 中间画板 -->
     <div v-if="design_box.design_H" class="drawn-content">
       <!-- 设计区域  -->
@@ -73,10 +45,10 @@
 </template>
 
 <script>
-import { Sketch } from 'vue-color' // 颜色选择器
 import { designApi } from '@/api/design'
 import DesignArea from '@/components/Design/DesignArea'
 import ConfirmModal from '../commonly/components/ConfirmModal'
+import SettingBoard from './components/SettingBoard'
 import store from '@/store'
 import { mapState } from 'vuex'
 import { Toast } from 'vant'
@@ -86,9 +58,9 @@ export default {
     next()
   },
   components: {
-    'sketch-picker': Sketch,
     'design-area': DesignArea,
-    ConfirmModal
+    ConfirmModal,
+    SettingBoard
   },
   data() {
     return {
@@ -468,6 +440,9 @@ export default {
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm', query: { is_wilcom: this.is_wilcom }})
       })
+    },
+    onPropChange({ type, value }) {
+      this[type] = value
     }
   }
 }

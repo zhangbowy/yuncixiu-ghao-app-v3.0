@@ -104,25 +104,33 @@
           <van-goods-action-icon icon="wap-home-o" text="首页" @click="pathTo('/')" />
           <van-goods-action-icon icon="cart-o" text="购物车" @click="pathTo('/cart')" />
           <van-goods-action-button
-            v-if="goodsDetail.is_custom==0"
-            type="warning"
-            text="加入购物车"
-            :disabled="skuItem.num==0"
-            @click="addCart"
+            v-if="is_presell"
+            color="#c8c9cc"
+            text="商品预售中"
+            disabled
           />
-          <van-goods-action-button
-            v-if="goodsDetail.is_custom==1"
-            type="warning"
-            text="立即定制"
-            :disabled="skuItem.num==0"
-            @click="toCustomized(1)"
-          />
-          <van-goods-action-button
-            type="danger"
-            text="立即购买"
-            :disabled="skuItem.num==0"
-            @click="buyNow(0)"
-          />
+          <template v-else>
+            <van-goods-action-button
+              v-if="goodsDetail.is_custom==0"
+              type="warning"
+              text="加入购物车"
+              :disabled="skuItem.num==0"
+              @click="addCart"
+            />
+            <van-goods-action-button
+              v-if="goodsDetail.is_custom==1"
+              type="warning"
+              text="立即定制"
+              :disabled="skuItem.num==0"
+              @click="toCustomized(1)"
+            />
+            <van-goods-action-button
+              type="danger"
+              text="立即购买"
+              :disabled="skuItem.num==0"
+              @click="buyNow(0)"
+            />
+          </template>
         </van-goods-action>
       </div>
     </div>
@@ -159,7 +167,8 @@ export default {
       id: this.$route.query.goods_id,
       skuCustom: 0,
       instance: {},
-      design_id: ''
+      design_id: '',
+      is_presell: false
     }
   },
   watch: {
@@ -224,15 +233,20 @@ export default {
       goodsApi.getGoodsDetail({
         id: id
       }).then(res => {
-        this.goodsDetail = res.data
-        this.goodsDetail.images = JSON.parse(res.data.images)
-        this.skuList = JSON.parse(res.data.sku_list)
-        this.skudata = JSON.parse(res.data.sku_show)
-        this.skuItem.current_price = res.data.current_price
-        this.skuItem.num = res.data.sum_stock
-        this.skuItem.images = res.data.thumb_image_path
-        // 调用微信分享
-        this.wxShare()
+        if (res.code === 0 && res.data) {
+          this.goodsDetail = res.data
+          this.goodsDetail.images = JSON.parse(res.data.images)
+          this.skuList = JSON.parse(res.data.sku_list)
+          this.skudata = JSON.parse(res.data.sku_show)
+          this.skuItem.current_price = res.data.current_price
+          this.skuItem.num = res.data.sum_stock
+          this.skuItem.images = res.data.thumb_image_path
+          this.is_presell = res.data.is_presell || false
+          // 调用微信分享
+          this.wxShare()
+        } else {
+          Toast('网络错误!')
+        }
       })
     },
     // 滑动切换轮播
@@ -396,7 +410,6 @@ export default {
         shareInfo.data = res.data
         shareInfo.shareInfo = this.goodsDetail
         wechatInterface(shareInfo, 'share', success => {
-          
         }, fail => {
         })
       })
