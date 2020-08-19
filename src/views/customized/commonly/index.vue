@@ -192,8 +192,9 @@
       v-model="previewModal"
       :loading="loading"
       :img="previewImg"
+      :goods-info="customInfo"
       @complete="complete"
-      @change='value => previewModal = value'
+      @change="value => previewModal = value"
     />
     <!-- 完成设计弹出层 -->
     <confirm-modal
@@ -271,6 +272,7 @@ export default {
       loading: false, // 加载动画
       showInput: false, // 显示上传图片弹框
       openArc: true, // 是否开启弧形
+      is_wilcom: 0,
       figureList: [], // 花样库
       templateList: [], // 模板列表
       currentTemplate: {}, // 当前模板
@@ -831,6 +833,7 @@ export default {
           this.loading = false
           this.previewImg = res.data.preview_image
           this.design_area_image = res.data.design_area_image
+          this.is_wilcom = res.data.is_wilcom || 0
         }).catch(() => {
           Toast('预览图生成失败!')
           this.loading = false
@@ -883,7 +886,7 @@ export default {
         design_area_image: this.design_area_image
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
-        this.$router.push({ path: '/orderConfirm' })
+        this.$router.push({ path: '/orderConfirm', query: { is_wilcom: this.is_wilcom }})
       })
     }
   }

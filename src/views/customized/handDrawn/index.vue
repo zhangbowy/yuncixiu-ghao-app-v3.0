@@ -118,7 +118,8 @@ export default {
       customStyle: {},
       canvasItem: '',
       designImg: {},
-      is_horizontal: false
+      is_horizontal: false,
+      is_wilcom: 0
     }
   },
   computed: {
@@ -348,6 +349,7 @@ export default {
         this.loading = false
         this.previewImg = res.data.preview_image
         this.design_area_image = res.data.design_area_image
+        this.is_wilcom = res.data.is_wilcom || 0
       }).catch(() => {
         this.loading = false
       })
@@ -385,8 +387,8 @@ export default {
           width: `${IMG_W * scale}px`,
           height: `${IMG_H * scale}px`,
           position: 'absolute',
-          left: `${cropInfo.site[0] * scale }px`,
-          top: `${cropInfo.site[1] * scale }px`
+          left: `${cropInfo.site[0] * scale}px`,
+          top: `${cropInfo.site[1] * scale}px`
         }
         this.cropInfo.left = cropInfo.site[0] * scale
         this.cropInfo.height = IMG_W * scale
@@ -464,7 +466,7 @@ export default {
         design_area_image: this.design_area_image
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
-        this.$router.push({ path: '/orderConfirm' })
+        this.$router.push({ path: '/orderConfirm', query: { is_wilcom: this.is_wilcom }})
       })
     }
   }

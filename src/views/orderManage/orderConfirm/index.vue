@@ -131,6 +131,7 @@ export default {
       show: false,
       submitLaoding: false,
       address_id: '',
+      is_wilcom: 0,
       active: 1,
       actions: [
         { name: '快递发货', type: 1 },
@@ -152,6 +153,7 @@ export default {
     ...mapState(['order'])
   },
   created() {
+    this.is_wilcom = Number(this.$route?.query.is_wilcom) || 0
     if (this.$route.query.address_id) {
       this.address_id = this.$route.query.address_id
       this.getConfirmData()
@@ -162,16 +164,21 @@ export default {
   methods: {
     // 配送方式改变
     onTabChange(tab) {
-      console.log(tab)
       this.orderType = this.actions[tab - 1]
       this.getConfirmData()
     },
     getConfirmData() {
       this.loading = true
+      const cartList = JSON.parse(this.order.cartList)
+      if (Array.isArray(cartList)) {
+        cartList.forEach((item) => {
+          item.is_wilcom = this.is_wilcom
+        })
+      }
       orderApi
         .calculation({
           address_id: this.address_id,
-          cart_list: JSON.parse(this.order.cartList),
+          cart_list: cartList,
           logistics_type: this.orderType.type
         })
         .then((res) => {
@@ -186,9 +193,15 @@ export default {
     // 提交订单，创建订单
     onSubmit() {
       this.submitLaoding = true
+      const cartList = JSON.parse(this.order.cartList)
+      if (Array.isArray(cartList)) {
+        cartList.forEach((item) => {
+          item.is_wilcom = this.is_wilcom
+        })
+      }
       orderApi
         .orderCreate({
-          cart_list: JSON.parse(this.order.cartList),
+          cart_list: cartList,
           address_id: this.orderInfo.address.address_id,
           buyer_message: this.message,
           logistics_type: this.orderType.type,

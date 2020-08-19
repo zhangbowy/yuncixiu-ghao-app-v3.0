@@ -5,12 +5,13 @@
         <span>{{ title }}</span>
       </div>
       <div class="goods-content">
-        <div v-for="(item,index) in data" :key="`${index}-${item.id}`" class="goods-item" @click="toDetail(item.id)">
-          <img v-lazy="item.thumb_image_path" alt="">
-          <p class="goods-name">{{ item.name }}</p>
-          <p class="goods-price"><span>￥{{ item.current_price }}</span> </p>
-          <span v-if="item.is_custom==1" class="corner-mark">定制</span>
+        <div v-for="(item,index) in data" :key="`${index}-${item[resultMap.id]}`" class="goods-item" @click="toDetail(item[resultMap.id])">
+          <img v-lazy="item[resultMap.thumb_image_path]" alt="">
+          <p class="goods-name">{{ item[resultMap.name] }}</p>
+          <p class="goods-price"><span>￥{{ item[resultMap.current_price] }}</span> </p>
+          <span v-if="item[resultMap.is_custom]==1" class="corner-mark">{{ !isPresell ? '定制' : '预售' }}</span>
         </div>
+        <van-empty v-if="!data.length" :description="description" />
       </div>
     </div>
   </div>
@@ -26,6 +27,37 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    propsMap: {
+      type: Object,
+      default: () => {}
+    },
+    description: {
+      type: String,
+      default: '暂无推荐商品'
+    },
+    isPresell: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      resultMap: {
+        id: 'id',
+        thumb_image_path: 'thumb_image_path',
+        name: 'name',
+        current_price: 'current_price',
+        is_custom: 'is_custom'
+      }
+    }
+  },
+  watch: {
+    propsMap: {
+      handler(newValue, oldValue) {
+        Object.assign(this.resultMap, newValue)
+      },
+      immediate: true
     }
   },
   methods: {

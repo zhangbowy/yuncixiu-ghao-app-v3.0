@@ -44,6 +44,12 @@ const constantRoutes = [
     meta: { title: '商品列表', showTabbar: true }
   },
   {
+    path: '/figureList',
+    name: 'FigureList',
+    component: () => import('@/views/goods/figureList/index'),
+    meta: { title: '商品列表', showTabbar: true }
+  },
+  {
     path: '/goodsDetail',
     name: 'GoodsDetail',
     component: () => import('@/views/goods/goodsDetail/index'),

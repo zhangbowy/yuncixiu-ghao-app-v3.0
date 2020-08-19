@@ -37,7 +37,9 @@
       />
     </div>
     <!-- 推荐种类 -->
-    <ver-scroll :data="indexData.category" title="种类推荐" />
+    <ver-scroll :data="indexData.category" title="定制推荐" />
+    <!-- 推荐种类 -->
+    <ver-scroll :data="indexData.design_category" :props-map="propsMap" title="花样种类推荐" />
     <!-- 样本 -->
     <div class="sample-box">
       <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
@@ -46,6 +48,8 @@
     </div>
     <!-- 热销商品 -->
     <hot-goods :data="indexData.hot_goods" title="热销商品" />
+    <!-- 预售商品 -->
+    <hot-goods :data="indexData.presell_goods" :is-presell="true" title="预售商品" description="暂无预售商品" />
   </div>
 </template>
 
@@ -64,6 +68,14 @@ export default {
     return {
       value: '',
       indexData: {},
+      propsMap: {
+        id: 'design_category_id',
+        logo: 'image_path',
+        category_name: 'design_category_name'
+      },
+      presellGoodsPropMap: {
+
+      },
       indicatorColor: '#000'
     }
   },

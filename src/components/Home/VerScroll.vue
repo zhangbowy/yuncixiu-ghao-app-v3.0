@@ -3,9 +3,9 @@
     <div class="kind-title"><span>{{ title }}</span></div>
     <div ref="wrapper" class="wrapper">
       <ul ref="cont" class="content">
-        <li v-for="(item,index) in data" :key="`${index}-${item.id}`" class="cont-item">
-          <img v-lazy="item.logo" class="cont-img" alt="" @click="toCategory(item.id)">
-          <p>{{ item.category_name }}</p>
+        <li v-for="(item,index) in data" :key="`${index}-${item[resultMap.id]}`" class="cont-item">
+          <img v-lazy="item[resultMap.logo]" class="cont-img" alt="" @click="toCategory(item[resultMap.id])">
+          <p>{{ item[resultMap.category_name] }}</p>
         </li>
       </ul>
     </div>
@@ -23,6 +23,27 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    propsMap: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  data() {
+    return {
+      resultMap: {
+        id: 'id',
+        logo: 'logo',
+        category_name: 'category_name'
+      }
+    }
+  },
+  watch: {
+    propsMap: {
+      handler(newValue, oldValue) {
+        Object.assign(this.resultMap, newValue)
+      },
+      immediate: true
     }
   },
   mounted() {
@@ -55,7 +76,11 @@ export default {
       })
     },
     toCategory(id) {
-      this.$router.push({ path: `/classify?category_id=${id}` })
+      if (this.resultMap.id === 'design_category_id') {
+        this.$router.push({ path: `/classify?design_category_id=${id}` })
+      } else {
+        this.$router.push({ path: `/classify?category_id=${id}` })
+      }
     }
   }
 }
@@ -66,6 +91,7 @@ export default {
     background: #fff;
     overflow: hidden;
     padding: 10px;
+    touch-action: none;
     .kind-title{
       font-size: 16px;
       color: #000;

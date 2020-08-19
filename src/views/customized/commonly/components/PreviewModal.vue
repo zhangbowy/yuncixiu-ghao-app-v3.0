@@ -12,57 +12,36 @@
     </div>
   </van-popup> -->
   <div class="preview-modal">
-    <van-image-preview 
+    <van-image-preview
       ref="imagePreview"
-      v-loading="loading" 
-      v-model="value" 
-      :images="[img]" 
-      :closeable='true'
-      :async-close='true' 
-      :show-index='false' 
-      @click.native="onImagePreviewClick">
-    </van-image-preview>
-    <div :class="['preview-btns', showBtns && 'preview-btns--active' ]"  v-if="showImagePreview">
+      v-model="value"
+      v-loading="loading"
+      :images="[img]"
+      :closeable="true"
+      :async-close="true"
+      :show-index="false"
+      @click.native="onImagePreviewClick"
+    />
+    <div v-if="showImagePreview" :class="['preview-btns', showBtns && 'preview-btns--active' ]">
       <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onComplete">完成设计</van-button>
       <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onShareBtnClick">定制分享</van-button>
     </div>
-    <van-share-sheet
-      v-model="showShare"
-      title="立即分享给好友"
-      :options="options"
-      @select="onSelect"
-      @cancel='onShareSheetCancel'
-      @click-overlay='onShareSheetClickOverlay'
-    />
-    <input type="text" id="copyer" ref="copyer">
+    <van-dialog v-model="showShare" title="" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true" @closed="onShareSheetCancel">
+      <span>
+        快去点击右上角分享好友吧~
+      </span>
+    </van-dialog>
   </div>
 </template>
 
 <script>
-import { ImagePreview, ShareSheet, Toast } from 'vant'
+import { ImagePreview, Toast, Dialog } from 'vant'
 import wechatInterface from '@/utils/wxUtils'
 import { wxSdkApi } from '@/api/common'
 export default {
-  model: {
-    prop: 'value',
-    event: 'onChange'
-  },
   components: {
-    [ImagePreview.Component.name]: ImagePreview.Component
-  },
-  data() {
-    return {
-      showShare: false,
-      showBtns: false,
-      showImagePreview: false,
-      options: [
-        { name: '微信', icon: 'wechat' },
-        // { name: '微博', icon: 'weibo' },
-        // { name: '复制链接', icon: 'link' },
-        // { name: '分享海报', icon: 'poster' },
-        // { name: '二维码', icon: 'qrcode' },
-      ],
-    }
+    [ImagePreview.Component.name]: ImagePreview.Component,
+    [Dialog.Component.name]: Dialog.Component
   },
   props: {
     value: {
@@ -76,13 +55,31 @@ export default {
     img: {
       type: String,
       default: ''
+    },
+    goodsInfo: {
+      type: Object,
+      default: () => {}
     }
   },
-  watch:{
+  data() {
+    return {
+      showShare: false,
+      showBtns: false,
+      showImagePreview: false
+    }
+  },
+  watch: {
     value: {
-      handler (newValue, oldValue) {
-        this.showBtns = newValue;
-        this.showImagePreview = newValue;
+      handler(newValue, oldValue) {
+        this.showBtns = newValue
+        this.showImagePreview = newValue
+      }
+    },
+    loading: {
+      handler(newValue, oldValue) {
+        if (newValue) {
+          this.wxShare()
+        }
       }
     }
   },
@@ -93,17 +90,17 @@ export default {
     onSelect(option) {
       // Toast(option.name);
       switch (option.icon) {
-        case 'wechat': 
+        case 'wechat':
           this.wxShare()
-          break;
+          break
         case 'link':
           this.copyLink()
-          break;
-        default: 
-          break;
+          break
+        default:
+          break
       }
-      this.showShare = false;
-      this.showBtns = true;
+      this.showShare = false
+      this.showBtns = true
     },
     // 微信分享
     wxShare() {
@@ -111,41 +108,37 @@ export default {
         url: window.location.origin
       }).then(res => {
         // this.doshare(res.data, 0)
-        let {design_id, goods_id} = this.$route.query || {}
+        const { design_id, goods_id } = this.$route.query || {}
         const shareInfo = {}
         shareInfo.data = res.data
         shareInfo.shareInfo = {
           thumb_image_path: this.img,
           id: goods_id,
           design_id: design_id,
+          desc: '云易绣',
+          name: this.goodsInfo?.item.name
         }
         wechatInterface(shareInfo, 'share', success => {
-          Toast('请点击右上角分享定制!');
+          Toast('请点击右上角分享定制!')
         }, fail => {
         })
       })
     },
-    copyLink () {
-      const url = window.location.origin
-      const copyer = this.$refs['copyer']
-      copyer.value = url
-      copyer.select(); // 选中文本
-      document.execCommand("copy"); // 执行浏览器复制命令
-    },
-    onShareSheetClickOverlay () {
+    onShareSheetClickOverlay() {
       // this.showShare = !this.showShare;
-      this.showBtns = !this.showBtns;
+      this.showBtns = !this.showBtns
     },
-    onShareBtnClick () {
+    onShareBtnClick() {
       this.showShare = true
-      this.showBtns = false;
+      this.showBtns = false
+      // this.wxShare()
     },
-    onShareSheetCancel () {
-      this.showShare = false;
-       this.showBtns = true;
+    onShareSheetCancel() {
+      this.showShare = false
+      this.showBtns = true
     },
-    onImagePreviewClick (e) {
-      if ( e.target.classList.contains('van-icon-clear') ) {
+    onImagePreviewClick(e) {
+      if (e.target.classList.contains('van-icon-clear')) {
         this.$emit('change', false)
       }
     }
@@ -180,5 +173,11 @@ export default {
     position: absolute;
     top: -100;
     z-index: -100;
+  }
+  .van-dialog__content {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
