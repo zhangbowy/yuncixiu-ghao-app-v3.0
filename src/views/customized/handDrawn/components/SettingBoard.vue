@@ -97,7 +97,7 @@ export default {
             }
         },
         lineColor: {
-            handler(newValue, oldValue) {
+            handler(newValue, oldValue) { 
                 this.lineColorComp = newValue
             }
         },
@@ -169,7 +169,33 @@ export default {
         display: block !important;
         position: absolute;
         .config-box {
-            
+            // transition: width 0.25s linear, height 0.25s linear, background-color 0.25s linear;
+            &--disabled {
+                // width: 0;
+                height: 0;
+                padding: 0 !important;
+                background-color: rgba(0, 0, 0, 0);
+                .van-button {
+                    margin: 9px !important;
+                }
+            }
+            .van-button {
+                display: block !important;
+                width: 100%;
+                font-size: 16px;
+                padding: 6px;
+                height: 16px !important;
+                overflow: hidden;
+                white-space: nowrap;
+                margin: 0 10px;
+                color: #1989fa;
+                background: rgba(0, 0, 0, 0);
+                border: none;
+                margin: 0;
+                width: 20px !important;
+                height: 20px !important;
+                align-self: start;
+            }   
         }
     }   
 }
@@ -191,9 +217,10 @@ export default {
             flex-direction: column !important;
             flex-wrap: nowrap !important;
             padding: 4px !important;
-            transition: width 0.35s linear, height 0.35s linear, background-color 0.35s linear;
+            transform-origin: 10% 10%;
+            
             &--disabled {
-                width: 0;
+                // width: 0;
                 height: 0;
                 padding: 0 !important;
                 background-color: rgba(0, 0, 0, 0);
@@ -227,7 +254,7 @@ export default {
             .van-button {
                 display: block !important;
                 width: 100%;
-                font-size: 6px;
+                font-size: 7px;
                 padding: 6px;
                 height: 16px !important;
                 overflow: hidden;

@@ -69,7 +69,7 @@ export default {
 </script>
 <style lang="scss" scope>
   .recommend-goods{
-    padding: 10px;
+    // padding: 10px;
     background: #fff;
     .recommend-title{
       font-size: 16px;
@@ -84,14 +84,20 @@ export default {
       display: flex;
       flex-flow: wrap;
       align-items: center;
-      justify-content: space-around;
+      // justify-content: space-around;
       .goods-item{
         width: 45%;
         border: 1px solid #f5f5f5;
         box-shadow: 0px 10px 20px #f3f3f3;
-        margin-bottom: 15px;
         border-radius: 6px;
         position: relative;
+        box-sizing: border-box;
+        &:nth-child(n) {
+          margin: 0 1.5% 15px 3.5%;
+        }
+        &:nth-child(2n) {
+          margin: 0 3.5% 15px 1.5%;
+        }
         .corner-mark{
           position: absolute;
           left: 0;

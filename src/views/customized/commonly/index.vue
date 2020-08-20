@@ -439,7 +439,6 @@ export default {
     // 初始化页面显示模板弹框
     this.templateModal = true
   },
-
   methods: {
     // 数字同一位小数点后两位
     formatNumber(number) {

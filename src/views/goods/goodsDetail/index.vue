@@ -395,7 +395,8 @@ export default {
           shopping_type: 2
         })
         store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
-          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}&design_id=${this.design_id}` })
+          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id }&design_id=${this.design_id}`})
+          localStorage.setItem('desc', this.goodsDetail.desc)
           this.changeSkuShow()
         })
       }

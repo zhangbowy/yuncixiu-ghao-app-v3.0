@@ -104,18 +104,21 @@ export default {
     },
     // 微信分享
     wxShare() {
+       const desc = localStorage.getItem('desc')
+        console.log(desc)
       wxSdkApi.getJsConfig({
         url: window.location.origin
       }).then(res => {
         // this.doshare(res.data, 0)
         const { design_id, goods_id } = this.$route.query || {}
+        const desc = localStorage.getItem('desc')
         const shareInfo = {}
         shareInfo.data = res.data
         shareInfo.shareInfo = {
           thumb_image_path: this.img,
           id: goods_id,
           design_id: design_id,
-          desc: '云易绣',
+          desc,
           name: this.goodsInfo?.item.name
         }
         wechatInterface(shareInfo, 'share', success => {

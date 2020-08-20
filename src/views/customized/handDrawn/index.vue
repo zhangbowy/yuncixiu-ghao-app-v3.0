@@ -104,12 +104,19 @@ export default {
       if (newValue > 150) {
         Toast('宽度不能超过150mm')
         this.width = 150
+        this.sizeChange('width', 150)
+      } else {
+        this.sizeChange('width', newValue)
       }
+        
     },
     height(newValue, oldValue) {
       if (newValue > 150) {
         Toast('高度不能超过150mm')
         this.height = 150
+        this.sizeChange('height', 150)
+      } else {
+        this.sizeChange('height', newValue)
       }
     }
   },
@@ -137,6 +144,17 @@ export default {
     window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', onOrientationChange, false)
   },
   methods: {
+    sizeChange(type, value) {
+      if (this.customInfo.custom_info) {
+        this.customInfo.custom_info['design_' + type] = value
+        if (this.isFullPage) {
+          this.initPage2()
+        } else {
+          this.initPage()
+        }
+      }
+      
+    },
     showFullPage() {
       this.isFullPage = true
       document.body.parentNode.setAttribute('class', 'full-page')
@@ -149,6 +167,8 @@ export default {
         sku_id: sku_id
       }).then(res => {
         this.customInfo = res.data
+        this.width = this.customInfo.custom_info?.design_width || ''
+        this.height = this.customInfo.custom_info?.design_height || ''
         this.backgroundImg = res.data.item && res.data.item.background ? res.data.item.background : res.data.custom_info.design_bg
         this.initPage()
       })
@@ -173,33 +193,6 @@ export default {
       this.design_box.design_bg_width = design_scale * this.customInfo.custom_info.design_bg_width
       this.design_box.design_bg_height = design_scale * this.customInfo.custom_info.design_bg_height
       // 设计区域实际跨高和左上对齐位置
-
-      // // 横屏
-      // if (this.is_horizontal) {
-      //   this.design_box.design_W = this.customInfo.custom_info.design_width * design_scale // 比例*设计区域高度
-      //   this.design_box.design_H = SCREEN_HEIGHT // 屏幕高度
-      //   // 计算设计区背景图的对齐位置
-      //   this.design_box.design_bg_X = this.design_box.design_bg_width - (this.customInfo.custom_info.design_top * design_scale) - SCREEN_WIDTH
-      //   this.design_box.design_X = (SCREEN_WIDTH - this.design_box.design_W) / 2 // x轴位置
-      //   this.design_box.design_Y = 0 // y轴
-      //   if (this.design_box.design_X < 0) {
-      //     this.design_box.design_X = 0
-      //     this.design_box.design_W = SCREEN_WIDTH
-      //   }
-      //   this.design_box.design_bg_Y = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_Y
-      // } else { // 竖屏
-      //   this.design_box.design_W = SCREEN_WIDTH // 屏幕宽度
-      //   this.design_box.design_H = this.customInfo.custom_info.design_height * design_scale // 比例*设计区域宽度
-      //   // 计算设计区背景图的对齐位置
-      //   this.design_box.design_bg_X = this.design_box.design_bg_width - (this.customInfo.custom_info.design_top * design_scale) - SCREEN_WIDTH
-      //   this.design_box.design_X = 0 // x轴位置
-      //   this.design_box.design_Y = (SCREEN_HEIGHT - this.design_box.design_H) / 2 // y轴
-      //   if (this.design_box.design_Y < 0) {
-      //     this.design_box.design_Y = 0
-      //     this.design_box.design_H = SCREEN_HEIGHT
-      //   }
-      //   this.design_box.design_bg_Y = this.customInfo.custom_info.design_left * design_scale - this.design_box.design_Y
-      // }
 
       this.design_box.design_W = this.customInfo.custom_info.design_width * design_scale
       this.design_box.design_H = this.customInfo.custom_info.design_height * design_scale
@@ -278,10 +271,10 @@ export default {
       // 背景图位置style
       this.designArea.designImgStyle = {
         position: 'absolute',
-        width: `${this.design_box.design_bg_height}px`,
-        height: `${this.design_box.design_bg_width}px`,
-        left: `-${this.design_box.design_bg_X}px`,
-        top: `-${this.design_box.design_bg_Y}px`
+        width: `${this.design_box.design_bg_width}px`,
+        height: `${this.design_box.design_bg_height}px`,
+        left: `${-this.design_box.design_bg_X}px`,
+        top: `${-this.design_box.design_bg_Y}px`
       }
       // 设计区域位置style
       this.designArea.designBoxStyle = {
@@ -355,6 +348,7 @@ export default {
         } else {
           scale = 0.8
         }
+        console.log(cropInfo, scale)
         this.designImg = {
           width: `${IMG_W * scale}px`,
           height: `${IMG_H * scale}px`,
@@ -362,6 +356,7 @@ export default {
           left: `${cropInfo.site[0] * scale}px`,
           top: `${cropInfo.site[1] * scale}px`
         }
+        console.log(this.designImg)
         this.cropInfo.left = cropInfo.site[0] * scale
         this.cropInfo.height = IMG_W * scale
         this.cropInfo.top = cropInfo.site[1] * scale
@@ -587,6 +582,8 @@ export default {
     // transform: rotate(90deg);
   }
   .designArea {
+    width: 100vw;
+    height: 100vh;
     .bg-box{
       height: 100%;
       overflow: unset;
@@ -610,7 +607,9 @@ export default {
       justify-content: space-between;
       padding: 0;
       .footer-btn {
-        position: static;
+        height: 100%;
+        bottom: 0;
+        left: calc(100% - 50px);
         flex-direction: column;
         align-content: center;
         justify-content: space-around;
