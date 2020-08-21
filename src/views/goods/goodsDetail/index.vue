@@ -168,10 +168,18 @@ export default {
       skuCustom: 0,
       instance: {},
       design_id: '',
-      is_presell: false
+      is_presell: false,
+      item_price_template: []
     }
   },
   watch: {
+    goodsNumber: {
+      handler(newValue, oldValue) {
+        item_price_template.forEach(item => {
+          
+        })
+      }
+    },
     skudata: {
       deep: true,
       immediate: true,

@@ -6,8 +6,8 @@
       :line-color="lineColor"
       :width="width"
       :height="height"
-      :is-full-page='isFullPage'
-      :is_horizontal='is_horizontal'
+      :is-full-page="isFullPage"
+      :is_horizontal="is_horizontal"
       @prop-change="onPropChange"
     />
     <!-- 中间画板 -->
@@ -108,7 +108,6 @@ export default {
       } else {
         this.sizeChange('width', newValue)
       }
-        
     },
     height(newValue, oldValue) {
       if (newValue > 150) {
@@ -153,7 +152,6 @@ export default {
           this.initPage()
         }
       }
-      
     },
     showFullPage() {
       this.isFullPage = true
@@ -348,7 +346,6 @@ export default {
         } else {
           scale = 0.8
         }
-        console.log(cropInfo, scale)
         this.designImg = {
           width: `${IMG_W * scale}px`,
           height: `${IMG_H * scale}px`,
@@ -356,7 +353,6 @@ export default {
           left: `${cropInfo.site[0] * scale}px`,
           top: `${cropInfo.site[1] * scale}px`
         }
-        console.log(this.designImg)
         this.cropInfo.left = cropInfo.site[0] * scale
         this.cropInfo.height = IMG_W * scale
         this.cropInfo.top = cropInfo.site[1] * scale

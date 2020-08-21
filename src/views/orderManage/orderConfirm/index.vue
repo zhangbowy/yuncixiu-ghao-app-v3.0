@@ -76,6 +76,14 @@
             </div>
             <div class="number">x{{ item.buy_num }}</div>
           </div>
+          <div v-if="(item._order_type === '一般定制订单' || item._order_type === '手绘订单') && hasMeetBatchRules(item)" class="good-bottom batch">
+            <div class="price">
+              <div>
+                ￥<span>{{ item.item_total_price.toFixed(2) }}</span>
+              </div>
+            </div>
+            <div class="number">x{{ item.buy_num }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -130,6 +138,7 @@ export default {
       loading: false,
       show: false,
       submitLaoding: false,
+      showBatch: true,
       address_id: '',
       is_wilcom: 0,
       active: 1,
@@ -162,6 +171,11 @@ export default {
     }
   },
   methods: {
+    // 判断是否满足小批量定制规则
+    hasMeetBatchRules(item) {
+      console.log(item)
+      return true
+    },
     // 配送方式改变
     onTabChange(tab) {
       this.orderType = this.actions[tab - 1]

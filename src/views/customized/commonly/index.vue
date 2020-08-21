@@ -36,6 +36,9 @@
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
             <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
               <van-switch-cell v-model="openArc" title="是否开启" @change="changeOpenArc" />
+              <van-cell v-if="currentTemplate.emb_template_id === 1" title="弧度">
+                <van-stepper v-model="radian" button-size="32px" :min='120' :max='360' />
+              </van-cell>
             </van-dropdown-item>
           </van-dropdown-menu>
         </div>
@@ -63,7 +66,7 @@
         <!-- 背景图 -->
         <img
           class="bg-img"
-          :src="customInfo.item && customInfo.item.background ?customInfo.item.background: customInfo.custom_info.design_bg"
+          :src="customInfo.item && customInfo.item.background ? customInfo.item.background : customInfo.custom_info.design_bg"
           :style="designImgStyle"
           alt=""
         >
@@ -80,23 +83,24 @@
               class="top-img-list"
               :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
               @click.stop="imgFocus(1)"
+              @click="inpuFocus(1)"
             >
               <span
                 v-if="topFocus==false && topInput==false && topImg.length==0"
-              >{{ form.topText.content?form.topText.content: '双击开始编辑' }}</span>
+              >{{ form.topText.content ? form.topText.content : '双击开始编辑' }}</span>
               <div v-else ref="topImgContent" class="top-img-content">
-                <span id="test">
-                  <img v-for="(item,index) in topImg" :key="index" :height="form.topText.fontSize" :src="item" alt="">
+                <span id="test" :class="openArc && 'arc'">
+                  <img ref="topImg" v-for="(item,index) in topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
                 </span>
               </div>
             </div>
             <div v-if="topFocus==true" class="input-box">
               <input
                 v-model="form.topText.content"
+                ref="topInput"
                 placeholder="点击输入文字"
                 type="text"
                 :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
-                @input="getFontTop()"
                 @blur="inputBlur(1)"
                 @focus="inpuFocus(1)"
               >
@@ -108,7 +112,7 @@
               v-if="patternPicture[0] || form.middleImg.prev_png_path"
               :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path"
               alt=""
-              :style="{maxWidth:`${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}"
+              :style="{maxWidth: `${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}"
               @click.stop="showMiddleMemu()"
             >
           </div>
@@ -272,6 +276,7 @@ export default {
       loading: false, // 加载动画
       showInput: false, // 显示上传图片弹框
       openArc: true, // 是否开启弧形
+      radian: 120, // 弧度，最小值120
       is_wilcom: 0,
       figureList: [], // 花样库
       templateList: [], // 模板列表
@@ -363,6 +368,13 @@ export default {
     ])
   },
   watch: {
+    radian: {
+      handler(newValue, oldValue) {
+        if (this.openArc) {
+          this.imgRotate()
+        }
+      }
+    },
     fontSize(newValue, oldValue) {
       if (this.topInput === true) {
         this.form.topText.fontSize = newValue
@@ -396,6 +408,11 @@ export default {
           this.form.bottomText.content = ''
           this.bottomImg = []
           this.deleteMiddleImg()
+          if(this.topText) {
+            this.inpuFocus(1).then(() => {
+              this.inputBlur(1)
+            })
+          }
         }
         if (type === 2) {
           this.topImg = []
@@ -408,6 +425,9 @@ export default {
         if (type === 3) {
           this.middleImgHeight = this.formatNumber(this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale)
           this.form.middleImg.height = this.middleImgHeight
+          if(this.topText) {
+            this.getFontTop()
+          }
         }
       }
     },
@@ -532,6 +552,11 @@ export default {
       return new Promise((resolve, reject) => {
         this.visible = true
         // this.middleVisible = false
+        this.$nextTick(() => {
+          if (this.$refs['topInput']) {
+            this.$refs['topInput'].focus()
+          }
+        })
         if (type === 1) {
           this.fontSize = this.form.topText.fontSize
           this.topFocus = true
@@ -548,6 +573,9 @@ export default {
         type === 1 ? this.topFocus = false : this.bottomFocus = false
         if (this.openArc === true) {
           this.imgRotate()
+        }
+        if (type === 1) {
+          this.getFontTop()
         }
       })
     },
@@ -591,21 +619,21 @@ export default {
     },
     // 是否弧形
     changeOpenArc() {
-      if (this.openArc === true) {
-        this.inpuFocus(1).then(() => {
-          this.inputBlur(1).then(() => {
-            this.imgRotate()
-          })
-        })
-      } else {
-        this.inpuFocus(1).then(() => {
-          this.inputBlur(1).then(() => {
-            this.getFontTop()
-          })
-        })
-      }
+      // if (this.openArc === true) {
+      //   this.imgRotate()
+      //   // this.inpuFocus(1).then(() => {
+      //   //   this.inputBlur(1).then(() => {
+      //   //   })
+      //   // })
+      // } else {
+      //   // this.inpuFocus(1).then(() => {
+      //   //   this.inputBlur(1).then(() => {
+      //   //     })
+      //   // })
+      // }
+      this.getFontTop()
     },
-    getFontTop: debounce(function() {
+    getFontTop: function() {
       let arr = []
       const text = this.form.topText.content
       arr = text.split('')
@@ -617,23 +645,13 @@ export default {
         if (res.code === 0) {
           this.topImg = res.data
           if (this.openArc === true) {
-            this.inpuFocus(1).then(() => {
-              this.inputBlur(1).then(() => {
-                this.imgRotate()
-              })
-            })
-          } else {
-            this.inpuFocus(1).then(() => {
-              this.inputBlur(1).then(() => {
-                this.topImg = res.data
-              })
-            })
+            this.imgRotate()
           }
         } else {
           Toast(res.msg)
         }
       })
-    }, 6000),
+    },
     getFontBottom: debounce(function() {
       let arr = []
       const text = this.form.bottomText.content
@@ -667,23 +685,50 @@ export default {
     },
     // 图片旋转
     imgRotate() {
+      const _self = this
       // 文字旋转
-      $(function() {
-        $('.top-input span').arctext({
-          radius: 120,
-          dir: 1,
-          rotate: true,
-          fitText: true
-        })
-      })
+      // $(function() {
+      //   $('.top-input span').arctext({
+      //     radius: 120,
+      //     dir: 1,
+      //     rotate: true,
+      //     fitText: true
+      //   })
+      // })
       // 图片旋转
       $(function() {
-        $('.top-img-list .top-img-content span').arctext({
-          radius: 120,
-          dir: 1,
-          rotate: true,
-          fitText: false
-        })
+        if (_self.currentTemplate?.emb_template_id === 1) {
+          console.log('self.currentTemplate?.emb_template_id')
+          const topImgList = Array.isArray(_self.$refs['topImg']) ? _self.$refs['topImg'] : (_self.$refs['topImg'] ? [_self.$refs['topImg']] : [])
+          const topImgContent = _self.$refs['topImgContent']
+          const radiusWidth = (topImgContent.offsetWidth || 0) / 2 - _self.fontSize - 15
+          const count = topImgList.length
+          const radius = _self.radian / (count - 1) // 平均角度)
+          // 算出弧形高度， 让弧形居中
+          let arcHeight = 0
+          if(_self.radian <= 180) {
+            arcHeight = radiusWidth * (1 + Math.sin(2 * Math.PI / 360 * (90 - _self.radian / 2))) / 2
+          } else {
+            arcHeight = radiusWidth * (1- Math.sin(2 * Math.PI / 360 * (_self.radian / 2 - 90))) / 2
+          }
+          if (count <= 1) return
+          topImgList.forEach((item, index) => {
+            // 根据角度， 半径计算位置
+            const currentRadius = -(_self.radian / 2) + radius * index
+            let offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius)
+            let offsetY = radiusWidth * Math.cos(2 * Math.PI / 360 * currentRadius)
+            offsetY = offsetY - arcHeight
+            item.style.transform = ` translate(calc( -50% + ${offsetX}px), calc( -50% + ${-offsetY}px)) rotate(${currentRadius}deg)`
+            
+          })
+        } else {
+          $('.top-img-list .top-img-content span').arctext({
+            radius: 120,
+            dir: 1,
+            rotate: true,
+            fitText: false
+          })
+        }
       })
     },
     // 字体选择
@@ -902,6 +947,9 @@ export default {
     height: 0;
     margin-bottom: 12px;
   }
+  .van-dropdown-item__content {
+    padding: 10px;
+  }
   .topOptions{
     position: absolute;
     top: 0;
@@ -912,7 +960,7 @@ export default {
     box-sizing: border-box;
     .operate-btn{
       position: relative;
-      z-index: 999;
+      z-index: auto;
       .middle-img-menu{
         display: flex;
         align-items: center;
@@ -1011,7 +1059,8 @@ export default {
           }
         }
         .top-img-content,.bottom-img-content{
-          display: inline;
+          // display: inline;
+          width: 100%;
         }
       }
       .top-img-list,.bottom-img-list{
@@ -1023,12 +1072,46 @@ export default {
         top: 0;
         left: 0;
         width: 100%;
+        &.focus {
+          .input-box {
+            width: 100%;
+          }
+        }
         &.middle{
-          min-height: 45px;
-          top: 50%;
-          transform: translateY(-50%);
+          // min-height: 45px;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          // top: 50%;
+          // transform: translateY(-50%);
+
           input{
             min-height: 45px;
+          }
+          .top-img-list {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .input-box {
+              width: 100%;
+            }
+            .top-img-content {
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              #test.arc {
+                height: 100%;
+                img {
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                }
+              }
+            }
           }
           .top-img-list,.bottom-img-list{
             min-height: 45px;

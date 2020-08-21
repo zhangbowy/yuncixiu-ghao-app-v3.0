@@ -104,8 +104,6 @@ export default {
     },
     // 微信分享
     wxShare() {
-       const desc = localStorage.getItem('desc')
-        console.log(desc)
       wxSdkApi.getJsConfig({
         url: window.location.origin
       }).then(res => {
