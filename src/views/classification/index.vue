@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="classification">
     <div class="index-search">
       <van-search
         shape="round"
@@ -193,6 +193,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.classification {
+  height: 100vh;
+  overflow: hidden;
+}
 .classify-content{
  .right-content{
    padding: 0 10px;
@@ -241,6 +245,10 @@ export default {
 }
 .van-tree-select {
   padding-top: 4px !important;
+}
+.van-tree-select__content {
+  box-sizing: border-box;
+  padding-bottom: 65px;
 }
 .sample-box{
   display: flex;

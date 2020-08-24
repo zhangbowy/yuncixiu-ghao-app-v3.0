@@ -37,7 +37,7 @@
             <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
               <van-switch-cell v-model="openArc" title="是否开启" @change="changeOpenArc" />
               <van-cell v-if="currentTemplate.emb_template_id === 1" title="弧度">
-                <van-stepper v-model="radian" button-size="32px" :min='120' :max='360' />
+                <van-stepper v-model="radian" button-size="32px" :min="120" :max="360" />
               </van-cell>
             </van-dropdown-item>
           </van-dropdown-menu>
@@ -90,14 +90,14 @@
               >{{ form.topText.content ? form.topText.content : '双击开始编辑' }}</span>
               <div v-else ref="topImgContent" class="top-img-content">
                 <span id="test" :class="openArc && 'arc'">
-                  <img ref="topImg" v-for="(item,index) in topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
+                  <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
                 </span>
               </div>
             </div>
             <div v-if="topFocus==true" class="input-box">
               <input
-                v-model="form.topText.content"
                 ref="topInput"
+                v-model="form.topText.content"
                 placeholder="点击输入文字"
                 type="text"
                 :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
@@ -162,6 +162,7 @@
     <!-- 底部操作 -->
     <bottom-options
       :current-template="currentTemplate"
+      :is-zh="inputMode === 'zh'"
       @change="bottomBtn"
     />
     <!-- 选择定制模板 -->
@@ -227,6 +228,17 @@
         </div>
       </div>
     </van-popup>
+    <!-- 输入模式 -->
+    <van-dialog v-model="inputModeModel" title="选择输入模式" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true">
+      <div class="input-mode-btns">
+        <div @click="onInputModeChange('en')">
+          <svg-icon class="mode-en" icon-class="en" />
+        </div>
+        <div @click="onInputModeChange('zh')">
+          <svg-icon class="mode-zh" icon-class="zh" />
+        </div>
+      </div>
+    </van-dialog>
   </div>
 </template>
 
@@ -246,7 +258,7 @@ import { mapState } from 'vuex'
 import html2canvas from 'html2canvas'
 import $ from 'jquery'
 import './imgRotate'
-import { Toast } from 'vant'
+import { Toast, Dialog } from 'vant'
 import store from '@/store'
 export default {
   components: {
@@ -257,7 +269,8 @@ export default {
     'confirm-modal': ConfirmModal,
     'template-modal': TemplateModal,
     'pattern-modal': PatternModal,
-    'bottom-options': BottomOptions
+    'bottom-options': BottomOptions,
+    [Dialog.Component.name]: Dialog.Component
   },
 
   data() {
@@ -266,6 +279,7 @@ export default {
       patternModal: false, // 花样弹框是否显示
       templateModal: false, // 模板选择弹框
       previewModal: false, // 预览弹框是否显示
+      inputModeModel: false, // 输入模式弹框
       confirmModal: false, // 完成设计
       visible: false, // 顶部操作是否显示
       middleVisible: false, // 顶部图片属性是否显示
@@ -280,13 +294,14 @@ export default {
       is_wilcom: 0,
       figureList: [], // 花样库
       templateList: [], // 模板列表
-      currentTemplate: {}, // 当前模板
-      topText: '', // 上输入框文本
       topImg: [], // 上图片
-      bottomText: '', // 底部文本
       bottomImg: [], // 底部图片
-      fontType: '', // 字体类型
       fontTypeOptions: [], // 可选字体
+      currentTemplate: {}, // 当前模板
+      inputMode: 'en', // 输入模式
+      topText: '', // 上输入框文本
+      bottomText: '', // 底部文本
+      fontType: '', // 字体类型
       fontAlign: 'center', // 字体对齐方式
       design_id: '', // 当前选中的花样id
       alignment: [{
@@ -408,7 +423,7 @@ export default {
           this.form.bottomText.content = ''
           this.bottomImg = []
           this.deleteMiddleImg()
-          if(this.topText) {
+          if (this.topText) {
             this.inpuFocus(1).then(() => {
               this.inputBlur(1)
             })
@@ -425,7 +440,7 @@ export default {
         if (type === 3) {
           this.middleImgHeight = this.formatNumber(this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale)
           this.form.middleImg.height = this.middleImgHeight
-          if(this.topText) {
+          if (this.topText) {
             this.getFontTop()
           }
         }
@@ -460,6 +475,10 @@ export default {
     this.templateModal = true
   },
   methods: {
+    onInputModeChange(mode) {
+      this.inputMode = mode
+      this.inputModeModel = false
+    },
     // 数字同一位小数点后两位
     formatNumber(number) {
       if (typeof number !== 'number') return number
@@ -698,7 +717,6 @@ export default {
       // 图片旋转
       $(function() {
         if (_self.currentTemplate?.emb_template_id === 1) {
-          console.log('self.currentTemplate?.emb_template_id')
           const topImgList = Array.isArray(_self.$refs['topImg']) ? _self.$refs['topImg'] : (_self.$refs['topImg'] ? [_self.$refs['topImg']] : [])
           const topImgContent = _self.$refs['topImgContent']
           const radiusWidth = (topImgContent.offsetWidth || 0) / 2 - _self.fontSize - 15
@@ -706,20 +724,19 @@ export default {
           const radius = _self.radian / (count - 1) // 平均角度)
           // 算出弧形高度， 让弧形居中
           let arcHeight = 0
-          if(_self.radian <= 180) {
+          if (_self.radian <= 180) {
             arcHeight = radiusWidth * (1 + Math.sin(2 * Math.PI / 360 * (90 - _self.radian / 2))) / 2
           } else {
-            arcHeight = radiusWidth * (1- Math.sin(2 * Math.PI / 360 * (_self.radian / 2 - 90))) / 2
+            arcHeight = radiusWidth * (1 - Math.sin(2 * Math.PI / 360 * (_self.radian / 2 - 90))) / 2
           }
           if (count <= 1) return
           topImgList.forEach((item, index) => {
             // 根据角度， 半径计算位置
             const currentRadius = -(_self.radian / 2) + radius * index
-            let offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius)
+            const offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius)
             let offsetY = radiusWidth * Math.cos(2 * Math.PI / 360 * currentRadius)
             offsetY = offsetY - arcHeight
             item.style.transform = ` translate(calc( -50% + ${offsetX}px), calc( -50% + ${-offsetY}px)) rotate(${currentRadius}deg)`
-            
           })
         } else {
           $('.top-img-list .top-img-content span').arctext({
@@ -776,6 +793,7 @@ export default {
       if (name === 'showImgList') this.patternModal = true // 显示花样库
       if (name === 'showUpload') this.uploadModal = true // 显示上传图片弹框
       if (name === 'showTemplate') this.templateModal = true // 显示模板弹框
+      if (name === 'showInputMode') this.inputModeModel = true // 显示输入模式选择弹框 
       if (name === 'preview') this.preview()
       if (name === 'complete') this.complete()
     },
@@ -1183,6 +1201,24 @@ export default {
       padding: 5px 0 10px;
       button{
         width: 70%;
+      }
+    }
+  }
+  .input-mode-btns {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    div {
+      width: 60px;
+      height: 60px;
+      svg {
+        width: 100%;
+        height: 100%;
+        &.mode-zh {
+          box-sizing: border-box;
+          padding: 6px;
+        }
       }
     }
   }

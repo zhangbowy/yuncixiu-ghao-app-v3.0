@@ -45,7 +45,8 @@
             <div v-if="skuItem" class="sku-info">
               <img :src="skuItem.images?skuItem.images:goodsDetail.thumb_image_path" width="96" height="96" alt="">
               <div class="right-info">
-                <p class="price">￥{{ skuItem.current_price }}</p>
+                <p class="price" :style="{textDecoration: is_batch ? 'line-through' : 'none'}">￥{{ skuItem.current_price }}</p>
+                <p v-if="is_batch" class="batch-price"><span :style="{color: '#ee0a24'}">￥{{ batchPrice }}</span> <br>  已达 {{ batchNumber }} 件, 享受批量定制价格 </p>
                 <p>剩余{{ skuItem.num }}</p>
                 <p>已选：<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
               </div>
@@ -169,14 +170,21 @@ export default {
       instance: {},
       design_id: '',
       is_presell: false,
+      is_batch: false,
+      batchNumber: 0,
+      batchPrice: 0,
       item_price_template: []
     }
   },
   watch: {
     goodsNumber: {
       handler(newValue, oldValue) {
-        item_price_template.forEach(item => {
-          
+        this.item_price_template.forEach(item => {
+          if (newValue >= Number(item.number)) {
+            this.is_batch = true
+            this.batchNumber = item.number
+            this.batchPrice = Number(item.price) || 0
+          }
         })
       }
     },
@@ -250,6 +258,7 @@ export default {
           this.skuItem.num = res.data.sum_stock
           this.skuItem.images = res.data.thumb_image_path
           this.is_presell = res.data.is_presell || false
+          this.item_price_template = JSON.parse(res.data.item_price_template || '[]')
           // 调用微信分享
           this.wxShare()
         } else {
@@ -403,7 +412,7 @@ export default {
           shopping_type: 2
         })
         store.dispatch('design/setGoodsInfo', JSON.stringify(goodsInfo)).then(() => {
-          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id }&design_id=${this.design_id}`})
+          this.$router.push({ path: `/customized/commonly?goods_id=${this.goodsDetail.id}&sku_id=${this.skuItem.sku_id}&design_id=${this.design_id}` })
           localStorage.setItem('desc', this.goodsDetail.desc)
           this.changeSkuShow()
         })
@@ -533,6 +542,15 @@ export default {
             }
             p.price{
               color: #ee0a24;
+            }
+            .batch-price {
+              font-size: 12px;
+              color: gray;
+              span {
+                font-size: 14px;
+                line-height: 20px;
+                color: #ee0a24;
+              }
             }
           }
         }

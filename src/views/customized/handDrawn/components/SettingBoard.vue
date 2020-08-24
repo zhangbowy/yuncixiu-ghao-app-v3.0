@@ -169,12 +169,14 @@ export default {
         display: block !important;
         position: absolute;
         .config-box {
-            // transition: width 0.25s linear, height 0.25s linear, background-color 0.25s linear;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s linear;
             &--disabled {
                 // width: 0;
                 height: 0;
                 padding: 0 !important;
                 background-color: rgba(0, 0, 0, 0);
+                box-shadow: none;
                 .van-button {
                     margin: 9px !important;
                 }

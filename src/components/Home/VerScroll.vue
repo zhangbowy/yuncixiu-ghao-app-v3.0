@@ -91,7 +91,6 @@ export default {
     background: #fff;
     overflow: hidden;
     padding: 10px;
-    touch-action: none;
     .kind-title{
       font-size: 16px;
       color: #000;

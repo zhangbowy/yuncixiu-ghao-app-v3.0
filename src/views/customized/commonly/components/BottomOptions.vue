@@ -6,6 +6,10 @@
         <!-- <p>选择模板</p> -->
         <p>{{ currentTemplate.template_name?currentTemplate.template_name:'选择模板' }}</p>
       </div>
+       <div v-if="currentTemplate.emb_template_id!=2" class="model-btn" @click="showInputMode">
+        <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'zh' : 'en'" />
+        <p>输入模式</p>
+      </div>
       <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
         <svg-icon icon-class="upload-img" />
         <p>上传图片</p>
@@ -28,9 +32,16 @@ export default {
     currentTemplate: {
       type: Object,
       default: () => {}
+    },
+    isZh: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
+    showInputMode() {
+      this.$emit('change', 'showInputMode')
+    },
     showTemplate() {
       this.$emit('change', 'showTemplate')
     },
@@ -71,6 +82,14 @@ export default {
       p{
         font-size: 12px;
         margin: 3px 0;
+      }
+      .model-btn {
+        width: 50%;
+        border-right: 1px solid #f5f5f5;
+        .mode-zh {
+          box-sizing: border-box;
+          padding: 2px;
+        }
       }
       .uoload-btn{
         width: 50%;

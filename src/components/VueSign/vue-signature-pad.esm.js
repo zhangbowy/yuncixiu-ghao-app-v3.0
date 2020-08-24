@@ -102,6 +102,7 @@ var script = {
   methods: {
     resizeCanvas: function resizeCanvas(isHorizontal) {
       var canvas = this.$refs.signaturePadCanvas
+      // console.log(canvas.saveSignature())
       const data = this.signaturePad.toData()
       const ratio =  1;
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
