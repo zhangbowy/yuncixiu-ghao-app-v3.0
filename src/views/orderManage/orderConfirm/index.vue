@@ -71,15 +71,22 @@
           <div class="good-bottom">
             <div class="price">
               <div>
-                ￥<span :style="{textDecoration: item.final_item_total_price ? 'line-through' : 'none'}">{{ item.item_total_price.toFixed(2) }}</span>
+                ￥<span :style="{textDecoration: (item.final_item_total_price !== item.item_total_price) ? 'line-through' : 'none'}">{{ item.item_total_price.toFixed(2) }}</span>
               </div>
             </div>
             <div class="number">x{{ item.buy_num }}</div>
           </div>
-          <div v-if="item.final_item_total_price" class="good-bottom batch">
+          <div v-if="(item.final_item_total_price !== item.item_total_price)" class="good-bottom batch">
             <div class="price">
               <div>
                 ￥<span>{{ item.final_item_total_price.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="item.emb_template_price">
+            <div class="price">
+              <div :style="{fontSize: '12px', color: '#969799', marginTop: '10px'}">
+                含定制费 <span :style="{color: '#df2525'}">￥{{ item.emb_template_price.toFixed(2) }}</span>
               </div>
             </div>
           </div>
@@ -177,6 +184,7 @@ export default {
     },
     getConfirmData() {
       this.loading = true
+      console.log(this.order)
       const cartList = JSON.parse(this.order.cartList)
       if (Array.isArray(cartList)) {
         cartList.forEach((item) => {

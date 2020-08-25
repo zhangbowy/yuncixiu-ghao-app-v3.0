@@ -101,21 +101,27 @@ export default {
   },
   watch: {
     width(newValue, oldValue) {
-      if (newValue > 150) {
-        Toast('宽度不能超过150mm')
-        this.width = 150
-        this.sizeChange('width', 150)
+      const maxWidth = this.customInfo?.custom_info.design_width || 150
+      if (newValue > maxWidth) {
+        Toast(`宽度不能超过${maxWidth}mm`)
+        this.$nextTick(() => {
+          this.width = maxWidth
+        })
+        // this.sizeChange('width', maxWidth)
       } else {
-        this.sizeChange('width', newValue)
+        // this.sizeChange('width', newValue)
       }
     },
     height(newValue, oldValue) {
-      if (newValue > 150) {
-        Toast('高度不能超过150mm')
-        this.height = 150
-        this.sizeChange('height', 150)
+      const maxHeight = this.customInfo?.custom_info.design_height || 150
+      if (newValue > maxHeight) {
+        Toast(`宽度不能超过${maxHeight}mm`)
+        this.$nextTick(() => {
+          this.height = maxHeight
+        })
+        // this.sizeChange('width', maxHeight)
       } else {
-        this.sizeChange('height', newValue)
+        // this.sizeChange('height', newValue)
       }
     }
   },
@@ -165,8 +171,8 @@ export default {
         sku_id: sku_id
       }).then(res => {
         this.customInfo = res.data
-        this.width = this.customInfo.custom_info?.design_width || ''
-        this.height = this.customInfo.custom_info?.design_height || ''
+        // this.width = this.customInfo.custom_info?.design_width || ''
+        // this.height = this.customInfo.custom_info?.design_height || ''
         this.backgroundImg = res.data.item && res.data.item.background ? res.data.item.background : res.data.custom_info.design_bg
         this.initPage()
       })
@@ -354,8 +360,9 @@ export default {
           top: `${cropInfo.site[1] * scale}px`
         }
         this.cropInfo.left = cropInfo.site[0] * scale
-        this.cropInfo.height = IMG_W * scale
+        this.cropInfo.height = IMG_H * scale
         this.cropInfo.top = cropInfo.site[1] * scale
+        this.cropInfo.width = IMG_W * scale
         // designImg
         this.getResultImg(data, IMG_W, IMG_H).then(res => {
           this.resultImg = res
