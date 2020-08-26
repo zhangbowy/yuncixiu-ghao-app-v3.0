@@ -120,7 +120,8 @@ export default {
           id: goods_id,
           design_id: design_id,
           desc,
-          name: this.goodsInfo?.item.name
+          name: this.goodsInfo?.item.name,
+          has_preview: true
         }
         wechatInterface(shareInfo, 'share', success => {
           // Toast('请点击右上角分享定制!')

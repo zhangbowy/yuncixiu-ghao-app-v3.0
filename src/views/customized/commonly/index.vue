@@ -526,7 +526,7 @@ export default {
     this.templateModal = true
   },
   mounted() {
-    document.getElementsByClassName('customized')[0].style.minHeight = this.minHeight + 'px'
+    this.$refs.commonly && (this.$refs.commonly.style.minHeight = window.screen.height - 46 + 'px')
   },
   methods: {
     onTextInputDelete() {

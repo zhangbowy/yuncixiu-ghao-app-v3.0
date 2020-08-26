@@ -48,11 +48,13 @@ const wechatInterface = (data, type, resolve, reject) => {
     // const paySign = data.paySign
     const url = window.location.href.split('#')[0] // 获取锚点之前的链接
     // let links = url+'#/Food/' + this.$route.params.id;
-    const links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id + '&design_id=' + (data.shareInfo.design_id || '')
+    let links = url + '#/goodsDetail?goods_id=' + data.shareInfo.id + '&design_id=' + (data.shareInfo.design_id || '')
+    if (data.shareInfo.has_preview) {
+      links = url + '#/desginPreview?goods_id=' + data.shareInfo.id + '&design_id=' + (data.shareInfo.design_id || '') + '&img_url=' + data.shareInfo.thumb_image_path
+    }
     // 分享朋友
     // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容（1.4.0）
     wx.ready(function() {
-      console.log(data, 'data')
       wx.updateAppMessageShareData({
         title: `${data.shareInfo.name}`, // 分享标题
         desc: data.shareInfo.desc, // 分享描述

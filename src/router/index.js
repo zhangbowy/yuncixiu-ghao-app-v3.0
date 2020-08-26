@@ -37,6 +37,13 @@ const constantRoutes = [
     component: () => import('@/views/authorize/register/index'),
     meta: { title: '用户注册', icon: 'register' }
   },
+  // 分享页跳转预览页
+  {
+    path: '/desginPreview',
+    name: 'DesginPreview',
+    component: () => import('@/views/goods/desginPreview/index'),
+    meta: { title: '设计预览' }
+  },
   {
     path: '/goodsList',
     name: 'GoodsList',

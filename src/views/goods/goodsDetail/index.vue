@@ -147,6 +147,21 @@ import store from '@/store'
 import wechatInterface from '@/utils/wxUtils'
 import { wxSdkApi } from '@/api/common'
 export default {
+  beforeRouteEnter(to, from, next) {
+    if (from.name === 'DesginPreview') {
+      next((_self) => {
+        _self.isPreviewPage = true
+      })
+    }
+    next()
+  },
+  beforeRouteLeave(to, from, next) {
+    next(false)
+    if (this.isPreviewPage && to.name !== 'Index') {
+      next('/')
+    }
+    next()
+  },
   components: {
     TopBar
   },
@@ -171,6 +186,7 @@ export default {
       design_id: '',
       is_presell: false,
       is_batch: false,
+      isPreviewPage: false, // 上一个页面是否是预览页
       batchNumber: 0,
       batchPrice: 0,
       item_price_template: []
