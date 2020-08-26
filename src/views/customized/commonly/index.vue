@@ -1,5 +1,5 @@
 <template>
-  <div ref="commonly" class="commonly">
+  <div ref="commonly" class="commonly" @click="onCommonlyClick($event)">
     <div class="topOptions">
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
@@ -7,11 +7,11 @@
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
             <van-dropdown-item ref="fontType" title="字体">
               <van-cell
-                v-for="item in fontTypeOptions"
+                v-for="item in filtterFontTypeList"
                 :key="item.font_id"
                 clickable
                 class="font-dropdown"
-                @click="fontChange(item.font_id)"
+                @click="fontChange(item)"
               >
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template #title>
@@ -81,7 +81,7 @@
       <!-- <van-overlay z-index="10" class-name="tsop-mask" :show="middleVisible" @click="hiddenVisible" /> -->
     </div>
     <div class="designArea">
-      <div class="commonly-bg-box" @click.stop="hiddenVisible">
+      <div class="commonly-bg-box" @click="hiddenVisible">
         <!-- 背景图 -->
         <img
           class="bg-img"
@@ -104,9 +104,12 @@
               @click.stop="imgFocus(1)"
             >
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content ? form.topText.content : '双击开始编辑' }}</span>
-              <div v-else ref="topImgContent" class="top-img-content">
-                <span id="test" :class="openArc && 'arc'">
+              <div v-else class="top-img-content">
+                <span v-if="inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
                   <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
+                </span>
+                <span v-if="inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
+                  <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
                 </span>
               </div>
             </div>
@@ -155,8 +158,10 @@
               <span
                 v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0"
               >{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
-              <div v-else ref="bottomImgContent" class="bottom-img-content">
-                <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item">
+              <div v-else class="bottom-img-content">
+                <span ref="bottomImgContent" :class="openArc && 'arc'">
+                  <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item">
+                </span>
               </div>
             </div>
             <div v-if="bottomFocus==true" class="input-box">
@@ -321,8 +326,10 @@ export default {
       topImg: [], // 上图片
       bottomImg: [], // 底部图片
       fontTypeOptions: [], // 可选字体
+      filtterFontTypeList: [], // 过滤后的可选字体
       currentTemplate: {}, // 当前模板
-      inputMode: 'en', // 输入模式
+      topTextList: [], // 字体列表
+      inputMode: '', // 输入模式
       topText: '', // 上输入框文本
       bottomText: '', // 底部文本
       fontType: '', // 字体类型
@@ -407,6 +414,16 @@ export default {
     ])
   },
   watch: {
+    inputMode: {
+      handler(newValue, oldValue) {
+        if (newValue !== oldValue) {
+          const type = newValue === 'en' ? 1 : 2
+          this.filtterFontTypeList = this.fontTypeOptions.filter(item => (item.font_type === type))
+          this.fontType = this.filtterFontTypeList[0]?.font_id || ''
+          this.getFontTop()
+        }
+      }
+    },
     radiusWidth: {
       handler(newValue, oldValue) {
         this.imgRotate()
@@ -529,6 +546,16 @@ export default {
     this.$refs.commonly && (this.$refs.commonly.style.minHeight = window.screen.height - 46 + 'px')
   },
   methods: {
+    onCommonlyClick(event) {
+      // if (event.target.tagName !== 'INPUT') {
+      //   this.topFocus = false
+      //   this.topInput = false
+      //   this.bottomInput = false
+      //   this.topFocus = false
+      //   this.showTextOperate = false
+      //   this.imgRotate()
+      // }
+    },
     onTextInputDelete() {
       const type = this.topFocus ? 'top' : 'bottom'
       this.$nextTick(() => {
@@ -571,6 +598,7 @@ export default {
       designApi.getFontList().then(res => {
         this.fontTypeOptions = res.data
         this.fontType = res.data[0].font_id
+        this.inputMode = 'en'
       })
     },
     // 获取定制模板
@@ -730,22 +758,33 @@ export default {
     changeOpenArc() {
       // if (this.openArc === true) {
       //   this.imgRotate()
-      //   // this.inpuFocus(1).then(() => {
-      //   //   this.inputBlur(1).then(() => {
-      //   //   })
-      //   // })
+      //   this.inpuFocus(1).then(() => {
+      //     this.inputBlur(1).then(() => {
+      //     })
+      //   })
       // } else {
-      //   // this.inpuFocus(1).then(() => {
-      //   //   this.inputBlur(1).then(() => {
-      //   //     })
-      //   // })
+      //   this.inpuFocus(1).then(() => {
+      //     this.inputBlur(1).then(() => {
+      //       })
+      //   })
       // }
-      this.getFontTop()
+      this.inpuFocus(1).then(() => {
+        this.inputBlur(1).then(() => {
+          this.getFontTop()
+        })
+      })
     },
     getFontTop: function() {
       let arr = []
       const text = this.form.topText.content
       arr = text.split('')
+      if (this.inputMode === 'zh') {
+        this.topTextList = arr
+        if (this.openArc === true) {
+          this.imgRotate()
+        }
+        return
+      }
       designApi.getTextImage({
         font_id: this.fontType,
         font_list: JSON.stringify(arr),
@@ -841,7 +880,8 @@ export default {
       })
     },
     // 字体选择
-    fontChange(value) {
+    fontChange(item) {
+      const { font_id: value, font_name, ttf } = item
       this.fontType = value
       if (this.topInput === true) {
         this.form.topText.fontType = value
@@ -850,6 +890,10 @@ export default {
       if (this.bottomInput === true) {
         this.form.bottomText.fontType = value
         this.getFontBottom()
+      }
+      if (this.inputMode === 'zh') {
+        this.$refs.commonly.style.setProperty('--font-family', font_name)
+        this.$refs.commonly.style.setProperty('--src', `url('${ttf}')`)
       }
       this.$refs.fontType.toggle()
     },
@@ -1006,19 +1050,22 @@ export default {
     },
     // 立即购买
     buyNow() {
-      let [top_w, bottom_w] = [0, 0, 0, 0]
+      let [top_w, bottom_w] = [0, 0]
       if (this.currentTemplate.emb_template_id !== 2) {
         if (typeof this.$refs.topImgContent !== 'undefined') {
           top_w = this.$refs.topImgContent.offsetWidth
+          console.log(top_w, 'top_w')
+          if (this.currentTemplate.emb_template_id === 1 && this.openArc) {
+            top_w = 2 * Math.PI * this.radiusWidth * (this.radian / 360)
+            console.log('弧形top_w', top_w)
+          }
         }
       }
       if (this.currentTemplate.emb_template_id === 3) {
         if (typeof this.$refs.topImgContent !== 'undefined') {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
+          console.log(bottom_w, 'bottom_w')
         }
-      }
-      if (this.currentTemplate.emb_template_id === 1) {
-        top_w = 2 * Math.PI * this.radiusWidth * (this.radian / 360)
       }
       // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
@@ -1051,6 +1098,12 @@ export default {
 </script>
 <style lang="scss">
 .commonly{
+  --font-family: '';
+  --src: 'url()';
+  @font-face {
+    font-family: var(--font-family);
+    src: var(--src);
+  }
   position: relative;
   height: 100%;
   .img-btn {
@@ -1229,9 +1282,12 @@ export default {
               display: flex;
               justify-content: center;
               align-items: center;
-              #test.arc {
+              #text {
+                font-family: var(--font-family);
+              }
+              #img.arc, #text.arc {
                 height: 100%;
-                img {
+                img, span{
                   position: absolute;
                   top: 50%;
                   left: 50%;
