@@ -892,8 +892,23 @@ export default {
         this.getFontBottom()
       }
       if (this.inputMode === 'zh') {
-        this.$refs.commonly.style.setProperty('--font-family', font_name)
-        this.$refs.commonly.style.setProperty('--src', `url('${ttf}')`)
+        const oldStyle = document.querySelector('style[id="font"]')
+        oldStyle && document.body.removeChild(oldStyle)
+        const style = document.createElement('style')
+        const str = `
+          @font-face {
+            font-family: 'font';
+            src: url("${ttf}");
+          }
+        `
+        style.id = 'font'
+        style.type = 'text/css'
+        if (style.styleSheet) { // ie下
+          style.styleSheet.cssText = str;  
+        } else {  
+          style.innerHTML = str; // 或者写成 nod.appendChild(document.createTextNode(str))
+        } 
+        document.body.appendChild(style)
       }
       this.$refs.fontType.toggle()
     },
@@ -1098,12 +1113,6 @@ export default {
 </script>
 <style lang="scss">
 .commonly{
-  --font-family: '';
-  --src: 'url()';
-  @font-face {
-    font-family: var(--font-family);
-    src: var(--src);
-  }
   position: relative;
   height: 100%;
   .img-btn {
@@ -1283,7 +1292,7 @@ export default {
               justify-content: center;
               align-items: center;
               #text {
-                font-family: var(--font-family);
+                font-family: 'font';
               }
               #img.arc, #text.arc {
                 height: 100%;
