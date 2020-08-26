@@ -104,7 +104,7 @@ var script = {
       var canvas = this.$refs.signaturePadCanvas
       // console.log(canvas.saveSignature())
       const data = this.signaturePad.toData()
-      const ratio =  1;
+      const ratio = 1
       const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
       const SCREEN_HEIGHT = window.screen.height // 获取屏幕高度
       let scale = 1

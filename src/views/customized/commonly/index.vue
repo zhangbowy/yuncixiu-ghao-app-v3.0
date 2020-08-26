@@ -37,14 +37,13 @@
             <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
               <van-switch-cell v-model="openArc" title="是否开启" @change="changeOpenArc" />
               <template v-if="currentTemplate.emb_template_id === 1">
-                <van-cell  title="弧度">
+                <van-cell title="弧度">
                   <van-stepper v-model="radian" button-size="32px" :min="120" :max="360" />
                 </van-cell>
-                <van-cell  title="半径">
+                <van-cell title="半径">
                   <van-stepper v-model="radiusWidth" button-size="32px" :min="minRadiusWidth" :max="maxRadiusWidth" />
                 </van-cell>
               </template>
-              
             </van-dropdown-item>
           </van-dropdown-menu>
         </div>
@@ -70,7 +69,7 @@
               <div class="menu-item  img-btn">
                 <van-button icon="replay" size="small" plain type="default" @click.self="onTextInputReplay">重新输入</van-button>
               </div>
-              <div v-if="this.currentTemplate.emb_template_id !== 1" class="menu-item  img-btn">
+              <div v-if="currentTemplate.emb_template_id !== 1" class="menu-item  img-btn">
                 <van-button icon="delete" size="small" plain type="default" @click="onTextInputDelete">删除</van-button>
               </div>
             </div>
@@ -104,9 +103,7 @@
               :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
               @click.stop="imgFocus(1)"
             >
-              <span
-                v-if="topFocus==false && topInput==false && topImg.length==0"
-              >{{ form.topText.content ? form.topText.content : '双击开始编辑' }}</span>
+              <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content ? form.topText.content : '双击开始编辑' }}</span>
               <div v-else ref="topImgContent" class="top-img-content">
                 <span id="test" :class="openArc && 'arc'">
                   <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
@@ -409,27 +406,6 @@ export default {
     ])
   },
   watch: {
-    bottomFocus: {
-      handler(newValue, oldValue) {
-        this.showTextOperate = newValue
-        if (this.currentTemplate.emb_template_id === 3) {
-          this.middleVisible = !newValue
-        }
-      }
-    },
-    topFocus: {
-      handler(newValue, oldValue) {
-        this.showTextOperate = newValue
-        if (this.currentTemplate.emb_template_id === 3) {
-          this.middleVisible = !newValue
-        }
-      }
-    },
-    middleVisible: {
-      handler(newValue, oldValue) {
-        console.log(newValue, 'middleVisible')
-      }
-    },
     radiusWidth: {
       handler(newValue, oldValue) {
         this.imgRotate()
@@ -573,7 +549,6 @@ export default {
         this.$nextTick(() => {
           this.$refs.bottomInput.value = ''
           this.form.bottomText.content = ''
-          console.log(this.form)
           this.bottomImg = []
         })
       }
@@ -718,6 +693,10 @@ export default {
         this.bottomFocus = true
         this.bottomInput = true
       }
+      this.showTextOperate = true
+      if (this.currentTemplate.emb_template_id === 3) {
+        this.middleVisible = false
+      }
     },
     async fontSizeChange(value) {
       this.fontSize = value
@@ -796,7 +775,6 @@ export default {
     }, 500),
     showMiddleMemu(type) {
       // type==1个人上传，type==2花样库选择
-      
       this.middleVisible = true
       this.showTextOperate = false
       this.topFocus = false
@@ -829,7 +807,6 @@ export default {
       $(function() {
         if (_self.currentTemplate?.emb_template_id === 1) {
           const topImgList = Array.isArray(_self.$refs['topImg']) ? _self.$refs['topImg'] : (_self.$refs['topImg'] ? [_self.$refs['topImg']] : [])
-          const topImgContent = _self.$refs['topImgContent']
           const radiusWidth = _self.radiusWidth
           const count = topImgList.length
           const radius = _self.radian / (count - (_self.radian === 360 ? 0 : 1)) // 平均角度)
@@ -904,7 +881,7 @@ export default {
       if (name === 'showImgList') this.patternModal = true // 显示花样库
       if (name === 'showUpload') this.uploadModal = true // 显示上传图片弹框
       if (name === 'showTemplate') this.templateModal = true // 显示模板弹框
-      if (name === 'showInputMode') this.inputModeModel = true // 显示输入模式选择弹框 
+      if (name === 'showInputMode') this.inputModeModel = true // 显示输入模式选择弹框
       if (name === 'preview') this.preview()
       if (name === 'complete') this.complete()
     },
@@ -1025,7 +1002,7 @@ export default {
     },
     // 立即购买
     buyNow() {
-      let [top_w, bottom_w, top_h, bottom_h] = [0, 0, 0, 0]
+      let [top_w, bottom_w] = [0, 0, 0, 0]
       if (this.currentTemplate.emb_template_id !== 2) {
         if (typeof this.$refs.topImgContent !== 'undefined') {
           top_w = this.$refs.topImgContent.offsetWidth

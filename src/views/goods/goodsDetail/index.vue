@@ -274,7 +274,8 @@ export default {
     preview(i) {
       this.instance = ImagePreview({
         images: this.goodsDetail.images,
-        startPosition: i
+        startPosition: i,
+        closeOnPopstate: true
       })
     },
     // 显示sku列表

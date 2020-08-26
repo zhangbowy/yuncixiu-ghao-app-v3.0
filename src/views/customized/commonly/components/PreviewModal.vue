@@ -28,14 +28,14 @@
     </div>
     <van-dialog v-model="showShare" title="" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true" @closed="onShareSheetCancel">
       <span>
-        快去点击右上角分享好友吧~
+        快去点击右上角分享好友吧 ~
       </span>
     </van-dialog>
   </div>
 </template>
 
 <script>
-import { ImagePreview, Toast, Dialog } from 'vant'
+import { ImagePreview, Dialog } from 'vant'
 import wechatInterface from '@/utils/wxUtils'
 import { wxSdkApi } from '@/api/common'
 export default {
@@ -77,7 +77,8 @@ export default {
     },
     loading: {
       handler(newValue, oldValue) {
-        if (newValue) {
+        console.log(newValue)
+        if (!newValue) {
           this.wxShare()
         }
       }
@@ -104,6 +105,8 @@ export default {
     },
     // 微信分享
     wxShare() {
+      console.log(window.location.origin)
+      console.log(this.img)
       wxSdkApi.getJsConfig({
         url: window.location.origin
       }).then(res => {
@@ -120,7 +123,7 @@ export default {
           name: this.goodsInfo?.item.name
         }
         wechatInterface(shareInfo, 'share', success => {
-          Toast('请点击右上角分享定制!')
+          // Toast('请点击右上角分享定制!')
         }, fail => {
         })
       })
