@@ -184,7 +184,6 @@ export default {
     },
     getConfirmData() {
       this.loading = true
-      console.log(this.order)
       const cartList = JSON.parse(this.order.cartList)
       if (Array.isArray(cartList)) {
         cartList.forEach((item) => {

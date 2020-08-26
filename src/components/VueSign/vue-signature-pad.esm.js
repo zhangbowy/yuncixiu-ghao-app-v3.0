@@ -58,9 +58,7 @@ var script = {
       signatureData: TRANSPARENT_PNG,
       onResizeHandler: null,
       canvasTxt: null,
-      oldWidth: 0,
-      signTime: 0,
-      oldScale: 1
+      oldWidth: 0
     })
   },
   computed: {
@@ -102,38 +100,21 @@ var script = {
   methods: {
     resizeCanvas: function resizeCanvas(isHorizontal) {
       var canvas = this.$refs.signaturePadCanvas
-      // console.log(canvas.saveSignature())
-      const data = this.signaturePad.toData()
-      const ratio = 1
-      const SCREEN_WIDTH = window.screen.width // 获取屏幕宽度
-      const SCREEN_HEIGHT = window.screen.height // 获取屏幕高度
-      let scale = 1
-      if (isHorizontal) {
-        scale = SCREEN_HEIGHT / canvas.offsetWidth / ratio
-        canvas.width = SCREEN_HEIGHT * ratio
-        canvas.height = SCREEN_HEIGHT * ratio * (canvas.offsetHeight / canvas.offsetWidth)
-      } else {
-        canvas.width = SCREEN_WIDTH * ratio
-        canvas.height = SCREEN_WIDTH * ratio * (canvas.offsetHeight / canvas.offsetWidth)
-        scale = canvas.offsetWidth / SCREEN_WIDTH / ratio
-        if (!this.signaturePad.isEmpty()) {
-          for (const item of data) {
-            if (this.signTime && item.points[0].time > this.signTime) {
-              item.points.forEach(item => {
-                item.x = item.x * this.oldScale
-                item.y = item.y * this.oldScale
-              })
-            }
-          }
-        }
-      }
-      this.signTime = +new Date()
-      this.oldScale = scale
+      const imgUrl = this.signaturePad.toDataURL()
+      let ratio = 1
+      // if (window.devicePixelRatio !== undefined) {
+      //   ratio = window.devicePixelRatio
+      // }
+      canvas.width = canvas.offsetWidth * ratio
+      canvas.height = canvas.offsetHeight * ratio
       this.signaturePad.clear()
       this.canvasTxt = canvas.getContext('2d')
       this.signatureData = TRANSPARENT_PNG
-      this.signaturePad.fromData(data)
-      canvas.getContext('2d').scale(ratio * scale, ratio * scale)
+      this.fromDataURL(imgUrl, {
+        width: canvas.width,
+        height: canvas.height
+      })
+      canvas.getContext('2d').scale(ratio, ratio)
     },
     getHorizontal() {
 
