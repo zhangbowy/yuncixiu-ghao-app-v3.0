@@ -156,7 +156,6 @@ export default {
     next()
   },
   beforeRouteLeave(to, from, next) {
-    next(false)
     if (this.isPreviewPage && to.name !== 'Index') {
       next('/')
     }

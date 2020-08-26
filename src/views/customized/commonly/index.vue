@@ -1142,6 +1142,12 @@ export default {
       background: rgba(0, 0, 0, 0.5);
       border: 5px solid rgba(192, 192, 192, 0.5);
       z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      // box-sizing: border-box;
+      padding: 4px;
       .top-input,.bottom-input{
         font-size: 12px;
         z-index: 1;
@@ -1189,9 +1195,9 @@ export default {
 
       }
       .top-input{
-        position: absolute;
-        top: 0;
-        left: 0;
+        // position: absolute;
+        // top: 0;
+        // left: 0;
         width: 100%;
         &.focus {
           .input-box {
@@ -1242,16 +1248,16 @@ export default {
 
       }
       .bottom-input{
-        position: absolute;
-        bottom: 0;
-        left: 0;
+        // position: absolute;
+        // bottom: 0;
+        // left: 0;
         width: 100%;
       }
       .middle-img{
-        position: absolute;
-        top: 46px;
-        bottom: 46px;
-        left: 0;
+        // position: absolute;
+        // top: 46px;
+        // bottom: 46px;
+        // left: 0;
         width: 99.2%;
         display: flex;
         align-items: center;
