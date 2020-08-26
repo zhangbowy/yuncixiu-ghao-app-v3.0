@@ -52,6 +52,7 @@ const wechatInterface = (data, type, resolve, reject) => {
     // 分享朋友
     // 自定义“分享给朋友”及“分享到QQ”按钮的分享内容（1.4.0）
     wx.ready(function() {
+      console.log(data, 'data')
       wx.updateAppMessageShareData({
         title: `${data.shareInfo.name}`, // 分享标题
         desc: data.shareInfo.desc, // 分享描述

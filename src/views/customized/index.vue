@@ -1,5 +1,5 @@
 <template>
-  <div class="customized">
+  <div ref="customized" class="customized">
     <div class="navbar">
       <!-- tab标题栏 -->
       <van-nav-bar

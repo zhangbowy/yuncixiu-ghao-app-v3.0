@@ -101,7 +101,7 @@ var script = {
     resizeCanvas: function resizeCanvas(isHorizontal) {
       var canvas = this.$refs.signaturePadCanvas
       const imgUrl = this.signaturePad.toDataURL()
-      let ratio = 1
+      const ratio = 1
       // if (window.devicePixelRatio !== undefined) {
       //   ratio = window.devicePixelRatio
       // }

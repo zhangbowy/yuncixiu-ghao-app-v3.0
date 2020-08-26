@@ -315,7 +315,7 @@ export default {
       minRadiusWidth: 20, // 最小半径
       radiusWidth: 0, // 半径
       is_wilcom: 0,
-      minHeight: 812,
+      // minHeight: 812,
       figureList: [], // 花样库
       templateList: [], // 模板列表
       topImg: [], // 上图片
@@ -526,8 +526,7 @@ export default {
     this.templateModal = true
   },
   mounted() {
-    this.minHeight = window.screen.height
-    this.$refs.commonly && (this.$refs.commonly.style.minHeight = this.minHeight + 'px')
+    document.getElementsByClassName('customized')[0].style.minHeight = this.minHeight + 'px'
   },
   methods: {
     onTextInputDelete() {
