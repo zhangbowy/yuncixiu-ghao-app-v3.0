@@ -543,7 +543,8 @@ export default {
     this.templateModal = true
   },
   mounted() {
-    this.$refs.commonly && (this.$refs.commonly.style.minHeight = window.screen.height - 46 + 'px')
+    // 696
+    this.$refs.commonly && (this.$refs.commonly.style.minHeight = document.body.offsetHeight + 'px')
   },
   methods: {
     onCommonlyClick(event) {
@@ -777,6 +778,7 @@ export default {
     getFontTop: function() {
       let arr = []
       const text = this.form.topText.content
+      if (text.trim() === '') return 
       arr = text.split('')
       if (this.inputMode === 'zh') {
         this.topTextList = arr
@@ -803,6 +805,7 @@ export default {
     getFontBottom: debounce(function() {
       let arr = []
       const text = this.form.bottomText.content
+      if (text.trim() === '') return
       arr = text.split('')
       designApi.getTextImage({
         font_id: this.fontType,

@@ -64,13 +64,13 @@ export default {
 <style lang="scss">
   // 底部选项
   .bottomOptions{
-    height: 15vh;
+    height: 125px;
     position: absolute;
     bottom: 0;
     width: 100%;
     left: 0;
     .operate-btn{
-      height: 8vh;
+      height: 65px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -107,7 +107,7 @@ export default {
       display: flex;
       align-items: center;
       padding: 0 30px;
-      height: 7vh;
+      height: 60px;
       justify-content: space-between;
       button{
         width: 40%;

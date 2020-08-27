@@ -4,7 +4,7 @@
       <div class="recommend-title">
         <span>{{ title }}</span>
       </div>
-      <div class="goods-content">
+      <div :class="['goods-content', !data.length && 'empty']">
         <div v-for="(item,index) in data" :key="`${index}-${item[resultMap.id]}`" class="goods-item" @click="toDetail(item[resultMap.id])">
           <img v-lazy="item[resultMap.thumb_image_path]" alt="">
           <p class="goods-name">{{ item[resultMap.name] }}</p>
@@ -84,7 +84,9 @@ export default {
       display: flex;
       flex-flow: wrap;
       align-items: center;
-      // justify-content: space-around;
+      &.empty {
+        justify-content: space-around;
+      }
       .goods-item{
         width: 45%;
         border: 1px solid #f5f5f5;
