@@ -199,7 +199,7 @@
       <div class="modal">
         <div class="modal-title">上传图片</div>
         <div class="modal-content">
-          <van-uploader v-model="patternPicture" multiple :max-count="1"  />
+          <van-uploader v-model="patternPicture" multiple :max-count="1" />
         </div>
         <div class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">确定</van-button>
@@ -557,9 +557,9 @@ export default {
       this.$toast.loading({
         duration: 0
       })
-      designApi.removeBackground({image: this.patternPicture[0].content}).then((res) => {
-        const imgUrl = this.cutImage(res.data)
-        this.patternPicture[0] = Object.assign(this.patternPicture[0], {content: imgUrl, oldContent: this.patternPicture[0].content})
+      designApi.removeBackground({ image: this.patternPicture[0].content }).then((res) => {
+        this.cutImage(res.data)
+        this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
       })
     },
     /**
@@ -580,8 +580,8 @@ export default {
         const ctx = canvas.getContext('2d')
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight)
         const imgData = ctx.getImageData(0, 0, imgWidth, imgHeight).data
-        let [x1, x2, y1, y2] = this.getCropArea(imgData, imgWidth, imgHeight)
-        let [resultImgWidth, resultImgHeight] = [x2 - x1, y2 - y1]
+        const [x1, x2, y1, y2] = this.getCropArea(imgData, imgWidth, imgHeight)
+        const [resultImgWidth, resultImgHeight] = [x2 - x1, y2 - y1]
         // 创建一个canvas 导出去除透明背景后的图片
         const crop_canvas = document.createElement('canvas')
         const crop_ctx = crop_canvas.getContext('2d')
@@ -594,9 +594,8 @@ export default {
         if (newImgUrl) {
           this.patternPicture[0].content = newImgUrl
         }
-      } 
         this.$toast.clear()
-      return imgUrl
+      }
     },
     /**
      * 获取非透明区域x 轴和y 轴上的最近最远值
@@ -606,8 +605,8 @@ export default {
      */
     getCropArea(imgData, imgWidth, imgHeight) {
       let [x1, x2, y1, y2] = [imgWidth, 0, imgHeight, 0]
-      for(let x = 0; x < imgWidth; x ++) {
-        for (let y = 0; y < imgHeight; y ++) {
+      for (let x = 0; x < imgWidth; x++) {
+        for (let y = 0; y < imgHeight; y++) {
           var position = (x + imgWidth * y) * 4
           if (imgData[position] > 0 || imgData[position + 1] > 0 || imgData[position + 2] || imgData[position + 3] > 0) {
             x1 = Math.min(x, x1)
@@ -1251,12 +1250,12 @@ export default {
   }
   // 设计区域
   .designArea{
-    height:65vh;
-    min-height: 520px;
-    position: absolute;
-    top: 18vh;
+    // height:calc(100% - 260px);
+    // min-height: 520px;
+    // position: absolute;
+    // top: 18vh;
     width: 100%;
-    left: 0;
+    // left: 0;
     .commonly-bg-box{
       width: 100%;
       height: 375px;

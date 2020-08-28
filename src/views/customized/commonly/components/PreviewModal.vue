@@ -77,7 +77,6 @@ export default {
     },
     loading: {
       handler(newValue, oldValue) {
-        console.log(newValue)
         if (!newValue) {
           this.wxShare()
         }
@@ -105,8 +104,6 @@ export default {
     },
     // 微信分享
     wxShare() {
-      console.log(window.location.origin)
-      console.log(this.img)
       wxSdkApi.getJsConfig({
         url: window.location.origin
       }).then(res => {

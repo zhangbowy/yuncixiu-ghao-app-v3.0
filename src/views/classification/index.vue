@@ -66,7 +66,13 @@ export default {
       currentId: 0,
       currentImg: '',
       items: [],
-      figureItems: [],
+      figureItems: [
+        {
+          activeId: '',
+          text: '全部',
+          image_path: ''
+        }
+      ],
       categories: [],
       figureCategoryList: [],
       subCategary: [],
@@ -77,9 +83,7 @@ export default {
   watch: {
     figureCategoryCurrentId: {
       handler(newValue, oldValue) {
-        if (newValue) {
-          this.getFigure(newValue)
-        }
+        this.getFigure(newValue)
       }
     }
   },
@@ -110,6 +114,7 @@ export default {
             image_path: item.image_path
           })
         })
+        console.log(this.figureItems)
         if (this.figureCategoryCurrentId) {
           res.data.design_category.forEach((element, i) => {
             if (element.design_category_id === parseInt(this.figureCategoryCurrentId)) {
@@ -118,7 +123,7 @@ export default {
             }
           })
         } else {
-          this.figureCategoryCurrentId = res.data.design_category[0].design_category_id
+          this.figureCategoryCurrentId = ''
         }
       })
       categoryApi.getCategory().then(res => {
@@ -185,7 +190,7 @@ export default {
     },
     // 花样类别切换
     onFigureCategoryNavClick(value) {
-      this.figureCategoryCurrentId = this.figureCategoryList[value].design_category_id
+      this.figureCategoryCurrentId = this.figureCategoryList[value - 1]?.design_category_id || ''
       this.figureActive = value
     }
   }
