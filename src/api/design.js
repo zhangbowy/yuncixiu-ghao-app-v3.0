@@ -78,5 +78,16 @@ export const designApi = {
       method: 'get',
       params
     })
+  },
+  /**
+   * 去除背景
+   * @param {*formData} params
+   */
+  removeBackground(data) {
+    return request({
+      url: '/custom/removeBg',
+      method: 'post',
+      data
+    })
   }
 }

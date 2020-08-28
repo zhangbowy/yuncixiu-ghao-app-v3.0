@@ -210,8 +210,8 @@ export default {
         position: 'absolute',
         width: `${this.design_box.design_bg_width}px`,
         height: `${this.design_box.design_bg_height}px`,
-        left: `-${this.design_box.design_bg_X}px`,
-        top: `-${this.design_box.design_bg_Y}px`
+        left: `${-this.design_box.design_bg_X}px`,
+        top: `${-this.design_box.design_bg_Y}px`
       }
       // 设计区域位置style
       this.designArea.designBoxStyle = {
@@ -220,7 +220,7 @@ export default {
         height: `${this.design_box.design_H}px`,
         left: `${this.design_box.design_X}px`,
         top: '50%',
-        marginTop: `-${this.design_box.design_H / 2}px`,
+        marginTop: `${-this.design_box.design_H / 2}px`,
         background: `rgba(0, 0, 0, 0.5)`
       }
       this.getDrawImg()

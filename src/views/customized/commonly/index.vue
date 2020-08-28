@@ -1,5 +1,5 @@
 <template>
-  <div ref="commonly" class="commonly" @click="onCommonlyClick($event)">
+  <div ref="commonly" class="commonly">
     <div class="topOptions">
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
@@ -199,10 +199,13 @@
       <div class="modal">
         <div class="modal-title">上传图片</div>
         <div class="modal-content">
-          <van-uploader v-model="patternPicture" multiple :max-count="1" />
+          <van-uploader v-model="patternPicture" multiple :max-count="1"  />
         </div>
         <div class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">确定</van-button>
+        </div>
+        <div v-if="patternPicture.length" class="footer-button">
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">去除背景</van-button>
         </div>
       </div>
     </van-popup>
@@ -547,15 +550,74 @@ export default {
     this.$refs.commonly && (this.$refs.commonly.style.minHeight = document.body.offsetHeight + 'px')
   },
   methods: {
-    onCommonlyClick(event) {
-      // if (event.target.tagName !== 'INPUT') {
-      //   this.topFocus = false
-      //   this.topInput = false
-      //   this.bottomInput = false
-      //   this.topFocus = false
-      //   this.showTextOperate = false
-      //   this.imgRotate()
+    removeBG() {
+      // if (this.patternPicture[0].oldContent) {
+      //   return
       // }
+      this.$toast.loading({
+        duration: 0
+      })
+      designApi.removeBackground({image: this.patternPicture[0].content}).then((res) => {
+        const imgUrl = this.cutImage(res.data)
+        this.patternPicture[0] = Object.assign(this.patternPicture[0], {content: imgUrl, oldContent: this.patternPicture[0].content})
+      })
+    },
+    /**
+     * 裁剪图片，去除透明部分
+     * @param {base64} imgUrl
+     */
+    cutImage(imgUrl) {
+      // 创建一个image 计算图片真实大小
+      const img = new Image()
+      img.src = imgUrl
+      img.onload = () => {
+        // 创建一个canva 计算不透明图片区域大小
+        const imgWidth = img.width
+        const imgHeight = img.height
+        const canvas = document.createElement('canvas')
+        canvas.width = imgWidth
+        canvas.height = imgHeight
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, imgWidth, imgHeight)
+        const imgData = ctx.getImageData(0, 0, imgWidth, imgHeight).data
+        let [x1, x2, y1, y2] = this.getCropArea(imgData, imgWidth, imgHeight)
+        let [resultImgWidth, resultImgHeight] = [x2 - x1, y2 - y1]
+        // 创建一个canvas 导出去除透明背景后的图片
+        const crop_canvas = document.createElement('canvas')
+        const crop_ctx = crop_canvas.getContext('2d')
+        crop_canvas.width = resultImgWidth
+        crop_canvas.height = resultImgHeight
+        const crop_imgData = ctx.getImageData(x1, y1, resultImgWidth, resultImgHeight)
+        crop_ctx.globalCompositeOperation = 'destination-over'
+        crop_ctx.putImageData(crop_imgData, 0, 0)
+        const newImgUrl = crop_canvas.toDataURL()
+        if (newImgUrl) {
+          this.patternPicture[0].content = newImgUrl
+        }
+      } 
+        this.$toast.clear()
+      return imgUrl
+    },
+    /**
+     * 获取非透明区域x 轴和y 轴上的最近最远值
+     * @param {imageData} imgData
+     * @param {number} imgWidth
+     * @param {number} imgHeight
+     */
+    getCropArea(imgData, imgWidth, imgHeight) {
+      let [x1, x2, y1, y2] = [imgWidth, 0, imgHeight, 0]
+      for(let x = 0; x < imgWidth; x ++) {
+        for (let y = 0; y < imgHeight; y ++) {
+          var position = (x + imgWidth * y) * 4
+          if (imgData[position] > 0 || imgData[position + 1] > 0 || imgData[position + 2] || imgData[position + 3] > 0) {
+            x1 = Math.min(x, x1)
+            x2 = Math.max(x, x2)
+            y1 = Math.min(y, y1)
+            y2 = Math.max(y, y2)
+          }
+        }
+      }
+      return [x1, x2, y1, y2]
     },
     onTextInputDelete() {
       const type = this.topFocus ? 'top' : 'bottom'
@@ -664,8 +726,8 @@ export default {
         position: 'absolute',
         width: `${this.design_box.design_bg_width}px`,
         height: `${this.design_box.design_bg_height}px`,
-        left: `-${this.design_box.design_bg_X}px`,
-        top: `-${this.design_box.design_bg_Y}px`
+        left: `${-this.design_box.design_bg_X}px`,
+        top: `${-this.design_box.design_bg_Y}px`
       }
       // 设计区域位置style
       this.designBoxStyle = {
@@ -674,7 +736,7 @@ export default {
         height: `${this.design_box.design_H}px`,
         left: `${this.design_box.design_X}px`,
         top: '50%',
-        marginTop: `-${this.design_box.design_H / 2}px`
+        marginTop: `${-this.design_box.design_H / 2}px`
       }
       // 计算最大最小半径
       this.maxRadiusWidth = Math.min(this.design_box.design_W, this.design_box.design_H) / 2
@@ -778,7 +840,7 @@ export default {
     getFontTop: function() {
       let arr = []
       const text = this.form.topText.content
-      if (text.trim() === '') return 
+      if (text.trim() === '') return
       arr = text.split('')
       if (this.inputMode === 'zh') {
         this.topTextList = arr
@@ -884,7 +946,7 @@ export default {
     },
     // 字体选择
     fontChange(item) {
-      const { font_id: value, font_name, ttf } = item
+      const { font_id: value, ttf } = item
       this.fontType = value
       if (this.topInput === true) {
         this.form.topText.fontType = value
@@ -907,10 +969,10 @@ export default {
         style.id = 'font'
         style.type = 'text/css'
         if (style.styleSheet) { // ie下
-          style.styleSheet.cssText = str;  
-        } else {  
-          style.innerHTML = str; // 或者写成 nod.appendChild(document.createTextNode(str))
-        } 
+          style.styleSheet.cssText = str
+        } else {
+          style.innerHTML = str // 或者写成 nod.appendChild(document.createTextNode(str))
+        }
         document.body.appendChild(style)
       }
       this.$refs.fontType.toggle()
@@ -1087,6 +1149,7 @@ export default {
       }
       // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
+      console.log(this.design)
       goodsInfo[0].design_info = {
         design_id: this.form.middleImg.design_id,
         top_font_width: top_w / parseInt(this.designBoxStyle.width) * (this.customInfo?.custom_info.design_width || 150),
@@ -1361,12 +1424,20 @@ export default {
         }
         .van-uploader__wrapper{
           align-items: center;
+          padding: 10px;
+          box-sizing: border-box;
         }
         .van-uploader__preview{
+          // background: url('../../../../public/reseau.jpg') 100% 100%;
           margin: 0 auto;
           .van-uploader__preview-image{
             width: 100%;
             height: auto;
+          }
+          .van-uploader__preview-delete {
+            top: -5px;
+            right: -5px;
+            border-radius: 50%;
           }
         }
       }
