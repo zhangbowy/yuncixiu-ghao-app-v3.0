@@ -98,23 +98,23 @@ var script = {
     }
   },
   methods: {
-    resizeCanvas: function resizeCanvas(isHorizontal) {
+    resizeCanvas: function resizeCanvas() {
       var canvas = this.$refs.signaturePadCanvas
       const imgUrl = this.signaturePad.toDataURL()
       const ratio = 1
-      // if (window.devicePixelRatio !== undefined) {
-      //   ratio = window.devicePixelRatio
-      // }
-      canvas.width = canvas.offsetWidth * ratio
-      canvas.height = canvas.offsetHeight * ratio
-      this.signaturePad.clear()
-      this.canvasTxt = canvas.getContext('2d')
-      this.signatureData = TRANSPARENT_PNG
-      this.fromDataURL(imgUrl, {
-        width: canvas.width,
-        height: canvas.height
-      })
-      canvas.getContext('2d').scale(ratio, ratio)
+      const isOldSize =  (canvas.width === canvas.offsetWidth * ratio) && (canvas.height === canvas.offsetHeight * ratio)
+      if (!isOldSize) {
+        canvas.width = canvas.offsetWidth * ratio
+        canvas.height = canvas.offsetHeight * ratio
+        this.signaturePad.clear()
+        this.fromDataURL(imgUrl, {
+          width: canvas.width,
+          height: canvas.height
+        })
+        this.signatureData = TRANSPARENT_PNG
+        this.canvasTxt = canvas.getContext('2d')
+        canvas.getContext('2d').scale(ratio, ratio)
+      }
     },
     getHorizontal() {
 

@@ -1,6 +1,7 @@
 <template>
   <div class="hand-drawn">
     <setting-board
+      v-if="isFullPage"
       :line-width="lineWidth"
       :min-width="minWidth"
       :line-color="lineColor"
@@ -26,7 +27,8 @@
           :width="`${design_box.design_W}px`"
           :height="`${design_box.design_H}px`"
           :custom-style="designArea.designBoxStyle"
-          :options="{ penColor:lineColor,maxWidth:lineWidth, minWidth:minWidth }"
+          :options="{ penColor:lineColor, maxWidth:lineWidth, minWidth:minWidth }"
+          @touchstart.native="onSignaturePadTouchstart"
         />
       </design-area>
     </div>
@@ -37,7 +39,7 @@
       <van-button v-if="isFullPage" type="default" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="initPage(0.8)">完成</van-button>
       <van-button type="default" size="small" @click="handleReset">清空</van-button>
       <van-button v-if="isFullPage" type="default" size="small" @click="undo">撤销</van-button>
-      <van-button v-if="!isFullPage" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
+      <van-button v-if="!isFullPage" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" :disabled="!resultImg" size="small" @click="handleGenerate">完成绘制</van-button>
     </div>
     <!-- 完成设计弹出层 -->
     <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
@@ -72,8 +74,11 @@ export default {
       cropInfo: {},
       backgroundImg: '',
       lineWidth: 3, // 笔画粗细
+      oldLineWidthList: [], // 上一步笔画粗细
       minWidth: 1, // 笔锋粗细
+      oldMinWidthList: [], // 上一步笔画粗细
       lineColor: '#fff',
+      oldLineColorList: ['#fff'], // 上一步笔画颜色
       bgColor: '',
       resultImg: '', // 结果图片
       isCrop: true,
@@ -91,7 +96,8 @@ export default {
       canvasItem: '',
       designImg: {},
       is_horizontal: false,
-      is_wilcom: 0
+      is_wilcom: 0,
+      is_get_data: true
     }
   },
   computed: {
@@ -107,9 +113,6 @@ export default {
         this.$nextTick(() => {
           this.width = maxWidth
         })
-        // this.sizeChange('width', maxWidth)
-      } else {
-        // this.sizeChange('width', newValue)
       }
     },
     height(newValue, oldValue) {
@@ -119,9 +122,6 @@ export default {
         this.$nextTick(() => {
           this.height = maxHeight
         })
-        // this.sizeChange('width', maxHeight)
-      } else {
-        // this.sizeChange('height', newValue)
       }
     }
   },
@@ -140,6 +140,7 @@ export default {
       if (window.orientation === 90 || window.orientation === -90) {
         this.is_horizontal = true
       }
+      this.is_get_data = false
       if (this.isFullPage) {
         this.initPage2()
       } else {
@@ -149,14 +150,20 @@ export default {
     window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', onOrientationChange, false)
   },
   methods: {
-    sizeChange(type, value) {
-      if (this.customInfo.custom_info) {
-        this.customInfo.custom_info['design_' + type] = value
-        if (this.isFullPage) {
-          this.initPage2()
-        } else {
-          this.initPage()
-        }
+    onSignaturePadTouchstart(event) {
+      this.saveSetting()
+    },
+    /**
+     * 保存配置
+     */
+    saveSetting() {
+      const propMap = {
+        lineWidth: 'oldLineWidthList',
+        minWidth: 'oldMinWidthList',
+        lineColor: 'oldLineColorList'
+      }
+      for (let prop in propMap) {
+        (this[prop] !== this[propMap[prop]][this[propMap[prop]].length - 1]) && this[propMap[prop]].unshift(this[prop])
       }
     },
     showFullPage() {
@@ -179,6 +186,7 @@ export default {
     },
     // 计算背景图位置 设计区域位置
     initPage() {
+      (this.isFullPage === true) && (this.is_get_data = true)
       this.isFullPage = false
       document.body.parentNode.setAttribute('class', 'portrait')
       const SCREEN_WIDTH = window.screen.width // 获取  屏幕宽度
@@ -290,8 +298,8 @@ export default {
         background: `rgba(0, 0, 0, 0.5)`
       }
       setTimeout(() => {
-        // this.canvasChange = true
-        this.$refs.signaturePad.resizeCanvas(this.is_horizontal)
+        this.canvasChange = true
+        this.$refs.signaturePad.resizeCanvas()
         this.$forceUpdate()
       }, 500)
     },
@@ -333,6 +341,19 @@ export default {
     undo() {
       this.$refs.signaturePad.undoSignature()
       this.getDrawImg()
+      // 设置回到上一步
+      // if (this.oldLineWidthList.length) {
+      //   this.oldLineWidthList.shift()
+      //   this.lineWidth = this.oldLineWidthList[0] || 3
+      // }
+      if (this.oldLineColorList.length) {
+        this.oldLineColorList.shift()
+        this.lineColor = this.oldLineColorList[0] || '#fff'
+      }
+      // if (this.oldMinWidthList.length) {
+      //   this.oldMinWidthList.shift()
+      //   this.minWidth = this.oldMinWidthList[0] || 1
+      // }
     },
     // 获取绘制的图片
     getDrawImg() {
