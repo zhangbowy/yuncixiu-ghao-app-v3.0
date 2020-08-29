@@ -1,7 +1,6 @@
 <template>
   <div class="hand-drawn">
     <setting-board
-      v-if="isFullPage"
       :line-width="lineWidth"
       :min-width="minWidth"
       :line-color="lineColor"
@@ -28,7 +27,9 @@
           :height="`${design_box.design_H}px`"
           :custom-style="designArea.designBoxStyle"
           :options="{ penColor:lineColor, maxWidth:lineWidth, minWidth:minWidth }"
+          :step="10"
           @touchstart.native="onSignaturePadTouchstart"
+          @last-history="onLastHistory"
         />
       </design-area>
     </div>
@@ -150,6 +151,10 @@ export default {
     window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', onOrientationChange, false)
   },
   methods: {
+    onLastHistory() {
+      console.log('onLastHistory')
+      this.$toast('最多撤销十步')
+    },
     onSignaturePadTouchstart(event) {
       this.saveSetting()
     },
@@ -162,7 +167,7 @@ export default {
         minWidth: 'oldMinWidthList',
         lineColor: 'oldLineColorList'
       }
-      for (let prop in propMap) {
+      for (const prop in propMap) {
         (this[prop] !== this[propMap[prop]][this[propMap[prop]].length - 1]) && this[propMap[prop]].unshift(this[prop])
       }
     },
@@ -298,7 +303,7 @@ export default {
         background: `rgba(0, 0, 0, 0.5)`
       }
       setTimeout(() => {
-        this.canvasChange = true
+        // this.canvasChange = true
         this.$refs.signaturePad.resizeCanvas()
         this.$forceUpdate()
       }, 500)

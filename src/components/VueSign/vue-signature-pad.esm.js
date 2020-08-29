@@ -49,6 +49,10 @@ var script = {
     images: {
       type: Array,
       default: function() { return [] }
+    },
+    step: { // 返回步数, 最多5步
+      type: Number,
+      default: 5
     }
   },
   data: function() {
@@ -58,7 +62,8 @@ var script = {
       signatureData: TRANSPARENT_PNG,
       onResizeHandler: null,
       canvasTxt: null,
-      oldWidth: 0
+      oldWidth: 0,
+      canvasHistory: [] // 历史记录
     })
   },
   computed: {
@@ -85,12 +90,9 @@ var script = {
     var signaturePad = new SignaturePad(canvas, Object.assign({}, DEFAULT_OPTIONS,
       options))
     this.signaturePad = signaturePad
-
     this.onResizeHandler = this.resizeCanvas.bind(this)
-
-    // window.addEventListener('resize', this.onResizeHandler, false)
-
     this.resizeCanvas()
+    this.bindEvent()
   },
   beforeDestroy: function beforeDestroy() {
     if (this.onResizeHandler) {
@@ -98,23 +100,30 @@ var script = {
     }
   },
   methods: {
+    bindEvent() {
+      const canvas = this.$refs.signaturePadCanvas
+      canvas.addEventListener('touchend', (e) => {
+        const imgUrl = this.signaturePad.toDataURL()
+        if (this.canvasHistory.length > this.step) {
+          this.canvasHistory = this.canvasHistory.splice(0, this.step)
+        }
+        this.canvasHistory.unshift(imgUrl)
+      })
+    },
     resizeCanvas: function resizeCanvas() {
       var canvas = this.$refs.signaturePadCanvas
       const imgUrl = this.signaturePad.toDataURL()
       const ratio = 1
-      const isOldSize =  (canvas.width === canvas.offsetWidth * ratio) && (canvas.height === canvas.offsetHeight * ratio)
-      if (!isOldSize) {
-        canvas.width = canvas.offsetWidth * ratio
-        canvas.height = canvas.offsetHeight * ratio
-        this.signaturePad.clear()
-        this.fromDataURL(imgUrl, {
-          width: canvas.width,
-          height: canvas.height
-        })
-        this.signatureData = TRANSPARENT_PNG
-        this.canvasTxt = canvas.getContext('2d')
-        canvas.getContext('2d').scale(ratio, ratio)
-      }
+      canvas.width = canvas.offsetWidth * ratio
+      canvas.height = canvas.offsetHeight * ratio
+      this.signaturePad.clear()
+      this.fromDataURL(imgUrl, {
+        width: canvas.width,
+        height: canvas.height
+      })
+      this.signatureData = TRANSPARENT_PNG
+      this.canvasTxt = canvas.getContext('2d')
+      canvas.getContext('2d').scale(ratio, ratio)
     },
     getHorizontal() {
 
@@ -177,17 +186,30 @@ var script = {
       return data
     },
     undoSignature: function undoSignature() {
-      var ref = this
-      var signaturePad = ref.signaturePad
-      var record = signaturePad.toData()
-
-      if (record) {
-        return signaturePad.fromData(record.slice(0, -1))
+      // 弃用原有组件撤销方法 😭
+      // var ref = this
+      // var signaturePad = ref.signaturePad
+      // var record = signaturePad.toData()
+      // console.log(record, 'record')
+      // if (record) {
+      //   return signaturePad.fromData(record.slice(0, -1))
+      // }
+      if (this.canvasHistory.length <= 1) {
+        this.$emit('last-history')
+        return
       }
+      const canvas = this.$refs.signaturePadCanvas
+      const signaturePad = this.signaturePad
+      signaturePad.clear()
+      this.fromDataURL(this.canvasHistory[1], {
+        width: canvas.width,
+        height: canvas.height
+      })
+      this.canvasHistory.shift()
+      return this.canvasHistory
     },
     mergeImageAndSignature: function mergeImageAndSignature(customSignature) {
       this.signatureData = customSignature
-
       return mergeImages((this.images).concat(this.cacheImages,
         [this.signatureData]
       ))
