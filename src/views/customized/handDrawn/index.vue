@@ -27,7 +27,7 @@
           :height="`${design_box.design_H}px`"
           :custom-style="designArea.designBoxStyle"
           :options="{ penColor:lineColor, maxWidth:lineWidth, minWidth:minWidth }"
-          :step="10"
+          :step="100"
           @touchstart.native="onSignaturePadTouchstart"
           @last-history="onLastHistory"
         />
@@ -152,8 +152,7 @@ export default {
   },
   methods: {
     onLastHistory() {
-      console.log('onLastHistory')
-      this.$toast('最多撤销十步')
+      this.$toast('不能再撤销啦 ~ ')
     },
     onSignaturePadTouchstart(event) {
       this.saveSetting()

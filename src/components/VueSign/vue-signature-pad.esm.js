@@ -194,7 +194,7 @@ var script = {
       // if (record) {
       //   return signaturePad.fromData(record.slice(0, -1))
       // }
-      if (this.canvasHistory.length <= 1) {
+      if (this.canvasHistory.length < 1) {
         this.$emit('last-history')
         return
       }
