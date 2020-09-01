@@ -44,6 +44,7 @@
     <div class="sample-box">
       <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
         <img :src="item.prev_png_path" alt="" @click="patternDialog(item)">
+        <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
       </div>
     </div>
     <!-- 热销商品 -->
@@ -96,11 +97,11 @@ export default {
     patternDialog(item) {
       Dialog.confirm({
         title: '提示',
-        message: '请先选择定制商品，再选择定制花样。',
-        confirmButtonText: '选择商品',
+        message: item.is_presell ? '改花样正在预售中' : '请先选择定制商品，再选择定制花样。',
+        confirmButtonText: item.is_presell ? '确定' : '选择商品',
         confirmButtonColor: '#df2525'
       }).then(() => {
-        this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})
+        !item.is_presell && this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})
       }).catch(() => {
       })
     }
@@ -137,6 +138,7 @@ export default {
     padding-top: 10px;
     border-bottom: 10px solid #f5f5f5;
     &-item{
+      position: relative;
       width: 28%;
       border: 1px solid #f5f5f5;
       box-shadow: 0px 10px 20px #f3f3f3;
@@ -153,6 +155,18 @@ export default {
         border-radius: 6px;
         display: block;
       }
+    }
+    .corner-mark{
+      position: absolute;
+      left: -3px;
+      top: -1px;
+      background: #ff2828;
+      padding: 3px;
+      border-radius: 6px 0 6px 0 ;
+      font-size: 10px;
+      color: #fff;
+      transform: scale(0.8);
+      display: inline-block;
     }
   }
 }
