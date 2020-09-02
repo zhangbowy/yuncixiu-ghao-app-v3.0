@@ -182,7 +182,7 @@ export default {
     patternDialog(item) {
       Dialog.confirm({
         title: '提示',
-        message: item.is_presell ? '改花样正在预售中' : '请先选择定制商品，再选择定制花样。',
+        message: item.is_presell ? '该花样正在预售中' : '请先选择定制商品，再选择定制花样。',
         confirmButtonText: item.is_presell ? '确定' : '选择商品',
         confirmButtonColor: '#df2525'
       }).then(() => {
