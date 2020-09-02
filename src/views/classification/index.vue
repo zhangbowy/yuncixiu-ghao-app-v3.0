@@ -39,9 +39,12 @@
               <div class="content">
                 <!-- 花样列表 -->
                 <div class="sample-box">
-                  <div v-for="(item,index) in figureList" :key="index+item.prev_png_path" class="sample-box-item">
-                    <img :src="item.prev_png_path" alt="" @click="patternDialog(item)">
-                  </div>
+                  <template v-for="(item,index) in figureList">
+                    <div :key="index+item.prev_png_path" class="sample-box-item">
+                      <img :src="item.prev_png_path" alt="" lazy-load @click="patternDialog(item)">
+                      <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
+                    </div>
+                  </template>
                 </div>
               </div>
             </template>
@@ -114,7 +117,6 @@ export default {
             image_path: item.image_path
           })
         })
-        console.log(this.figureItems)
         if (this.figureCategoryCurrentId) {
           res.data.design_category.forEach((element, i) => {
             if (element.design_category_id === parseInt(this.figureCategoryCurrentId)) {
@@ -180,11 +182,11 @@ export default {
     patternDialog(item) {
       Dialog.confirm({
         title: '提示',
-        message: '请先选择定制商品，再选择定制花样。',
-        confirmButtonText: '选择商品',
+        message: item.is_presell ? '改花样正在预售中' : '请先选择定制商品，再选择定制花样。',
+        confirmButtonText: item.is_presell ? '确定' : '选择商品',
         confirmButtonColor: '#df2525'
       }).then(() => {
-        this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})
+        !item.is_presell && this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})
       }).catch(() => {
       })
     },
@@ -269,10 +271,23 @@ export default {
     border-radius: 6px;
     box-sizing: border-box;
     padding: 10px;
+    position: relative;
     img{
       width: 90%;
       border-radius: 6px;
       display: block;
+    }
+    .corner-mark{
+      position: absolute;
+      left: -3px;
+      top: -1px;
+      background: #ff2828;
+      padding: 3px;
+      border-radius: 6px 0 6px 0 ;
+      font-size: 10px;
+      color: #fff;
+      transform: scale(0.8);
+      display: inline-block;
     }
   }
 }
