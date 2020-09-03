@@ -118,6 +118,9 @@ export default {
           padding-bottom: 10px;
         }
         .sku-item-attr{
+          display: flex;
+          // justify-content: space-around;
+          flex-wrap: wrap;
           .attr-name{
             background: #f5f5f5;
             color: #333;
@@ -125,6 +128,7 @@ export default {
             padding: 5px 10px;
             margin-right: 10px;
             font-size: 12px;
+            margin-top: 10px;
           }
           .attr-name.active{
             background: rgba(255, 0, 0, 0.164);

@@ -6,7 +6,7 @@
         <!-- <p>选择模板</p> -->
         <p>{{ currentTemplate.template_name?currentTemplate.template_name:'选择模板' }}</p>
       </div>
-       <div v-if="currentTemplate.emb_template_id!=2" class="model-btn" @click="showInputMode">
+      <div v-if="currentTemplate.emb_template_id!=2" class="model-btn" @click="showInputMode">
         <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'zh' : 'en'" />
         <p>{{ isZh ? '中文字符' : '英文字符' }}</p>
       </div>
