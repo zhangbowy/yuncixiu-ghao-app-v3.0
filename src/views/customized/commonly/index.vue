@@ -256,11 +256,13 @@
     <!-- 输入模式 -->
     <van-dialog v-model="inputModeModel" title="选择输入模式" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true">
       <div class="input-mode-btns">
-        <div @click="onInputModeChange('en')">
-          <svg-icon class="mode-en" icon-class="en" />
+        <div class="icon-wrapper" @click="onInputModeChange('en')">
+          <svg-icon class="mode-en" icon-class="cx" />
+          <span>刺绣字符</span>
         </div>
-        <div @click="onInputModeChange('zh')">
-          <svg-icon class="mode-zh" icon-class="zh" />
+        <div class="icon-wrapper" @click="onInputModeChange('zh')">
+          <svg-icon class="mode-zh" icon-class="text" />
+          <span>普通字符</span>
         </div>
       </div>
     </van-dialog>
@@ -738,7 +740,7 @@ export default {
         marginTop: `${-this.design_box.design_H / 2}px`
       }
       // 计算最大最小半径
-      this.maxRadiusWidth = Math.min(this.design_box.design_W, this.design_box.design_H) / 2
+      this.maxRadiusWidth = Math.max(this.design_box.design_W, this.design_box.design_H) / 2
       this.minRadiusWidth = this.form.topText.fontSize
       !this.radiusWidth && (this.radiusWidth = this.maxRadiusWidth)
     },
@@ -1246,6 +1248,26 @@ export default {
     }
     .van-dropdown-menu{
       line-height: 0;
+    }
+  }
+  .icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    box-sizing: border-box;
+    &:first-child{
+      padding-top: 10px;
+    }
+    .mode-en, .mode-zh {
+    width: 60px !important;
+    height: 60px !important;
+    color: #666666;
+    }
+    .mode-en {
+      width: 30px !important;
+      height: 30px !important;
     }
   }
   // 设计区域

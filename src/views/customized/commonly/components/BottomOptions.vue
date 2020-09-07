@@ -7,8 +7,8 @@
         <p>{{ currentTemplate.template_name?currentTemplate.template_name:'选择模板' }}</p>
       </div>
       <div v-if="currentTemplate.emb_template_id!=2" class="model-btn" @click="showInputMode">
-        <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'zh' : 'en'" />
-        <p>{{ isZh ? '中文字符' : '英文字符' }}</p>
+        <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'text' : 'cx'" />
+        <p>{{ isZh ? '普通字符' : '刺绣字符' }}</p>
       </div>
       <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
         <svg-icon icon-class="upload-img" />
@@ -89,6 +89,7 @@ export default {
         .mode-zh {
           box-sizing: border-box;
           padding: 2px;
+          width: 50px;
         }
       }
       .uoload-btn{
