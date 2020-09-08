@@ -206,6 +206,10 @@
         </div>
         <div v-if="patternPicture.length" class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">去除背景</van-button>
+          <div class="footer-button_message">
+            <van-icon name="info-o" />
+            <span>仅限白色背景</span>
+          </div>
         </div>
       </div>
     </van-popup>
@@ -1473,9 +1477,25 @@ export default {
     }
     .footer-button{
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 5px 0 10px;
+      &_message {
+        display: flex;
+        align-items: center;
+        color: #8a8a8a;
+        margin-top: 6px;
+        i {
+          font-size: 14px;
+        }
+        & > span {
+          padding-top: 2px;
+          font-size: 12px;
+          line-height: 12px;
+          margin-left: 4px;
+        }
+      }
       button{
         width: 70%;
       }
