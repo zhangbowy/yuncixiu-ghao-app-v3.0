@@ -1076,7 +1076,7 @@ export default {
     },
     // 获取预览图
     async getPreview() {
-      if (this.currentTemplate.emb_template_id === 1 && this.topImg.length === 0) {
+      if (this.currentTemplate.emb_template_id === 1 && !this.topText.content) {
         Toast('请输入文字内容')
         return false
       }
@@ -1125,6 +1125,7 @@ export default {
     },
     // 完成定制
     complete() {
+      console.log('getPreview')
       this.previewModal = false
       this.getPreview()
       this.confirmModal = true
