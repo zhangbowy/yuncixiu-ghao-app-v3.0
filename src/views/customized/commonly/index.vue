@@ -558,11 +558,18 @@ export default {
       //   return
       // }
       this.$toast.loading({
-        duration: 0
+        duration: 0,
+        forbidClick: true
       })
       designApi.removeBackground({ image: this.patternPicture[0].content, type: 2 }).then((res) => {
-        this.cutImage(res.data)
-        this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
+        // if (!image) {}
+        console.log(res)
+        if (res.code === 0 && res.data) {
+          this.cutImage(res.data)
+          this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
+        } else {
+          this.$toast('去除背景失败')
+        }
       })
     },
     /**
@@ -592,6 +599,7 @@ export default {
         crop_canvas.width = resultImgWidth
         crop_canvas.height = resultImgHeight
         const crop_imgData = ctx.getImageData(x1, y1, resultImgWidth, resultImgHeight)
+        // 设置图片大小
         this.form.middleImg.width = resultImgWidth > this.middleImgWidth ? this.middleImgWidth : resultImgWidth
         this.form.middleImg.height = resultImgHeight > this.middleImgHeight ? this.middleImgHeight : resultImgHeight
         crop_ctx.globalCompositeOperation = 'destination-over'
