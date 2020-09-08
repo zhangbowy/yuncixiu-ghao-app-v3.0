@@ -561,7 +561,7 @@ export default {
         duration: 0,
         forbidClick: true
       })
-      designApi.removeBackground({ image: this.patternPicture[0].content, type: 2 }).then((res) => {
+      designApi.removeBackground({ image: this.patternPicture[0].content }).then((res) => {
         if (res.code === 0 && res.data) {
           this.cutImage(res.data)
           this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
