@@ -73,7 +73,7 @@
         <van-button color="#999999" round size="small" plain @click.stop="cancelOrder(orderDetail.order_no)">取消订单</van-button>
         <van-button color="#ee0a24" round size="small" @click.stop="doPay(orderDetail.order_no)">立即支付</van-button>
       </div>
-      <div v-if="orderDetail.status==2">
+      <div v-if="orderDetail.order_type!=1 && orderDetail.logistics_type==2 && orderDetail.status == 10">
         <van-button color="#ee0a24" round size="small" plain @click.stop="scanCode(orderDetail.order_no)">扫描机器</van-button>
       </div>
       <div v-if="orderDetail.status==3">
