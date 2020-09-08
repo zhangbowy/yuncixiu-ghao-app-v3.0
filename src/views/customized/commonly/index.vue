@@ -481,6 +481,7 @@ export default {
     },
     patternPicture(newValue, oldValue) {
       if (newValue[0]) {
+        console.log(this.form.middleImg)
         this.form.middleImg.design_id = ''
         this.form.middleImg.prev_png_path = ''
       }
