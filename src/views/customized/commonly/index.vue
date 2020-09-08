@@ -562,14 +562,14 @@ export default {
         forbidClick: true
       })
       designApi.removeBackground({ image: this.patternPicture[0].content, type: 2 }).then((res) => {
-        // if (!image) {}
-        console.log(res)
         if (res.code === 0 && res.data) {
           this.cutImage(res.data)
           this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
         } else {
-          this.$toast('去除背景失败')
+          this.$toast.fail('去除背景失败!')
         }
+      }).catch(() => {
+        this.$toast.fail('去除背景失败!')
       })
     },
     /**
