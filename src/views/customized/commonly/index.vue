@@ -481,6 +481,7 @@ export default {
     },
     patternPicture(newValue, oldValue) {
       if (newValue[0]) {
+        this.cutImage(newValue[0].content)
         this.form.middleImg.design_id = ''
         this.form.middleImg.prev_png_path = ''
       }
@@ -569,6 +570,7 @@ export default {
      * @param {base64} imgUrl
      */
     cutImage(imgUrl) {
+      if (!imgUrl) return
       // 创建一个image 计算图片真实大小
       const img = new Image()
       img.src = imgUrl
@@ -590,8 +592,8 @@ export default {
         crop_canvas.width = resultImgWidth
         crop_canvas.height = resultImgHeight
         const crop_imgData = ctx.getImageData(x1, y1, resultImgWidth, resultImgHeight)
-        this.form.middleImg.width = resultImgWidth
-        this.form.middleImg.height = resultImgHeight
+        this.form.middleImg.width = resultImgWidth > this.middleImgWidth ? this.middleImgWidth : resultImgWidth
+        this.form.middleImg.height = resultImgHeight > this.middleImgHeight ? this.middleImgHeight : resultImgHeight
         crop_ctx.globalCompositeOperation = 'destination-over'
         crop_ctx.putImageData(crop_imgData, 0, 0)
         const newImgUrl = crop_canvas.toDataURL()
