@@ -131,7 +131,7 @@
               v-if="patternPicture[0] || form.middleImg.prev_png_path"
               :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path"
               alt=""
-              :style="{maxWidth: `${form.middleImg.width*design_box.design_scale}px`,height: `${form.middleImg.height*design_box.design_scale}px`}"
+              :style="{maxWidth: `${form.middleImg.width*design_box.design_scale || 300}px`,height: `${form.middleImg.height*design_box.design_scale}px`}"
               @click.stop="showMiddleMemu()"
             >
           </div>
@@ -481,7 +481,6 @@ export default {
     },
     patternPicture(newValue, oldValue) {
       if (newValue[0]) {
-        console.log(this.form.middleImg)
         this.form.middleImg.design_id = ''
         this.form.middleImg.prev_png_path = ''
       }
@@ -1126,7 +1125,6 @@ export default {
     },
     // 完成定制
     complete() {
-      console.log('getPreview')
       this.previewModal = false
       this.getPreview()
       this.confirmModal = true
@@ -1137,22 +1135,18 @@ export default {
       if (this.currentTemplate.emb_template_id !== 2) {
         if (typeof this.$refs.topImgContent !== 'undefined') {
           top_w = this.$refs.topImgContent.offsetWidth
-          console.log(top_w, 'top_w')
           if (this.currentTemplate.emb_template_id === 1 && this.openArc) {
             top_w = 2 * Math.PI * this.radiusWidth * (this.radian / 360)
-            console.log('弧形top_w', top_w)
           }
         }
       }
       if (this.currentTemplate.emb_template_id === 3) {
         if (typeof this.$refs.topImgContent !== 'undefined') {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
-          console.log(bottom_w, 'bottom_w')
         }
       }
       // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
-      console.log(this.design)
       goodsInfo[0].design_info = {
         design_id: this.form.middleImg.design_id,
         top_font_width: top_w / parseInt(this.designBoxStyle.width) * (this.customInfo?.custom_info.design_width || 150),
