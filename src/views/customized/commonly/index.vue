@@ -590,6 +590,8 @@ export default {
         crop_canvas.width = resultImgWidth
         crop_canvas.height = resultImgHeight
         const crop_imgData = ctx.getImageData(x1, y1, resultImgWidth, resultImgHeight)
+        this.form.middleImg.width = resultImgWidth
+        this.form.middleImg.height = resultImgHeight
         crop_ctx.globalCompositeOperation = 'destination-over'
         crop_ctx.putImageData(crop_imgData, 0, 0)
         const newImgUrl = crop_canvas.toDataURL()
