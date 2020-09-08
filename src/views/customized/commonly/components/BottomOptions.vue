@@ -8,7 +8,7 @@
       </div>
       <div v-if="currentTemplate.emb_template_id!=2" class="model-btn" @click="showInputMode">
         <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'text' : 'cx'" />
-        <p>{{ isZh ? '普通字符' : '刺绣字符' }}</p>
+        <p>{{ isZh ? '中文字体' : '刺绣字体' }}</p>
       </div>
       <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
         <svg-icon icon-class="upload-img" />

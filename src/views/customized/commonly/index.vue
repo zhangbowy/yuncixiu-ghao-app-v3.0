@@ -258,11 +258,11 @@
       <div class="input-mode-btns">
         <div class="icon-wrapper" @click="onInputModeChange('en')">
           <svg-icon class="mode-en" icon-class="cx" />
-          <span>刺绣字符</span>
+          <span>刺绣字体</span>
         </div>
         <div class="icon-wrapper" @click="onInputModeChange('zh')">
           <svg-icon class="mode-zh" icon-class="text" />
-          <span>普通字符</span>
+          <span>中文字体</span>
         </div>
       </div>
     </van-dialog>
@@ -559,7 +559,7 @@ export default {
       this.$toast.loading({
         duration: 0
       })
-      designApi.removeBackground({ image: this.patternPicture[0].content }).then((res) => {
+      designApi.removeBackground({ image: this.patternPicture[0].content, type: 2 }).then((res) => {
         this.cutImage(res.data)
         this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
       })

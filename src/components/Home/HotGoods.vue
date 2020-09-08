@@ -9,7 +9,7 @@
           <img v-lazy="item[resultMap.thumb_image_path]" alt="">
           <p class="goods-name">{{ item[resultMap.name] }}</p>
           <p class="goods-price"><span>￥{{ item[resultMap.current_price] }}</span> </p>
-          <span v-if="item[resultMap.is_custom]==1" class="corner-mark">{{ !isPresell ? '定制' : '预售' }}</span>
+          <span v-if="item[resultMap.is_show]==1" class="corner-mark">{{ !isPresell ? '定制' : '预售' }}</span>
         </div>
         <van-empty v-if="!data.length" :description="description" />
       </div>
@@ -48,7 +48,7 @@ export default {
         thumb_image_path: 'thumb_image_path',
         name: 'name',
         current_price: 'current_price',
-        is_custom: 'is_custom'
+        is_show: 'is_custom'
       }
     }
   },

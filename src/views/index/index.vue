@@ -50,7 +50,7 @@
     <!-- 热销商品 -->
     <hot-goods :data="indexData.hot_goods" title="热销商品" />
     <!-- 预售商品 -->
-    <hot-goods :data="indexData.presell_goods" :is-presell="true" title="预售商品" description="暂无预售商品" />
+    <hot-goods :data="indexData.presell_goods" :is-presell="true" :props-map="presellMap" title="预售商品" description="暂无预售商品" />
   </div>
 </template>
 
@@ -73,6 +73,9 @@ export default {
         id: 'design_category_id',
         logo: 'image_path',
         category_name: 'design_category_name'
+      },
+      presellMap: {
+        is_show: 'is_presell'
       },
       presellGoodsPropMap: {
 
