@@ -58,7 +58,7 @@
 <script>
 import { categoryApi } from '@/api/goods'
 import { designApi } from '@/api/design'
-import { indexApi } from '@/api/home'
+// import { indexApi } from '@/api/home'
 import { Dialog } from 'vant'
 export default {
   data() {
@@ -107,31 +107,36 @@ export default {
     },
     // 获取分类列表
     getCategoryList() {
-      indexApi.getIndex().then((res) => {
-        this.figureCategoryList = res.data.design_category
-        // 渲染左侧列表
-        res.data.design_category.map(item => {
-          this.figureItems.push({
-            activeId: item.design_category_id,
-            text: item.design_category_name,
-            image_path: item.image_path
-          })
-        })
-        if (this.figureCategoryCurrentId) {
-          res.data.design_category.forEach((element, i) => {
-            if (element.design_category_id === parseInt(this.figureCategoryCurrentId)) {
-              this.figureActive = i
-              return
-            }
-          })
-        } else {
-          this.figureCategoryCurrentId = ''
-        }
-      })
+      // indexApi.getIndex().then((res) => {
+      //   this.figureCategoryList = res.data.design_category
+      //   // 渲染左侧列表
+      //   res.data.design_category.map(item => {
+      //     this.figureItems.push({
+      //       activeId: item.design_category_id,
+      //       text: item.design_category_name,
+      //       image_path: item.image_path
+      //     })
+      //   })
+      //   if (this.figureCategoryCurrentId) {
+      //     res.data.design_category.forEach((element, i) => {
+      //       if (element.design_category_id === parseInt(this.figureCategoryCurrentId)) {
+      //         this.figureActive = i
+      //         return
+      //       }
+      //     })
+      //   } else {
+      //     this.figureCategoryCurrentId = ''
+      //   }
+      // })
       categoryApi.getCategory().then(res => {
         // 渲染左侧列表
         res.data.map(item => {
           this.items.push({
+            activeId: item.id,
+            text: item.category_name,
+            image_path: item.image_path
+          })
+          this.figureItems.push({
             activeId: item.id,
             text: item.category_name,
             image_path: item.image_path
@@ -150,7 +155,18 @@ export default {
           this.currentImg = res.data[0].image_path
           this.subCategary = res.data[0].children
         }
+        if (this.figureCategoryCurrentId) {
+          res.data.forEach((element, i) => {
+            if (element.id === parseInt(this.figureCategoryCurrentId)) {
+              this.figureActive = i
+              return
+            }
+          })
+        } else {
+          this.figureCategoryCurrentId = ''
+        }
         this.categories = res.data
+        this.figureCategoryList = res.data
       })
     },
     getFigure(design_category_id) {
@@ -163,15 +179,10 @@ export default {
       })
     },
     toSearch() {
-      // if (!this.tabsActive) {
-      //   this.$router.push({ path: `/goodsList` })
-      // } else {
-      //   this.$router.push({ path: `/figureList` })
-      // }
       this.$router.push({ path: `/goodsList` })
     },
     // 前往搜索页面
-    toGoodsList(id) {
+    toGoodsList(id, category_id) {
       this.$router.push({ path: `/goodsList?category_id=${id}` })
     },
     // tab 切换
@@ -186,13 +197,14 @@ export default {
         confirmButtonText: item.is_presell ? '确定' : '选择商品',
         confirmButtonColor: '#df2525'
       }).then(() => {
+        console.log(this.figureCategoryCurrentId)
         !item.is_presell && this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})
       }).catch(() => {
       })
     },
     // 花样类别切换
     onFigureCategoryNavClick(value) {
-      this.figureCategoryCurrentId = this.figureCategoryList[value - 1]?.design_category_id || ''
+      this.figureCategoryCurrentId = this.figureCategoryList[value - 1]?.id || ''
       this.figureActive = value
     }
   }

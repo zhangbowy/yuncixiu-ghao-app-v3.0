@@ -57,6 +57,7 @@ export default {
   methods: {
     fetchData(id) {
       goodsApi.getGoodsList({
+        design_id: this.design_id || 0,
         category_id: id || '',
         name: this.keyWords,
         currentPage: 1,
@@ -71,6 +72,7 @@ export default {
       this.page++
       goodsApi.getGoodsList({
         category_id: this.category_id || '',
+        design_id: this.design_id || 0,
         name: this.keyWords,
         currentPage: this.page,
         pagesize: this.pagesize

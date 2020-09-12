@@ -330,6 +330,7 @@ export default {
       radiusWidth: 0, // 半径
       is_wilcom: 0,
       // minHeight: 812,
+      goods_id: '',
       figureList: [], // 花样库
       templateList: [], // 模板列表
       topImg: [], // 上图片
@@ -692,8 +693,10 @@ export default {
     },
     // 获取花样库列表
     getFigureList() {
+      console.log()
       designApi.getFigure({
-        pageSize: 1000
+        pageSize: 1000,
+        goods_id: this.goods_id
       }).then(res => {
         this.figureList = res.data.data
         if (this.design_id) {
