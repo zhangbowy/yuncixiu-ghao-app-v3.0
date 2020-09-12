@@ -1144,6 +1144,10 @@ export default {
     },
     // 完成定制
     complete() {
+      if (this.currentTemplate.emb_template_id === 3 && !this.form.topText.content && !this.form.bottomText.content) {
+        this.$toast('请输入文字')
+        return
+      }
       this.previewModal = false
       this.getPreview()
       this.confirmModal = true
@@ -1160,7 +1164,7 @@ export default {
         }
       }
       if (this.currentTemplate.emb_template_id === 3) {
-        if (typeof this.$refs.topImgContent !== 'undefined') {
+        if (typeof this.$refs.bottomImgContent !== 'undefined') {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
         }
       }
