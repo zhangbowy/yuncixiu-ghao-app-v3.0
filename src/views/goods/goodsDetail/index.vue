@@ -543,6 +543,7 @@ export default {
         padding: 20px;
         padding-bottom: 60px;
         .sku-info{
+          display: flex;
           img{
             border-radius: 5px;
           }
