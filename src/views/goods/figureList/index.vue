@@ -5,7 +5,7 @@
         v-model="keyWords"
         shape="round"
         background="#fff"
-        placeholder="搜索花样"
+        :placeholder="`${$t('搜索花样')}`"
         @search="onSearch"
         @cancel="onCancel"
       />
@@ -20,12 +20,12 @@
       <!-- 加载更多 -->
       <div v-if="figureList.length>=12" class="load-more">
         <infinite-loading @infinite="loadMore">
-          <span slot="no-results" style="padding-bottom:50px; font-size: 14px">没有更多了～</span>
-          <span slot="no-more" style="padding-bottom:50px; font-size: 14px">没有更多了～</span>
+          <span slot="no-results" style="padding-bottom:50px; font-size: 14px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
+          <span slot="no-more" style="padding-bottom:50px; font-size: 14px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
         </infinite-loading>
       </div>
       <div v-if="figureList.length==0">
-        <van-empty description="暂无花样" />
+        <van-empty :description="`${$t('暂无花样')}`" />
       </div>
     </div>
   </div>
@@ -98,9 +98,9 @@ export default {
     onCancel() {},
     patternDialog(item) {
       Dialog.confirm({
-        title: '提示',
-        message: '请先选择定制商品，再选择定制花样。',
-        confirmButtonText: '选择商品',
+        title: `${this.$t('提示')}`,
+        message: `${this.$t('请先选择定制商品')}${this.$t('，')}${this.$t('再选择定制花样')}${this.$t('。')}`,
+        confirmButtonText: `${this.$t('选择商品')}`,
         confirmButtonColor: '#df2525'
       }).then(() => {
         this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})

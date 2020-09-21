@@ -4,33 +4,33 @@
       <van-field
         v-model="form.name"
         name="name"
-        label="姓名"
+        :label="`${$t('姓名')}`"
         clearable
-        placeholder="姓名"
-        :rules="[{ required: true, message: '请填写姓名' }]"
+        :placeholder="`${$t('姓名')}`"
+        :rules="[{ required: true, message: `${$t('请填写姓名')}` }]"
       />
       <van-field
         v-model="form.phone"
         type="tel"
         name="phone"
         clearable
-        label="电话"
-        placeholder="电话"
+        :label="`${$t('电话')}`"
+        :placeholder="`${$t('电话')}`"
         :rules="[
-          { required: true, message: '请填写您的手机号码！' },
-          { pattern: /^1[3456789]\d{9}$/, message: '手机号码格式错误！'}
+          { required: true, message: `${$t('请填写您的手机号码')}${$t('！')}` },
+          { pattern: /^1[3456789]\d{9}$/, message: `${$t('手机号码格式错误')}${$t('！')}`}
         ]"
       />
       <van-field
         readonly
         name="area"
         clickable
-        label="城市"
+        :label="`${$t('城市')}`"
         :value="area"
         right-icon="arrow"
-        placeholder="选择省 / 市 / 区"
+        :placeholder="`${$t('选择省')}/${$t('市')}/${$t('区')}`"
         :rules="[
-          { required: true, message: '请选择省市区！' },
+          { required: true, message: `${$t('请选择省市区')}${$t('！')}` },
         ]"
         @click="showPicker = true"
       />
@@ -38,38 +38,34 @@
         v-model="form.address"
         name="address"
         clearable
-        label="详细地址"
-        placeholder="详细地址"
-        :rules="[{ required: true, message: '请填写详细地址!' }]"
+        :label="`${$t('详细地址')}`"
+        :placeholder="`${$t('详细地址')}`"
+        :rules="[{ required: true, message: `${$t('请填写详细地址')}!` }]"
       />
       <van-field
         v-model="form.post_code"
         type="number"
         name="post_code"
         clearable
-        label="邮编"
-        placeholder="邮编"
+        :label="`${$t('邮编')}`"
+        :placeholder="`${$t('邮编')}`"
         :rules="[
-          { required: true, message: '请填写邮编！' }
+          { required: true, message: `${$t('请填写邮编')}${$t('！')}` }
         ]"
       />
-      <!-- { pattern: /^[1-9]\d{5}$/g, message: '邮编格式错误！'} -->
-      <van-field name="is_default" label="默认地址" input-align="right">
+      <!-- { pattern: /^[1-9]\d{5}$/g, message: `${$t('邮编格式错误')}${$t('！')}`} -->
+      <van-field name="is_default" :label="`${$t('默认地址')}`" input-align="right">
         <template #input>
           <van-switch v-model="form.is_default" size="20" :active-value="1" :inactive-value="0" />
         </template>
       </van-field>
       <div style="margin: 16px;">
-        <van-button round block type="info" native-type="submit">
-          保存
-        </van-button>
+        <van-button round block type="info" native-type="submit">{{ $t(`保存`) }}</van-button>
 
       </div>
     </van-form>
     <div v-if="addressInfo.address_id" class="form-action">
-      <van-button round block type="danger" @click.stop="deleteAddress">
-        删除
-      </van-button>
+      <van-button round block type="danger" @click.stop="deleteAddress">{{ $t(`删除`) }}</van-button>
     </div>
     <van-overlay :show="showPicker" @click="showPicker = false" />
     <van-popup v-model="showPicker" position="bottom" :overlay="false">
@@ -141,7 +137,7 @@ export default {
       deep: true,
       immediate: true,
       handler(newValue) {
-        if (newValue === '新增地址') {
+        if (newValue === `${this.$t('新增地址')}`) {
           this.area = ''
         }
       }

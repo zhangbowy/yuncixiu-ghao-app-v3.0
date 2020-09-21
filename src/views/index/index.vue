@@ -5,7 +5,7 @@
         v-model="value"
         shape="round"
         background="#fff"
-        placeholder="搜索商品"
+        :placeholder="`${$t('搜索商品')}`"
         disabled
         @click="toSearch"
       />
@@ -37,9 +37,9 @@
       />
     </div>
     <!-- 推荐种类 -->
-    <ver-scroll :data="indexData.category" title="定制推荐" />
+    <ver-scroll :data="indexData.category" :title="`${$t('定制推荐')}`" />
     <!-- 推荐种类 -->
-    <ver-scroll :data="indexData.design_category" :props-map="propsMap" title="花样种类推荐" />
+    <ver-scroll :data="indexData.design_category" :props-map="propsMap" :title="`${$t('花样种类推荐')}`" />
     <!-- 样本 -->
     <div class="sample-box">
       <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
@@ -48,9 +48,9 @@
       </div>
     </div>
     <!-- 热销商品 -->
-    <hot-goods :data="indexData.hot_goods" title="热销商品" />
+    <hot-goods :data="indexData.hot_goods" :title="`${$t('热销商品')}`" />
     <!-- 预售商品 -->
-    <hot-goods :data="indexData.presell_goods" :is-presell="true" :props-map="presellMap" title="预售商品" description="暂无预售商品" />
+    <hot-goods :data="indexData.presell_goods" :is-presell="true" :props-map="presellMap" :title="`${$t('预售商品')}`" :description="`${$t('暂无预售商品')}`" />
   </div>
 </template>
 
@@ -99,9 +99,9 @@ export default {
     },
     patternDialog(item) {
       Dialog.confirm({
-        title: '提示',
-        message: item.is_presell ? '该花样正在预售中' : '请先选择定制商品，再选择定制花样。',
-        confirmButtonText: item.is_presell ? '确定' : '选择商品',
+        title: `${this.$t('提示')}`,
+        message: item.is_presell ? `${this.$t('该花样正在预售中')}` : `${this.$t('请先选择定制商品')}${this.$t('，')}${this.$t('再选择定制花样')}${this.$t('。')}`,
+        confirmButtonText: item.is_presell ? `${this.$t('确定')}` : `${this.$t('选择商品')}`,
         confirmButtonColor: '#df2525'
       }).then(() => {
         !item.is_presell && this.$router.push({ path: '/goodsList', query: { design_id: item.design_id }})

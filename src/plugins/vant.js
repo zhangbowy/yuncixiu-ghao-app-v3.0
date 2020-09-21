@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+  Dialog,
   Swipe,
   SwipeItem,
   Lazyload,
@@ -42,6 +43,8 @@ import {
 } from 'vant'
 
 Vue.use(
+  Dialog
+).use(
   Swipe
 ).use(
   SwipeItem

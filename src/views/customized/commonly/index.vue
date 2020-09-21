@@ -5,7 +5,7 @@
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
-            <van-dropdown-item ref="fontType" title="字体">
+            <van-dropdown-item ref="fontType" :title="`${$t('字体')}`">
               <van-cell
                 v-for="item in filtterFontTypeList"
                 :key="item.font_id"
@@ -23,24 +23,24 @@
                 </template>
               </van-cell>
             </van-dropdown-item>
-            <van-dropdown-item ref="fontColor" title="颜色">
+            <van-dropdown-item ref="fontColor" :title="`${$t('颜色')}`">
               <van-tabs type="card" color="#333" background="#fff">
-                <van-tab title="标准色">
+                <van-tab :title="`${$t('标准色')}`">
                   <compact-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab>
-                <van-tab title="自定义">
+                <van-tab :title="`${$t('自定义')}`">
                   <sketch-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
             <van-dropdown-item v-model="fontSize" :options="sizeOptions" @change="fontSizeChange" />
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
-            <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
-              <van-switch-cell v-model="openArc" title="是否开启" @change="changeOpenArc" />
+            <van-dropdown-item v-if="topInput==true" ref="item" :title="`${$t('弧形')}`">
+              <van-switch-cell v-model="openArc" :title="`${$t('是否开启')}`" @change="changeOpenArc" />
               <template v-if="currentTemplate.emb_template_id === 1">
-                <van-cell title="弧度">
+                <van-cell :title="`${$t('弧度')}`">
                   <van-stepper v-model="radian" button-size="32px" :min="120" :max="360" />
                 </van-cell>
-                <van-cell title="半径">
+                <van-cell :title="`${$t('半径')}`">
                   <van-stepper v-model="radiusWidth" button-size="32px" :min="minRadiusWidth" :max="maxRadiusWidth" />
                 </van-cell>
               </template>
@@ -53,10 +53,10 @@
           <van-dropdown-menu>
             <div class="middle-img-menu" :overlay="false">
               <div class="menu-item  img-btn">
-                <van-button icon="edit" size="small" plain type="default" @click="showInput=true">尺寸</van-button>
+                <van-button icon="edit" size="small" plain type="default" @click="showInput=true">{{ $t(`尺寸`) }}</van-button>
               </div>
               <div class="menu-item  img-btn">
-                <van-button icon="delete" size="small" plain type="default" @click="deleteMiddleImg">删除</van-button>
+                <van-button icon="delete" size="small" plain type="default" @click="deleteMiddleImg">{{ $t(`删除`) }}</van-button>
               </div>
             </div>
           </van-dropdown-menu>
@@ -67,10 +67,10 @@
           <van-dropdown-menu>
             <div class="middle-img-menu" :overlay="false">
               <div class="menu-item  img-btn">
-                <van-button icon="replay" size="small" plain type="default" @click.self="onTextInputReplay">重新输入</van-button>
+                <van-button icon="replay" size="small" plain type="default" @click.self="onTextInputReplay">{{ $t(`重新输入`) }}</van-button>
               </div>
               <div v-if="currentTemplate.emb_template_id !== 1" class="menu-item  img-btn">
-                <van-button icon="delete" size="small" plain type="default" @click="onTextInputDelete">删除</van-button>
+                <van-button icon="delete" size="small" plain type="default" @click="onTextInputDelete">{{ $t(`删除`) }}</van-button>
               </div>
             </div>
           </van-dropdown-menu>
@@ -117,7 +117,7 @@
               <input
                 ref="topInput"
                 v-model="form.topText.content"
-                placeholder="点击输入文字"
+                :placeholder="`${$t('点击输入文字')}`"
                 type="text"
                 :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
                 @blur="inputBlur(1, $event)"
@@ -168,7 +168,7 @@
               <input
                 ref="bottomInput"
                 v-model="form.bottomText.content"
-                placeholder="点击输入文字"
+                :placeholder="`${$t('点击输入文字')}`"
                 type="text"
                 :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}"
                 @input="getFontBottom()"
@@ -197,18 +197,18 @@
     <!-- 上传图片 -->
     <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
       <div class="modal">
-        <div class="modal-title">上传图片</div>
+        <div class="modal-title">{{ $t(`上传图片`) }}</div>
         <div class="modal-content">
           <van-uploader v-model="patternPicture" multiple :max-count="1" />
         </div>
         <div class="footer-button">
-          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">确定</van-button>
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">{{ $t(`确定`) }}</van-button>
         </div>
         <div v-if="patternPicture.length" class="footer-button">
-          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">去除背景</van-button>
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">{{ $t(`去除背景`) }}</van-button>
           <div class="footer-button_message">
             <van-icon name="info-o" />
-            <span>仅限白色背景</span>
+            <span>{{ $t(`仅限白色背景`) }}</span>
           </div>
         </div>
       </div>
@@ -241,16 +241,16 @@
     <!-- 修改图片尺寸 -->
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
-        <div class="modal-title">修改图片尺寸</div>
+        <div class="modal-title">{{ $t(`修改图片尺寸`) }}</div>
         <div class="modal-content">
           <div class="img-size">
             <number-input
               v-model="form.middleImg.height"
               width="100%"
               :value="form.middleImg.height"
-              label="图片高度"
+              :label="`${$t('图片高度')}`"
               :max="middleImgHeight"
-              placeholder="请输入高度"
+              :placeholder="`${$t('请输入高度')}`"
               unit="mm"
             />
           </div>
@@ -258,15 +258,15 @@
       </div>
     </van-popup>
     <!-- 输入模式 -->
-    <van-dialog v-model="inputModeModel" title="选择输入模式" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true">
+    <van-dialog v-model="inputModeModel" :title="`${$t('选择输入模式')}`" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true">
       <div class="input-mode-btns">
         <div class="icon-wrapper" @click="onInputModeChange('en')">
           <svg-icon class="mode-en" icon-class="cx" />
-          <span>刺绣字体</span>
+          <span>{{ $t(`刺绣字体`) }}</span>
         </div>
         <div class="icon-wrapper" @click="onInputModeChange('zh')">
           <svg-icon class="mode-zh" icon-class="text" />
-          <span>中文字体</span>
+          <span>{{ $t(`中文字体`) }}</span>
         </div>
       </div>
     </van-dialog>
@@ -346,11 +346,11 @@ export default {
       fontAlign: 'center', // 字体对齐方式
       design_id: '', // 当前选中的花样id
       alignment: [{
-        text: '左对齐', value: 'left'
+        text: `${this.$t('左对齐')}`, value: 'left'
       }, {
-        text: '居中', value: 'center'
+        text: `${this.$t('居中')}`, value: 'center'
       }, {
-        text: '右对齐', value: 'right'
+        text: `${this.$t('右对齐')}`, value: 'right'
       }],
       fontColor: {
         hex: 'fff'
@@ -444,7 +444,7 @@ export default {
         const reg = /[\u4e00-\u9fa5]+/g
         if (this.inputMode === 'en' && reg.test(newValue)) {
           this.$toast({
-            message: '该模式下无法输入中文!'
+            message: `${this.$t('该模式下无法输入中文')}!`
           })
           this.form.bottomText.content = newValue.replace(reg, '')
         }
@@ -455,7 +455,7 @@ export default {
         const reg = /[\u4e00-\u9fa5]+/g
         if (this.inputMode === 'en' && reg.test(newValue)) {
           this.$toast({
-            message: '该模式下无法输入中文!'
+            message: `${this.$t('该模式下无法输入中文')}!`
           })
           this.form.topText.content = newValue.replace(reg, '')
         }
@@ -571,10 +571,10 @@ export default {
           this.cutImage(res.data)
           this.patternPicture[0] = Object.assign(this.patternPicture[0], { content: res.data, oldContent: this.patternPicture[0].content })
         } else {
-          this.$toast.fail('去除背景失败!')
+          this.$toast.fail(`${this.$t('去除背景失败')}!`)
         }
       }).catch(() => {
-        this.$toast.fail('去除背景失败!')
+        this.$toast.fail(`${this.$t('去除背景失败')}!`)
       })
     },
     /**
@@ -880,7 +880,7 @@ export default {
             this.imgRotate()
           }
         } else {
-          Toast(res.msg)
+          Toast(this.$t(res.msg))
         }
       })
     },
@@ -897,7 +897,7 @@ export default {
         if (res.code === 0) {
           this.bottomImg = res.data
         } else {
-          Toast(res.msg)
+          Toast(this.$t(res.msg))
         }
       })
     }, 500),
@@ -1096,7 +1096,7 @@ export default {
     // 获取预览图
     async getPreview() {
       if (this.currentTemplate.emb_template_id === 1 && !this.form.topText.content) {
-        Toast('请输入文字内容')
+        Toast(`${this.$t('请输入文字内容')}`)
         return false
       }
       this.loading = true
@@ -1135,17 +1135,17 @@ export default {
           this.design_area_image = res.data.design_area_image
           this.is_wilcom = res.data.is_wilcom || 0
         }).catch(() => {
-          Toast('预览图生成失败!')
+          Toast(`${this.$t('预览图生成失败')}!`)
           this.loading = false
         })
       }).catch(() => {
-        Toast('定制图案生成失败!')
+        Toast(`${this.$t('定制图案生成失败')}!`)
       })
     },
     // 完成定制
     complete() {
       if (this.currentTemplate.emb_template_id === 3 && !this.form.topText.content && !this.form.bottomText.content) {
-        this.$toast('请输入文字')
+        this.$toast(`${this.$t('请输入文字')}`)
         return
       }
       this.previewModal = false

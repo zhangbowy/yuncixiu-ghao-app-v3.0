@@ -2,10 +2,10 @@
   <div class="order-list">
     <div v-for="item in data" :key="item.id" class="order-list-item">
       <div class="list-item-header">
-        <div class="order-number">订单号： <span>{{ item.order_no }}</span></div>
+        <div class="order-number">{{ `${$t('订单号')}${$t('：')}` }}<span>{{ item.order_no }}</span></div>
         <div class="order-status">
           <!-- {{ item._status }} -->
-          {{ item.status==1?'待支付': item.status==2||item.status==7||item.status==8||item.status==9||item.status==10?'待发货':item.status==3?'待收货':item.status==4?'已完成':item.status==5?'待回复':item.status==6?'已回复':item.status==-2?'已取消':'' }}
+          {{ item.status==1?$t('待支付'): item.status==2||item.status==7||item.status==8||item.status==9||item.status==10?$t('待发货'):item.status==3?$t('待收货'):item.status==4?$t('已完成'):item.status==5?$t('待回复'):item.status==6?$t('已回复'):item.status==-2?$t('已取消'):'' }}
         </div>
       </div>
       <div class="goods-info" @click="toDetail(item.order_no)">
@@ -16,7 +16,7 @@
             <div v-if="goods.sku_id!=0" class="sku-info">{{ goods.sku_name }}</div>
             <div class="price-info">
               <div class="price">
-                <div>￥<span>{{ goods.item_total_price.toFixed(2) }}</span></div>
+                <div>{{ `${$t('￥')}` }}<span>{{ goods.item_total_price.toFixed(2) }}</span></div>
               </div>
               <div class="number">x{{ goods.buy_num }}</div>
             </div>
@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="statistics">
-        <span class="logistics-type">{{ item._logistics_type }}</span> <span>共计{{ item.order_item.length }}件商品 合计:￥</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span v-if="item.logistics_type==1">(含运费￥{{ item.express_amount.toFixed(2) }})</span>
+        <span class="logistics-type">{{ $t(item._logistics_type) }}</span> <span>{{ $t('共计') }}{{ item.order_item.length }}{{ $t('件商品') }} {{ $t('合计') }}:{{ $t('￥') }}</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span v-if="item.logistics_type==1">({{ $t('含运费') }}{{ $t('￥') }}{{ item.express_amount.toFixed(2) }})</span>
       </div>
       <div class="list-operation">
         <div class="button-box">
@@ -35,7 +35,7 @@
             size="mini"
             plain
             @click.stop="cancelOrder(item.order_no)"
-          >取消订单</van-button>
+          >{{ $t(`取消订单`) }}</van-button>
 
           <van-button
             v-if="item.status==1 || item.status==5 || item.status==6"
@@ -43,7 +43,7 @@
             round
             size="mini"
             @click.stop="doPay(item.order_no)"
-          >立即支付</van-button>
+          >{{ $t(`立即支付`) }}</van-button>
 
           <van-button
             v-if="item.order_type!=1 && item.logistics_type==2 && item.status == 10"
@@ -52,10 +52,10 @@
             size="mini"
             plain
             @click.stop="scanCode(item.order_no)"
-          >扫描机器</van-button>
-          <van-button v-if="item.status==4 || item.status==-2" color="#ee0a24" round size="mini" plain @click.stop="deleteOrder(item.order_no)">删除订单</van-button>
-          <van-button v-if="item.status==3" color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">确认收货</van-button>
-          <van-button v-if="item.status==6" color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">回复报价</van-button>
+          >{{ $t(`扫描机器`) }}</van-button>
+          <van-button v-if="item.status==4 || item.status==-2" color="#ee0a24" round size="mini" plain @click.stop="deleteOrder(item.order_no)">{{ $t(`删除订单`) }}</van-button>
+          <van-button v-if="item.status==3" color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">{{ $t(`确认收货`) }}</van-button>
+          <van-button v-if="item.status==6" color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">{{ $t(`回复报价`) }}</van-button>
         </div>
       </div>
     </div>
@@ -89,14 +89,14 @@ export default {
         }, (error) => {
           console.log(error)
           // 支付失败回调
-          Toast('支付失败')
+          Toast(`${this.$t('支付失败')}`)
         })
       }).catch(() => {
       })
     },
     cancelOrder(order_no) {
       Dialog.confirm({
-        message: '是否取消该订单？',
+        message: `${this.$t('是否取消该订单')}${this.$t('？')}`,
         confirmButtonColor: '#df2525'
       }).then(() => {
         orderApi.orderCancel({
@@ -105,12 +105,12 @@ export default {
           this.$emit('getList')
         })
       }).catch(() => {
-        Toast('您点击了取消')
+        Toast(`${this.$t('您点击了取消')}`)
       })
     },
     confirmRceipt(order_no) {
       Dialog.confirm({
-        message: '是否确认收货？',
+        message: `${this.$t('是否确认收货')}${this.$t('？')}`,
         confirmButtonColor: '#df2525'
       }).then(() => {
         orderApi.confirmReceived({
@@ -119,7 +119,7 @@ export default {
           this.$emit('getList')
         })
       }).catch(() => {
-        Toast('您点击了取消')
+        Toast(`${this.$t('您点击了取消')}`)
       })
     },
     // 调用摄像头扫一扫
@@ -134,7 +134,7 @@ export default {
               order_no: order_no,
               machine_code: code
             }).then(res => {
-              Toast(res.msg)
+              Toast(this.$t(res.msg))
             })
           }
         }, (error) => {
@@ -151,7 +151,7 @@ export default {
     // 删除订单
     deleteOrder(order_no) {
       Dialog.confirm({
-        message: '是否确认删除？'
+        message: `${this.$t('是否确认删除')}${this.$t('？')}`
       }).then(() => {
         orderApi.deleteOrder({
           order_no: order_no
@@ -223,6 +223,9 @@ export default {
           }
           .sku-info{
             margin-top: 5px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
           }
           .price-info{
             display: flex;

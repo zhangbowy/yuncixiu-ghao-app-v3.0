@@ -5,12 +5,12 @@
         shape="round"
         disabled
         background="#fff"
-        placeholder="搜索商品"
+        :placeholder="`${$t('搜索商品')}`"
         @click="toSearch"
       />
     </div>
     <van-tabs v-model="tabsActive" sticky swipeable @click="onTabsClick">
-      <van-tab title="商品">
+      <van-tab :title="`${$t('商品')}`">
         <div class="classify-content">
           <van-tree-select height="89vh" :items="items" :active-id.sync="items.activeId" :main-active-index.sync="active" @click-nav="onNavClick">
             <template #content>
@@ -32,7 +32,7 @@
           </van-tree-select>
         </div>
       </van-tab>
-      <van-tab title="花样">
+      <van-tab :title="`${$t('花样')}`">
         <div class="classify-content">
           <van-tree-select height="89vh" :items="figureItems" :active-id.sync="figureItems.activeId" :main-active-index.sync="figureActive" @click-nav="onFigureCategoryNavClick">
             <template #content>
@@ -72,7 +72,7 @@ export default {
       figureItems: [
         {
           activeId: '',
-          text: '全部',
+          text: `${this.$t('全部')}`,
           image_path: ''
         }
       ],
@@ -192,9 +192,9 @@ export default {
     // 点击花样
     patternDialog(item) {
       Dialog.confirm({
-        title: '提示',
-        message: item.is_presell ? '该花样正在预售中' : '请先选择定制商品，再选择定制花样。',
-        confirmButtonText: item.is_presell ? '确定' : '选择商品',
+        title: `${this.$t('提示')}`,
+        message: item.is_presell ? `${this.$t('该花样正在预售中')}` : `${this.$t('请先选择定制商品')}${this.$t('，')}${this.$t('再选择定制花样')}${this.$t('。')}`,
+        confirmButtonText: item.is_presell ? `${this.$t('确定')}` : `${this.$t('选择商品')}`,
         confirmButtonColor: '#df2525'
       }).then(() => {
         console.log(this.figureCategoryCurrentId)

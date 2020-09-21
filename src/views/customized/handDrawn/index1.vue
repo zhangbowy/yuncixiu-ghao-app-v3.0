@@ -4,19 +4,19 @@
     <div class="drawn-config">
       <div class="config-box">
         <div class="config-item">
-          <span>笔画粗细：</span>
+          <span>{{ `${$t('笔画粗细')}${$t('：')}` }}</span>
           <div class="slider">
             <van-stepper v-model="lineWidth" input-width="25px" button-size="22" min="1" max="50" />
           </div>
         </div>
         <div class="config-item">
-          <span>笔锋粗细：</span>
+          <span>{{ `${$t('笔锋粗细')}${$t('：')}` }}</span>
           <div class="slider">
             <van-stepper v-model="minWidth" input-width="25px" button-size="22" min="1" max="5" />
           </div>
         </div>
         <div class="config-item" style="width: 25%">
-          <span>颜色：</span>
+          <span>{{ `${$t('颜色')}${$t('：')}` }}</span>
           <div class="color_con" :style="{background:lineColor}" @click="handleShowColor">
             <div v-show="colorShow" class="sketch">
               <sketch-picker v-model="lineColor" style="z-index: 10" @input="updateValue" />
@@ -25,15 +25,15 @@
           </div>
         </div>
         <div class="config-item" style="width: 32%">
-          <span>宽(mm)：</span>
+          <span>{{ $t('宽') }}(mm)：</span>
           <div class="input">
-            <input v-model.number="width" type="number" step="1" max="150" placeholder="宽度">
+            <input v-model.number="width" type="number" step="1" max="150" :placeholder="`${$t('宽度')}`">
           </div>
         </div>
         <div class="config-item" style="width: 32%">
-          <span>高(mm)：</span>
+          <span>{{ $t('高') }}(mm)：</span>
           <div class="input">
-            <input v-model.number="height" type="number" step="1" max="150" placeholder="高度">
+            <input v-model.number="height" type="number" step="1" max="150" :placeholder="`${$t('高度')}`">
           </div>
         </div>
       </div>
@@ -55,12 +55,12 @@
     </div>
     <!-- 底部操作 -->
     <div class="footer-btn">
-      <!-- <van-button type="default" size="small" @click="initPage(1)">放大</van-button> -->
-      <van-button type="default" size="small" @click="showFullPage">全屏</van-button>
-      <van-button type="default" size="small" @click="initPage(0.8)">还原</van-button>
-      <van-button type="default" size="small" @click="handleReset">清空画板</van-button>
-      <van-button type="default" size="small" @click="undo">撤销</van-button>
-      <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">完成绘制</van-button>
+      <!-- <van-button type="default" size="small" @click="initPage(1)">{{ $t(`放大`) }}</van-button> -->
+      <van-button type="default" size="small" @click="showFullPage">{{ $t(`全屏`) }}</van-button>
+      <van-button type="default" size="small" @click="initPage(0.8)">{{ $t(`还原`) }}</van-button>
+      <van-button type="default" size="small" @click="handleReset">{{ $t(`清空画板`) }}</van-button>
+      <van-button type="default" size="small" @click="undo">{{ $t(`撤销`) }}</van-button>
+      <van-button type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="handleGenerate">{{ $t(`完成绘制`) }}</van-button>
     </div>
     <!-- 完成设计弹出层 -->
     <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
@@ -118,13 +118,13 @@ export default {
   watch: {
     width(newValue, oldValue) {
       if (newValue > 150) {
-        Toast('宽度不能超过150mm')
+        Toast(`${this.$t('宽度不能超过150mm')}`)
         this.width = 150
       }
     },
     height(newValue, oldValue) {
       if (newValue > 150) {
-        Toast('高度不能超过150mm')
+        Toast(`${this.$t('高度不能超过150mm')}`)
         this.height = 150
       }
     }
@@ -276,7 +276,7 @@ export default {
     handleGenerate() {
       const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
       if (isEmpty === true) {
-        alert('请绘制内容')
+        alert(`${this.$t('请绘制内容')}`)
         return false
       }
       this.resultImg = data

@@ -37,7 +37,7 @@ export default {
       // login({ code: code }).then((res) => {
       //   const datas = res.data
       //   if (datas.code === 0) {
-      //     console.log('成功')
+      //     console.log(`${this.$t('成功')}`)
       //   }
       // }).catch((error) => {
       //   console.log(error)

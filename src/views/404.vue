@@ -3,7 +3,7 @@
     <div class="wscn-http404">
       <div class="bullshit">
         <div class="bullshit__headline">{{ message }}</div>
-        <a href="/" class="bullshit__return-home">返回首页</a>
+        <a href="/" class="bullshit__return-home">{{ $t(`返回首页`) }}</a>
       </div>
     </div>
   </div>

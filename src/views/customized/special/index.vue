@@ -17,11 +17,11 @@
           width="100%"
           :max="600"
           :value="form.width"
-          label="宽度"
+          :label="`${$t('宽度')}`"
           :rules="[
-            { required: true, message: '请输入宽度' },
+            { required: true, message: `${$t('请输入宽度')}` },
           ]"
-          placeholder="请输入宽度"
+          :placeholder="`${$t('请输入宽度')}`"
           unit="mm"
         />
         <number-input
@@ -29,32 +29,32 @@
           width="100%"
           :max="400"
           :value="form.height"
-          label="高度"
+          :label="`${$t('高度')}`"
           :rules="[
-            { required: true, message: '请输入高度' },
+            { required: true, message: `${$t('请输入高度')}` },
           ]"
-          placeholder="请输入高度"
+          :placeholder="`${$t('请输入高度')}`"
           unit="mm"
         />
         <van-field
           v-model="form.colorNum"
-          label="颜色数"
+          :label="`${$t('颜色数')}`"
           name="colorValidator"
-          placeholder="建议小于等于12色"
+          :placeholder="`${$t('建议小于等于12色')}`"
           :rules="[
-            { required: true, message: '请填写颜色数！' },
+            { required: true, message: `${$t('请填写颜色数')}${$t('！')}` },
           ]"
         />
         <van-field
           v-model="form.time"
-          label="时间"
+          :label="`${$t('时间')}`"
           name="timeValidator"
-          placeholder="默认5个工作日"
+          :placeholder="`${$t('默认5个工作日')}`"
           :rules="[
-            { required: true, message: '请填写时间！' },
+            { required: true, message: `${$t('请填写时间')}${$t('！')}` },
           ]"
         />
-        <van-field name="switch" label="包含商品">
+        <van-field name="switch" :label="`${$t('包含商品')}`">
           <template #input>
             <van-switch
               v-model="form.is_only_design"
@@ -64,9 +64,9 @@
         </van-field>
         <van-field
           name="uploader"
-          label="定制图案"
+          :label="`${$t('定制图案')}`"
           :rules="[
-            { required: true, message: '请上传定制图案！' },
+            { required: true, message: `${$t('请上传定制图案')}${$t('！')}` },
           ]"
         >
           <template #input>
@@ -77,19 +77,17 @@
           v-model="form.desc"
           rows="2"
           autosize
-          label="备注"
+          :label="`${$t('备注')}`"
           type="textarea"
           maxlength="50"
-          placeholder="请输入"
+          :placeholder="`${$t('请输入')}`"
           show-word-limit
           :rules="[
-            { required: true, message: '请输入备注！' },
+            { required: true, message: `${$t('请输入备注')}${$t('！')}` },
           ]"
         />
         <div style="margin: 16px;">
-          <van-button round block type="info" native-type="submit">
-            提交
-          </van-button>
+          <van-button round block type="info" native-type="submit">{{ $t(`提交`) }}</van-button>
         </div>
       </van-form>
     </div>
@@ -153,12 +151,12 @@ export default {
     // 提交
     onFailed(errorInfo) {
       console.log('failed', errorInfo)
-      Toast('表单信息不完整')
+      Toast(`${this.$t('表单信息不完整')}`)
     },
     submit(values) {
       console.log(values)
       if (this.result.length === 0) {
-        Toast('请勾选刺绣种类')
+        Toast(`${this.$t('请勾选刺绣种类')}`)
         return false
       }
       var goodsInfo = JSON.parse(this.design.goodsInfo)

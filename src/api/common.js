@@ -19,3 +19,12 @@ export const commonApi = {
     })
   }
 }
+
+// 获取语言包
+export function getLanguage(params) {
+  return request({
+    url: '/getLang',
+    method: 'get',
+    params
+  })
+}

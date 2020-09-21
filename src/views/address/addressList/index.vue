@@ -1,12 +1,12 @@
 <template>
   <div class="address-manage">
     <div class="address-navbar">
-      <top-bar title="地址列表" :border="false" />
+      <top-bar :title="`${$t('地址列表')}`" :border="false" />
     </div>
     <div class="addrss-content">
       <address-list
         :list="list"
-        default-tag-text="默认"
+        :default-tag-text="`${$t('默认')}`"
         @add="onAdd"
         @edit="onEdit"
       />
@@ -60,13 +60,13 @@ export default {
       })
     },
     onAdd() {
-      this.actionTitle = '新增地址'
+      this.actionTitle = `${this.$t('新增地址')}`
       this.addressInfo = {}
       this.show = true
     },
 
     onEdit(item, index) {
-      this.actionTitle = '编辑地址'
+      this.actionTitle = `${this.$t('编辑地址')}`
       this.addressInfo = item
       this.show = true
     },
@@ -87,7 +87,7 @@ export default {
           is_default: form.is_default,
           post_code: form.post_code
         }).then(res => {
-          Toast(res.msg)
+          Toast(this.$t(res.msg))
           if (res.code === 0) {
             this.show = false
             this.fetchData()
@@ -108,7 +108,7 @@ export default {
           is_default: form.is_default,
           post_code: form.post_code
         }).then(res => {
-          Toast(res.msg)
+          Toast(this.$t(res.msg))
           if (res.code === 0) {
             this.show = false
             this.fetchData()
@@ -118,14 +118,14 @@ export default {
     },
     onDelete(id) {
       Dialog.confirm({
-        title: '提示',
-        message: '是否删除当前地址'
+        title: `${this.$t('提示')}`,
+        message: `${this.$t('是否删除当前地址')}`
       })
         .then(() => {
           addressApi.deleteAddress({
             address_id: id
           }).then(res => {
-            Toast(res.msg)
+            Toast(this.$t(res.msg))
             if (res.code === 0) {
               this.show = false
               this.fetchData()

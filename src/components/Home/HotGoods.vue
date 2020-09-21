@@ -8,8 +8,8 @@
         <div v-for="(item,index) in data" :key="`${index}-${item[resultMap.id]}`" class="goods-item" @click="toDetail(item[resultMap.id])">
           <img v-lazy="item[resultMap.thumb_image_path]" alt="">
           <p class="goods-name">{{ item[resultMap.name] }}</p>
-          <p class="goods-price"><span>￥{{ item[resultMap.current_price] }}</span> </p>
-          <span v-if="item[resultMap.is_show]==1" class="corner-mark">{{ !isPresell ? '定制' : '预售' }}</span>
+          <p class="goods-price"><span>{{ $t('￥') }}{{ item[resultMap.current_price] }}</span> </p>
+          <span v-if="item[resultMap.is_show]==1" class="corner-mark">{{ !isPresell ? $t('定制') : $t('预售') }}</span>
         </div>
         <van-empty v-if="!data.length" :description="description" />
       </div>

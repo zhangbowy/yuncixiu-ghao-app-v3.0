@@ -1,7 +1,5 @@
 <template>
-  <div class="register">
-    用户注册
-  </div>
+  <div class="register">{{ $t(`用户注册`) }}</div>
 </template>
 
 <script>

@@ -1,6 +1,6 @@
 <template>
   <div class="my-order">
-    <top-bar class="top-bar" title="我的订单" />
+    <top-bar class="top-bar" :title="`${$t('我的订单')}`" />
     <van-tabs v-model="active" swipeable animated @change="tabCahnge">
       <van-tab v-for="item in tabs" :key="item.name" :title="item.name">
         <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
@@ -8,12 +8,12 @@
             <order-list v-if="orderList.length>0" :data="orderList" @getList="fetchData()" @change="orderChange" />
             <div v-if="orderList.length>=10" class="load-more">
               <infinite-loading :identifier="infiniteId" @infinite="loadMore">
-                <span slot="no-results" style="font-size: 12px">没有更多了～</span>
-                <span slot="no-more" style="font-size: 12px">没有更多了～</span>
+                <span slot="no-results" style="font-size: 12px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
+                <span slot="no-more" style="font-size: 12px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
               </infinite-loading>
             </div>
             <div v-if="orderList.length===0" class="no-order">
-              <no-data icon="no-order" text="暂无订单" :font-size="110" />
+              <no-data icon="no-order" :text="`${$t('暂无订单')}`" :font-size="110" />
             </div>
           </div>
         </van-pull-refresh>
@@ -21,26 +21,26 @@
     </van-tabs>
 
     <!-- 回复报价 -->
-    <form-popup v-model="showReplay" title="回复报价" @confirm="confirmRelay" @cancel="showReplay = false">
+    <form-popup v-model="showReplay" :title="`${$t('回复报价')}`" @confirm="confirmRelay" @cancel="showReplay = false">
       <div slot="modalcontent">
         <van-form>
           <van-field
             v-model="replayForm.price"
-            name="价格"
-            label="回复价格"
+            :name="`${$t('价格')}`"
+            :label="`${$t('回复价格')}`"
             :border="false"
-            placeholder="回复价格"
-            :rules="[{ validatorPrice, message: '请输入回复价格' }]"
+            :placeholder="`${$t('回复价格')}`"
+            :rules="[{ validatorPrice, message: `${$t('请输入回复价格')}` }]"
           />
           <van-field
             v-model="replayForm.buyer_message"
             type="textarea"
-            name="备注"
-            label="备注"
+            :name="`${$t('备注')}`"
+            :label="`${$t('备注')}`"
             :border="false"
             maxlength="50"
-            placeholder="备注"
-            :rules="[{ validatorMessage, message: '请填写备注信息' }]"
+            :placeholder="`${$t('备注')}`"
+            :rules="[{ validatorMessage, message: `${$t('请填写备注信息')}` }]"
           />
         </van-form>
       </div>
@@ -77,28 +77,28 @@ export default {
         buyer_message: ''
       },
       tabs: [{
-        name: '全部',
+        name: `${this.$t('全部')}`,
         type: 0
       }, {
-        name: '待支付',
+        name: `${this.$t('待支付')}`,
         type: 1
       }, {
-        name: '待发货',
+        name: `${this.$t('待发货')}`,
         type: '2,7,8,9,10'
       }, {
-        name: '待收货',
+        name: `${this.$t('待收货')}`,
         type: '3'
       }, {
-        name: '已完成',
+        name: `${this.$t('已完成')}`,
         type: 4
       }, {
-        name: '待回复',
+        name: `${this.$t('待回复')}`,
         type: 5
       }, {
-        name: '已回复',
+        name: `${this.$t('已回复')}`,
         type: 6
       }, {
-        name: '已关闭',
+        name: `${this.$t('已关闭')}`,
         type: -2
       }],
       orderList: [],
@@ -171,7 +171,7 @@ export default {
     confirmRelay(value) {
       if (this.validatorPrice && this.validatorMessage) {
         orderApi.askOrder(this.replayForm).then(res => {
-          Toast.success('回复成功！')
+          Toast.success(`${this.$t('回复成功')}${this.$t('！')}`)
           this.showReplay = false
           this.fetchData()
         })

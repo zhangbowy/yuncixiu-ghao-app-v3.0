@@ -35,12 +35,12 @@
     </div>
     <!-- 底部操作 -->
     <div class="footer-btn">
-      <!-- <van-button type="default" size="small" @click="initPage(1)">放大</van-button> -->
-      <van-button v-if="!isFullPage" type="default" size="small" @click="showFullPage">开始手绘</van-button>
-      <van-button v-if="isFullPage" type="default" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="initPage(0.8)">完成</van-button>
-      <van-button type="default" size="small" @click="handleReset">清空</van-button>
-      <van-button v-if="isFullPage" type="default" size="small" @click="undo">撤销</van-button>
-      <van-button v-if="!isFullPage" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" :disabled="!resultImg" size="small" @click="handleGenerate">完成绘制</van-button>
+      <!-- <van-button type="default" size="small" @click="initPage(1)">{{ $t(`放大`) }}</van-button> -->
+      <van-button v-if="!isFullPage" type="default" size="small" @click="showFullPage">{{ $t(`开始手绘`) }}</van-button>
+      <van-button v-if="isFullPage" type="default" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="initPage(0.8)">{{ $t(`完成`) }}</van-button>
+      <van-button type="default" size="small" @click="handleReset">{{ $t(`清空`) }}</van-button>
+      <van-button v-if="isFullPage" type="default" size="small" @click="undo">{{ $t(`撤销`) }}</van-button>
+      <van-button v-if="!isFullPage" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" :disabled="!resultImg" size="small" @click="handleGenerate">{{ $t(`完成绘制`) }}</van-button>
     </div>
     <!-- 完成设计弹出层 -->
     <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
@@ -423,7 +423,7 @@ export default {
     handleGenerate() {
       // const { isEmpty, data, cropInfo } = this.$refs.signaturePad.saveSignature()
       // if (isEmpty === true) {
-      //   alert('请绘制内容')
+      //   alert(`${this.$t('请绘制内容')}`)
       //   return false
       // }
       this.getPreview()

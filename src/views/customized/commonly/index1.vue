@@ -23,12 +23,12 @@
                 </template>
               </van-cell>
             </van-dropdown-item>
-            <van-dropdown-item ref="fontColor" title="颜色">
+            <van-dropdown-item ref="fontColor" :title="`${$t('颜色')}`">
               <van-tabs type="card" color="#333" background="#fff">
-                <van-tab title="标准色">
+                <van-tab :title="`${$t('标准色')}`">
                   <compact-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab>
-                <van-tab title="自定义">
+                <van-tab :title="`${$t('自定义')}`">
                   <sketch-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
@@ -37,13 +37,13 @@
                 v-model="fontSize"
                 width="100%"
                 :value="fontSize"
-                label="字体高度"
+                :label="`${$t('字体高度')}`"
                 :min="fontType.min_height"
                 :max="fontType.max_height"
-                placeholder="请输入字体高度"
+                :placeholder="`${$t('请输入字体高度')}`"
                 unit="mm"
               /> -->
-              <van-cell title="字体高度">
+              <van-cell :title="`${$t('字体高度')}`">
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template #right-icon>
                   <van-stepper v-model="fontSize" :min="fontType.min_height" :max="fontType.max_height" />
@@ -53,8 +53,8 @@
               <span style="font-size: 14px; color:#999;display: block;padding: 16px;">当前字体高度在{{ fontType.min_height }}mm至{{ fontType.max_height }}mm之间</span>
             </van-dropdown-item>
             <van-dropdown-item v-model="fontAlign" :options="alignment" />
-            <van-dropdown-item v-if="topInput==true" ref="item" title="弧形">
-              <van-switch-cell v-model="openArc" title="是否开启" />
+            <van-dropdown-item v-if="topInput==true" ref="item" :title="`${$t('弧形')}`">
+              <van-switch-cell v-model="openArc" :title="`${$t('是否开启')}`" />
             </van-dropdown-item>
           </van-dropdown-menu>
         </div>
@@ -64,10 +64,10 @@
           <van-dropdown-menu>
             <div class="middle-img-menu">
               <div class="menu-item">
-                <van-button icon="edit" size="small" plain type="default" @click="showInput=true">尺寸</van-button>
+                <van-button icon="edit" size="small" plain type="default" @click="showInput=true">{{ $t(`尺寸`) }}</van-button>
               </div>
               <div class="menu-item">
-                <van-button icon="delete" size="small" plain type="default" @click="deleteMiddleImg">删除</van-button>
+                <van-button icon="delete" size="small" plain type="default" @click="deleteMiddleImg">{{ $t(`删除`) }}</van-button>
               </div>
             </div>
           </van-dropdown-menu>
@@ -110,7 +110,7 @@
             <div v-if="topFocus==true" class="input-box">
               <input
                 v-model="form.topText.content"
-                placeholder="点击输入文字"
+                :placeholder="`${$t('点击输入文字')}`"
                 type="text"
                 :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
                 @input="getFontTop()"
@@ -157,7 +157,7 @@
             <div v-if="bottomFocus==true" class="input-box">
               <input
                 v-model="form.bottomText.content"
-                placeholder="点击输入文字"
+                :placeholder="`${$t('点击输入文字')}`"
                 type="text"
                 :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}"
                 @input="getFontBottom()"
@@ -185,12 +185,12 @@
     <!-- 上传图片 -->
     <van-popup v-model="uploadModal" :style="{ width: '80%', minHeight: '30%' }" round closeable>
       <div class="modal">
-        <div class="modal-title">上传图片</div>
+        <div class="modal-title">{{ $t(`上传图片`) }}</div>
         <div class="modal-content">
           <van-uploader v-model="patternPicture" multiple :max-count="1" />
         </div>
         <div class="footer-button">
-          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">确定</van-button>
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">{{ $t(`确定`) }}</van-button>
         </div>
       </div>
     </van-popup>
@@ -220,19 +220,19 @@
     <!-- 修改图片尺寸 -->
     <van-popup v-model="showInput" :style="{ width: '100%' }" position="bottom" round closeable>
       <div class="modal">
-        <div class="modal-title">修改图片尺寸</div>
+        <div class="modal-title">{{ $t(`修改图片尺寸`) }}</div>
         <div class="modal-content" style="text-align: left">
           <div class="img-size">
             <!-- <number-input
               v-model="form.middleImg.height"
               width="100%"
               :value="form.middleImg.height"
-              label="图片高度"
+              :label="`${$t('图片高度')}`"
               :max="middleImgHeight"
-              placeholder="请输入高度"
+              :placeholder="`${$t('请输入高度')}`"
               unit="mm"
             /> -->
-            <van-cell title="图片高度">
+            <van-cell :title="`${$t('图片高度')}`">
               <template #right-icon>
                 <van-stepper v-model="form.middleImg.height" :min="0" :max="middleImgHeight" />
               </template>
@@ -299,11 +299,11 @@ export default {
       fontTypeOptions: [], // 可选字体
       fontAlign: 'center', // 字体对齐方式
       alignment: [{
-        text: '左对齐', value: 'left'
+        text: `${this.$t('左对齐')}`, value: 'left'
       }, {
-        text: '居中', value: 'center'
+        text: `${this.$t('居中')}`, value: 'center'
       }, {
-        text: '右对齐', value: 'right'
+        text: `${this.$t('右对齐')}`, value: 'right'
       }],
       fontColor: {
         hex: 'fff'
@@ -567,7 +567,7 @@ export default {
           this.topImg = res.data
           this.imgRotate()
         } else {
-          Toast(res.msg)
+          Toast(this.$t(res.msg))
         }
       })
     }, 500),
@@ -583,7 +583,7 @@ export default {
         if (res.code === 0) {
           this.bottomImg = res.data
         } else {
-          Toast(res.msg)
+          Toast(this.$t(res.msg))
         }
       })
     }, 500),

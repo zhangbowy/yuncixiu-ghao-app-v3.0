@@ -3,7 +3,7 @@
     <div class="navbar">
       <!-- tab标题栏 -->
       <van-nav-bar
-        title="开始设计"
+        :title="`${$t('开始设计')}`"
         left-text=""
         left-arrow
         @click-left="onClickLeft"
@@ -11,9 +11,9 @@
         <template #right>
           <van-dropdown-menu style="height: 45px;border: none">
             <van-dropdown-item ref="item">
-              <van-cell title="一般定制" is-link :to="`/customized/commonly?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
-              <van-cell title="特殊定制" is-link :to="`/customized/special?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
-              <van-cell title="手绘" is-link :to="`/customized/handDrawn?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
+              <van-cell :title="`${$t('一般定制')}`" is-link :to="`/customized/commonly?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
+              <van-cell :title="`${$t('特殊定制')}`" is-link :to="`/customized/special?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
+              <van-cell :title="`${$t('手绘')}`" is-link :to="`/customized/handDrawn?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
             </van-dropdown-item>
           </van-dropdown-menu>
         </template>
@@ -35,9 +35,9 @@ export default {
       goods_id: this.$route.query.goods_id,
       sku_id: this.$route.query.sku_id,
       option1: [
-        { text: '一般定制', value: 0 },
-        { text: '特殊定制', value: 1 },
-        { text: '手绘', value: 2 }
+        { text: `${this.$t('一般定制')}`, value: 0 },
+        { text: `${this.$t('特殊定制')}`, value: 1 },
+        { text: `${this.$t('手绘')}`, value: 2 }
       ]
     }
   },

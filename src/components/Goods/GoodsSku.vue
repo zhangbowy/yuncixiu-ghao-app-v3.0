@@ -1,18 +1,18 @@
 <template>
   <div class="goods-sku">
     <div class="sku-box">
-      <van-action-sheet v-model="showSku" title="选择规格">
+      <van-action-sheet v-model="showSku" :title="`${$t('选择规格')}`">
         <div class="content">
           <div v-if="skuItem" class="sku-info">
             <img :src="skuItem.images?skuItem.images:goodsDetail.thumb_image_path" width="96" height="96" alt="">
             <div class="right-info">
-              <p class="price">￥{{ skuItem.current_price }}</p>
-              <p>剩余{{ skuItem.num }}</p>
-              <p>已选：<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
+              <p class="price">{{ $t('￥') }}{{ skuItem.current_price }}</p>
+              <p>{{ $t('剩余') }}{{ skuItem.num }}</p>
+              <p>{{ `${$t('已选')}${$t('：')}` }}<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
             </div>
           </div>
           <div class="goods-number">
-            <van-cell title="选择数量">
+            <van-cell :title="`${$t('选择数量')}`">
               <!-- 使用 right-icon 插槽来自定义右侧图标 -->
               <template>
                 <van-stepper v-model="goodsNumber" :min="1" :max="skuItem.num" input-width="30px" button-size="22px" />
@@ -31,12 +31,12 @@
             <van-goods-action>
               <van-goods-action-button
                 type="warning"
-                text="加入购物车"
+                :text="`${$t('加入购物车')}`"
                 @click="skuAddCart"
               />
               <van-goods-action-button
                 type="danger"
-                text="立即购买"
+                :text="`${$t('立即购买')}`"
                 @click="skuBuy"
               />
             </van-goods-action>

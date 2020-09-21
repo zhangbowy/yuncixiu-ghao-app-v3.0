@@ -6,8 +6,8 @@
         <slot name="modalcontent" />
       </div>
       <div class="footer-button">
-        <van-button color="#999" size="small" plain round @click="cancel">取消</van-button>
-        <van-button color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" round @click="confirm">确定</van-button>
+        <van-button color="#999" size="small" plain round @click="cancel">{{ $t(`取消`) }}</van-button>
+        <van-button color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" round @click="confirm">{{ $t(`确定`) }}</van-button>
       </div>
     </div>
   </van-popup>

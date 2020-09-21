@@ -1,6 +1,6 @@
 <template>
   <div class="about-us">
-    <top-bar title="关于我们" class />
+    <top-bar :title="`${$t('关于我们')}`" class />
     <div class="about-content" v-html="content" />
   </div>
 </template>

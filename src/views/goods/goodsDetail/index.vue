@@ -21,8 +21,8 @@
       <!-- 基础信息 -->
       <div class="goods-info">
         <div class="goods-price">
-          ￥<span class="current-price">{{ parseFloat(goodsDetail.current_price).toFixed(2) }}</span>
-          <span class="old-price">￥{{ parseFloat(goodsDetail.old_price).toFixed(2) }}</span>
+          {{ `${$t('￥')}` }}<span class="current-price">{{ parseFloat(goodsDetail.current_price).toFixed(2) }}</span>
+          <span class="old-price">{{ $t('￥') }}{{ parseFloat(goodsDetail.old_price).toFixed(2) }}</span>
           <span class="sale-num">{{ goodsDetail.sale_num }}人付款</span>
         </div>
         <div class="goods-name">
@@ -33,26 +33,26 @@
       <!-- 商品规格选择 -->
       <div class="goods-cell">
         <div class="cell-item" @click="changeSkuShow">
-          <span class="cell-title">已选</span>
+          <span class="cell-title">{{ $t(`已选`) }}</span>
           <span class="cell-content">{{ checkedSku }}</span>
           <span class="right-arrow"><svg-icon icon-class="right-arrow" /></span>
         </div>
       </div>
       <!-- sku容器 -->
       <div class="sku-box">
-        <van-action-sheet v-model="showSku" title="选择规格">
+        <van-action-sheet v-model="showSku" :title="`${$t('选择规格')}`">
           <div class="content">
             <div v-if="skuItem" class="sku-info">
               <img :src="skuItem.images?skuItem.images:goodsDetail.thumb_image_path" width="96" height="96" alt="">
               <div class="right-info">
-                <p class="price" :style="{textDecoration: is_batch ? 'line-through' : 'none'}">￥{{ skuItem.current_price }}</p>
-                <p v-if="is_batch" class="batch-price"><span :style="{color: '#ee0a24'}">￥{{ batchPrice }}</span> <br>  已达 {{ batchNumber }} 件, 享受批量定制价格 </p>
-                <p>剩余{{ skuItem.num }}</p>
-                <p>已选：<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
+                <p class="price" :style="{textDecoration: is_batch ? 'line-through' : 'none'}">{{ $t('￥') }}{{ skuItem.current_price }}</p>
+                <p v-if="is_batch" class="batch-price"><span :style="{color: '#ee0a24'}">{{ $t('￥') }}{{ batchPrice }}</span> <br>  已达 {{ batchNumber }} 件, 享受批量定制价格 </p>
+                <p>{{ $t('剩余') }}{{ skuItem.num }}</p>
+                <p>{{ `${$t('已选')}${$t('：')}` }}<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
               </div>
             </div>
             <div class="goods-number">
-              <van-cell title="选择数量">
+              <van-cell :title="`${$t('选择数量')}`">
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template>
                   <van-stepper v-model="goodsNumber" :min="1" :max="skuItem.num?skuItem.num: goodsDetail.sum_stock" input-width="30px" button-size="22px" />
@@ -72,20 +72,20 @@
                 <van-goods-action-button
                   v-if="goodsDetail.is_custom==1 && skuCustom==1"
                   type="warning"
-                  text="立即定制"
+                  :text="`${$t('立即定制')}`"
                   :disabled="skuItem.num==0"
                   @click="skutoCustomized"
                 />
                 <van-goods-action-button
                   v-else
                   type="warning"
-                  text="加入购物车"
+                  :text="`${$t('加入购物车')}`"
                   :disabled="skuItem.num==0"
                   @click="skuAddCart"
                 />
                 <van-goods-action-button
                   type="danger"
-                  text="立即购买"
+                  :text="`${$t('立即购买')}`"
                   :disabled="skuItem.num==0"
                   @click="skuBuy"
                 />
@@ -96,38 +96,38 @@
       </div>
       <!-- 商品详情 -->
       <div class="detail">
-        <div class="title">商品详情</div>
+        <div class="title">{{ $t(`商品详情`) }}</div>
         <div class="content" v-html="goodsDetail.detail" />
       </div>
       <!-- 底部操作 -->
       <div class="goods-adction">
         <van-goods-action>
-          <van-goods-action-icon icon="wap-home-o" text="首页" @click="pathTo('/')" />
-          <van-goods-action-icon icon="cart-o" text="购物车" @click="pathTo('/cart')" />
+          <van-goods-action-icon icon="wap-home-o" :text="`${$t('首页')}`" @click="pathTo('/')" />
+          <van-goods-action-icon icon="cart-o" :text="`${$t('购物车')}`" @click="pathTo('/cart')" />
           <van-goods-action-button
             v-if="is_presell"
             color="#c8c9cc"
-            text="商品预售中"
+            :text="`${$t('商品预售中')}`"
             disabled
           />
           <template v-else>
             <van-goods-action-button
               v-if="goodsDetail.is_custom==0"
               type="warning"
-              text="加入购物车"
+              :text="`${$t('加入购物车')}`"
               :disabled="skuItem.num==0"
               @click="addCart"
             />
             <van-goods-action-button
               v-if="goodsDetail.is_custom==1"
               type="warning"
-              text="立即定制"
+              :text="`${$t('立即定制')}`"
               :disabled="skuItem.num==0"
               @click="toCustomized(1)"
             />
             <van-goods-action-button
               type="danger"
-              text="立即购买"
+              :text="`${$t('立即购买')}`"
               :disabled="skuItem.num==0"
               @click="buyNow(0)"
             />
@@ -167,7 +167,7 @@ export default {
   data() {
     return {
       current: 0, // 轮播图当前位
-      checkedSku: '请选择规格', // sku-cell文字
+      checkedSku: `${this.$t('请选择规格')}`, // sku-cell文字
       showSku: false, // 是否显示sku
       share: false, // 是否显示分享
       goodsDetail: {
@@ -240,7 +240,7 @@ export default {
           arr.push(item.sku_id)
         })
         if (arr.indexOf(this.checkedSkuIds) < 0) {
-          this.checkedSku = '请选择规格'
+          this.checkedSku = `${this.$t('请选择规格')}`
           this.skuItem = {
             current_price: this.goodsDetail.current_price,
             num: this.goodsDetail.sum_stock,
@@ -277,7 +277,7 @@ export default {
           // 调用微信分享
           this.wxShare()
         } else {
-          Toast('网络错误!')
+          Toast(`${this.$t('网络错误')}!`)
         }
       })
     },
@@ -331,7 +331,7 @@ export default {
           cartList[index].number += this.goodsNumber
         }
         shopCart.setItem(JSON.stringify(cartList))
-        Toast('添加成功！')
+        Toast(`${this.$t('添加成功')}${this.$t('！')}`)
         this.changeSkuShow()
       }
     },
@@ -356,7 +356,7 @@ export default {
     // sku添加购物车按钮
     skuAddCart() {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
-        Toast('请选择规格')
+        Toast(`${this.$t('请选择规格')}`)
       } else {
         this.skuItem.number = this.goodsNumber
         this.skuItem.goods_info = this.goodsDetail
@@ -374,14 +374,14 @@ export default {
           cartList[index].number += this.goodsNumber
         }
         shopCart.setItem(JSON.stringify(cartList))
-        Toast('添加成功！')
+        Toast(`${this.$t('添加成功')}${this.$t('！')}`)
         // this.changeSkuShow()
       }
     },
     // sku购买按钮
     skuBuy() {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
-        Toast('请选择规格')
+        Toast(`${this.$t('请选择规格')}`)
       } else {
         const cartList = []
         cartList.push({
@@ -418,7 +418,7 @@ export default {
     // sku去定制按钮
     skutoCustomized() {
       if (!this.skuItem.sku_id && this.skuList.length > 0) {
-        Toast('请选择规格')
+        Toast(`${this.$t('请选择规格')}`)
       } else {
         const goodsInfo = []
         goodsInfo.push({

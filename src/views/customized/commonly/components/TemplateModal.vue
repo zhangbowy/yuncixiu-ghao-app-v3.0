@@ -1,7 +1,7 @@
 <template>
   <van-popup :value="value" :style="{ width: '80%' }" round closeable @input="val => this.$emit('input', val)">
     <div class="modal">
-      <div class="modal-title">选择模板</div>
+      <div class="modal-title">{{ $t(`选择模板`) }}</div>
       <div class="modal-content ">
         <div class="figure-list">
           <div v-for="(item,index) in dataList" :key="index" class="figure-item" :class="{checked:currentTemplate.emb_template_id == item.emb_template_id}">

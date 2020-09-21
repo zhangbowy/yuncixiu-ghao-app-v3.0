@@ -4,19 +4,19 @@
       <van-button icon="setting" @click="onShowBtnClick" />
       <template v-if="showSettingBoard">
         <div class="config-item">
-          <span>笔画粗细：</span>
+          <span>{{ `${$t('笔画粗细')}${$t('：')}` }}</span>
           <div class="slider">
             <van-stepper v-model="lineWidthComp" input-width="25px" button-size="22" min="1" max="50" @change="onChange('lineWidth')" />
           </div>
         </div>
         <div class="config-item">
-          <span>笔锋粗细：</span>
+          <span>{{ `${$t('笔锋粗细')}${$t('：')}` }}</span>
           <div class="slider">
             <van-stepper v-model="minWidthComp" input-width="25px" button-size="22" min="1" max="5" @change="onChange('minWidth')" />
           </div>
         </div>
         <div class="config-item" style="width: 25%">
-          <span>颜色：</span>
+          <span>{{ `${$t('颜色')}${$t('：')}` }}</span>
           <div class="color_con" :style="{background:lineColor}" @click="handleShowColor">
             <div v-show="colorShow" class="sketch">
               <sketch-picker v-model="lineColorComp" style="z-index: 10" @input="onChange('lineColor')" />
@@ -25,15 +25,15 @@
           </div>
         </div>
         <div class="config-item" style="width: 32%">
-          <span>宽(mm)：</span>
+          <span>{{ $t('宽') }}(mm)：</span>
           <div class="input">
-            <input v-model.number="widthComp" type="number" step="1" max="150" placeholder="宽度" @change="onChange('width')">
+            <input v-model.number="widthComp" type="number" step="1" max="150" :placeholder="`${$t('宽度')}`" @change="onChange('width')">
           </div>
         </div>
         <div class="config-item" style="width: 32%">
-          <span>高(mm)：</span>
+          <span>{{ $t('高') }}(mm)：</span>
           <div class="input">
-            <input v-model.number="heightComp" type="number" step="1" max="150" placeholder="高度" @change="onChange('height')">
+            <input v-model.number="heightComp" type="number" step="1" max="150" :placeholder="`${$t('高度')}`" @change="onChange('height')">
           </div>
         </div>
       </template>

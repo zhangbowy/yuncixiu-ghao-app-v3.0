@@ -5,7 +5,7 @@
         <slot name="fullpageDesign" />
       </div>
       <div class="confirm-footer">
-        <van-button size="small" color="#333" plain type="primary" @click="hidden">完成</van-button>
+        <van-button size="small" color="#333" plain type="primary" @click="hidden">{{ $t(`完成`) }}</van-button>
       </div>
     </div>
   </van-popup>

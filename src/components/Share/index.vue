@@ -2,7 +2,7 @@
   <div>
     <van-share-sheet
       v-model="show"
-      title="立即分享给好友"
+      :title="`${$t('立即分享给好友')}`"
       :options="options"
       @select="onSelect"
     />
@@ -20,11 +20,11 @@ export default {
   data() {
     return {
       options: [
-        { name: '微信', icon: 'wechat' }
-        // { name: '微博', icon: 'weibo' },
-        // { name: '复制链接', icon: 'link' },
-        // { name: '分享海报', icon: 'poster' },
-        // { name: '二维码', icon: 'qrcode' }
+        { name: `${this.$t('微信')}`, icon: 'wechat' }
+        // { name: `${this.$t('微博')}`, icon: 'weibo' },
+        // { name: `${this.$t('复制链接')}`, icon: 'link' },
+        // { name: `${this.$t('分享海报')}`, icon: 'poster' },
+        // { name: `${this.$t('二维码')}`, icon: 'qrcode' }
       ]
     }
   },
@@ -37,10 +37,10 @@ export default {
     onSelect(option) {
       this.$emit('showShare', false)
       switch (option.name) {
-        case '微信':
+        case `${this.$t('微信')}`:
           this.bindShareTimeLine()
           break
-        case '朋友圈':
+        case `${this.$t('朋友圈')}`:
           this.bindShareAppMessage()
           break
         case 'QQ':

@@ -2,10 +2,10 @@
   <div v-loading="loading" class="order-confirm">
     <div class="navbar">
       <!-- tab标题栏 -->
-      <top-bar title="确认订单" />
+      <top-bar :title="`${$t('确认订单')}`" />
     </div>
     <div class="express-type">
-      <van-cell title="配送方式" style="line-height: 1" :border="false" @click="show = true">
+      <van-cell :title="`${$t('配送方式')}`" style="line-height: 1" :border="false" @click="show = true">
         <!-- <template #right-icon>
           <span
             style="border:1px solid #ee0a24; color: #ee0a24;border-radius: 3px;padding: 2px 5px;font-size: 10px"
@@ -28,7 +28,7 @@
         <span
           v-if="orderInfo.address.is_default == 1"
           class="is-default"
-        >默认</span>
+        >{{ $t(`默认`) }}</span>
       </div>
       <div class="address-detail">
         <span>{{ orderInfo.address.province }}{{ orderInfo.address.city
@@ -47,7 +47,7 @@
         <svg-icon icon-class="order-site" />
       </span>
       <div class="add-tip">
-        <span>添加收货地址</span>
+        <span>{{ $t(`添加收货地址`) }}</span>
       </div>
       <span class="right-arrow">
         <svg-icon icon-class="right-arrow" />
@@ -63,15 +63,15 @@
         <div class="good-right">
           <div class="good-name">
             {{ item.name }}
-            <span v-if="item._order_type" class="order-type">{{ item._order_type }}</span>
+            <span v-if="item._order_type" class="order-type">{{ $t(item._order_type) }}</span>
           </div>
           <div v-if="item.sku_id != 0" class="good-sku">
-            已选规格：{{ item.sku_name }}
+            {{ `${$t('已选规格')}${$t('：')}` }}{{ item.sku_name }}
           </div>
           <div class="good-bottom">
             <div class="price">
               <div>
-                ￥<span :style="{textDecoration: (item.final_item_total_price !== item.item_total_price) ? 'line-through' : 'none'}">{{ item.item_total_price.toFixed(2) }}</span>
+                {{ `${$t('￥')}` }}<span :style="{textDecoration: (item.final_item_total_price !== item.item_total_price) ? 'line-through' : 'none'}">{{ item.item_total_price.toFixed(2) }}</span>
               </div>
             </div>
             <div class="number">x{{ item.buy_num }}</div>
@@ -79,14 +79,13 @@
           <div v-if="(item.final_item_total_price !== item.item_total_price)" class="good-bottom batch">
             <div class="price">
               <div>
-                ￥<span>{{ item.final_item_total_price.toFixed(2) }}</span>
+                {{ `${$t('￥')}` }}<span>{{ item.final_item_total_price.toFixed(2) }}</span>
               </div>
             </div>
           </div>
           <div v-if="item.emb_template_price">
             <div class="price">
-              <div :style="{fontSize: '12px', color: '#969799', marginTop: '10px'}">
-                含定制费 <span :style="{color: '#df2525'}">￥{{ item.emb_template_price.toFixed(2) }}</span>
+              <div :style="{fontSize: '12px', color: '#969799', marginTop: '10px'}">{{ $t(`含定制费`) }}<span :style="{color: '#df2525'}">{{ $t('￥') }}{{ item.emb_template_price.toFixed(2) }}</span>
               </div>
             </div>
           </div>
@@ -95,13 +94,13 @@
     </div>
     <div class="statistical">
       <van-cell
-        title="小计"
-        :value="`￥${orderInfo.item_price ? orderInfo.item_price : 0.0}`"
+        :title="`${$t('小计')}`"
+        :value="`${$t('￥')}${orderInfo.item_price ? orderInfo.item_price : 0.0}`"
       />
       <van-cell
         v-if="orderType.type == 1"
-        title="运费"
-        :value="`￥${orderInfo.express_amount ? orderInfo.express_amount : 0.0}`"
+        :title="`${$t('运费')}`"
+        :value="`${$t('￥')}${orderInfo.express_amount ? orderInfo.express_amount : 0.0}`"
       />
     </div>
     <div class="order-mask">
@@ -110,10 +109,10 @@
         rows="2"
         :border="true"
         autosize
-        label="留言"
+        :label="`${$t('留言')}`"
         type="textarea"
         maxlength="100"
-        placeholder="请输入留言"
+        :placeholder="`${$t('请输入留言')}`"
         show-word-limit
       />
     </div>
@@ -121,7 +120,7 @@
       <van-submit-bar
         :price="orderInfo.total_price ? orderInfo.total_price * 100 : 0"
         :loading="submitLaoding"
-        button-text="提交订单"
+        :button-text="`${$t('提交订单')}`"
         @submit="onSubmit"
       />
     </div>
@@ -149,11 +148,11 @@ export default {
       is_wilcom: 0,
       active: 1,
       actions: [
-        { name: '快递发货', type: 1 },
-        { name: '门店自提', type: 2 }
+        { name: `${this.$t('快递发货')}`, type: 1 },
+        { name: `${this.$t('门店自提')}`, type: 2 }
       ],
       orderType: {
-        name: '快递发货',
+        name: `${this.$t('快递发货')}`,
         type: 1
       },
       orderInfo: {
@@ -201,7 +200,7 @@ export default {
           this.orderInfo = res.data
         })
         .catch((error) => {
-          Notify({ type: 'danger', message: error.msg || '请求异常' })
+          Notify({ type: 'danger', message: error.msg || `${this.$t('请求异常')}` })
           this.loading = false
         })
     },
@@ -238,7 +237,7 @@ export default {
             res.data,
             (success) => {
               // 支付成功回调
-              Toast(success)
+              Toast(this.$t(success))
               setTimeout(() => {
                 if (this.$route.query.from === 'shop_cart') {
                   store.dispatch('shopCart/removeCartList')
@@ -249,7 +248,7 @@ export default {
             }, (error) => {
               console.log(error)
               // 支付失败回调
-              Toast('支付失败')
+              Toast(`${this.$t('支付失败')}`)
               setTimeout(() => {
                 if (this.$route.query.from === 'shop_cart') {
                   store.dispatch('shopCart/removeCartList')

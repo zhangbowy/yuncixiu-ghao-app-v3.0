@@ -1,9 +1,9 @@
 <template>
   <div class="order-trace">
-    <top-bar class="top-bar" title="物流详情" />
+    <top-bar class="top-bar" :title="`${$t('物流详情')}`" />
     <div class="trace-info-top">
       <div class="order-no">{{ traceInfo.express_name }} {{ traceInfo.express_number }}</div>
-      <div class="order-status">{{ traceInfo._state }}</div>
+      <div class="order-status">{{ $t(traceInfo._state) }}</div>
     </div>
     <div class="trace-info-content">
       <van-steps direction="vertical" :active="0" active-color="#1296db">
@@ -16,7 +16,7 @@
         <van-empty
           class="custom-image"
           image="https://img.yzcdn.cn/vant/custom-empty-image.png"
-          description="暂无轨迹信息"
+          :description="`${$t('暂无轨迹信息')}`"
         />
       </div>
     </div>

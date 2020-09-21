@@ -10,37 +10,43 @@
     <div class="content-view">
       <div class="order-cell">
         <div class="order-cell-title">
-          <div class="left-text">我的订单</div>
+          <div class="left-text">{{ $t(`我的订单`) }}</div>
           <div class="right-text" @click="toOrderList(0)">
-            <span>查看全部订单</span>
+            <span>{{ $t(`查看全部订单`) }}</span>
             <svg-icon icon-class="right-arrow" />
           </div>
         </div>
         <div class="cell-item-box">
           <div class="cell-item" @click="toOrderList(1)">
             <svg-icon icon-class="wait-confirm" />
-            <p>待支付</p>
+            <p>{{ $t(`待支付`) }}</p>
           </div>
           <div class="cell-item" @click="toOrderList(2)">
             <svg-icon icon-class="wait-defray" />
-            <p>待发货</p>
+            <p>{{ $t(`待发货`) }}</p>
           </div>
           <div class="cell-item" @click="toOrderList(3)">
             <svg-icon icon-class="wait-receive" />
-            <p>待收货</p>
+            <p>{{ $t(`待收货`) }}</p>
           </div>
           <div class="cell-item" @click="toOrderList(4)">
             <svg-icon icon-class="isok" />
-            <p>已完成</p>
+            <p>{{ $t(`已完成`) }}</p>
           </div>
         </div>
       </div>
 
       <div class="cell-box">
-        <cell-item icon-name="site-icon" left-text="地址管理" path="/addressList" />
-        <cell-item icon-name="about" left-text="关于我们" path="/about" />
+        <cell-item icon-name="site-icon" :left-text="`${$t('地址管理')}`" path="/addressList" />
+        <cell-item icon-name="language" :left-text="`${$t('语言')}`" @click.native="onLanguageBtnClick" />
+        <cell-item icon-name="about" :left-text="`${$t('关于我们')}`" path="/about" />
       </div>
     </div>
+    <van-dialog v-model="show" :title="`${$t('切换语言')}`" :show-confirm-button="false" :close-on-click-overlay="true">
+      <van-list>
+        <van-cell v-for="lang in langsType" :key="lang.name" :title="lang.title" center clickable @click="onLangClick(lang.name)" />
+      </van-list>
+    </van-dialog>
   </div>
 </template>
 
@@ -48,6 +54,9 @@
 import SvgIcon from '@/components/SvgIcon'
 import CellItem from '@/components/Cell/CellItem'
 import { mapGetters } from 'vuex'
+import { Locale } from 'vant'
+import zhCN from 'vant/lib/locale/lang/zh-CN'
+import enUS from 'vant/lib/locale/lang/en-US'
 export default {
   components: {
     SvgIcon,
@@ -55,13 +64,15 @@ export default {
   },
   data() {
     return {
+      show: false
     }
   },
   computed: {
     ...mapGetters([
       'name',
       'avatar',
-      'userInfo'
+      'userInfo',
+      'langsType'
     ])
     // name() {
     //   return this.data
@@ -71,6 +82,17 @@ export default {
 
   },
   methods: {
+    onLangClick(lang) {
+      document.documentElement.dataset.lang = lang
+      this.$i18n.locale = lang || 'zh'
+      Locale.use(lang, lang === 'zh' ? zhCN : enUS)
+      this.$store.dispatch('settings/changeSetting', { key: 'lang', value: lang })
+      this.show = false
+    },
+    onLanguageBtnClick() {
+      this.show = true
+      console.log()
+    },
     toOrderList(type) {
       if (type) {
         this.$router.push({ path: `/orderList?current_type=${type}` })
@@ -165,6 +187,14 @@ export default {
     .cell-item{
       border: none;
     }
+  }
+  .van-cell__title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  ::v-deep .cell-item .left-box {
+    width: 80%;
   }
 }
 </style>

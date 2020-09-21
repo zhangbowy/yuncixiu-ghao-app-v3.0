@@ -2,12 +2,12 @@
   <!-- 预览设计 -->
   <!-- <van-popup :value="value" :style="{ width: '80%' }" round closeable @input="val => this.$emit('input', val)">
     <div class="modal">
-      <div class="modal-title">预览</div>
+      <div class="modal-title">{{ $t(`预览`) }}</div>
       <div v-loading="loading" class="modal-content preview-content">
         <img :src="img" alt="" width="100%">
       </div>
       <div class="footer-button">
-        <van-button size="small" style="width: 50%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onComplete">完成设计</van-button>
+        <van-button size="small" style="width: 50%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onComplete">{{ $t(`完成设计`) }}</van-button>
       </div>
     </div>
   </van-popup> -->
@@ -23,8 +23,8 @@
       @click.native="onImagePreviewClick"
     />
     <div v-if="showImagePreview" :class="['preview-btns', showBtns && 'preview-btns--active' ]">
-      <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onComplete">完成设计</van-button>
-      <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onShareBtnClick">定制分享</van-button>
+      <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onComplete">{{ $t(`完成设计`) }}</van-button>
+      <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onShareBtnClick">{{ $t(`定制分享`) }}</van-button>
     </div>
     <van-dialog v-model="showShare" title="" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true" @closed="onShareSheetCancel">
       <span>
@@ -121,7 +121,7 @@ export default {
           has_preview: true
         }
         wechatInterface(shareInfo, 'share', success => {
-          // Toast('请点击右上角分享定制!')
+          // Toast(`${this.$t('请点击右上角分享定制')}!`)
         }, fail => {
         })
       })

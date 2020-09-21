@@ -2,8 +2,8 @@
   <div class="cart-view">
     <div class="cart-header">
       <van-nav-bar
-        title="购物车"
-        :right-text="isEdit==true?'完成':'管理'"
+        :title="`${$t('购物车')}`"
+        :right-text="isEdit==true?`${$t('完成')}`:`${$t('管理')}`"
         left-arrow
         :border="false"
         @click-right="onClickRight"
@@ -19,9 +19,9 @@
               <img v-lazy="item.images" alt="" width="100">
               <div class="good-info-right">
                 <div class="good-name">{{ item.goods_info.name }}</div>
-                <div class="good-sku">规格：<span v-for="sku in item.skus" :key="sku.k">{{ sku.v }} </span></div>
+                <div class="good-sku">{{ `${$t('规格')}${$t('：')}` }}<span v-for="sku in item.skus" :key="sku.k">{{ sku.v }} </span></div>
                 <div class="good-price">
-                  <span class="price">￥{{ item.current_price }}</span>
+                  <span class="price">{{ $t('￥') }}{{ item.current_price }}</span>
                   <span class="number">x{{ item.number }}</span>
                   <!-- <span v-else class="number">
                     <van-stepper v-model="item.number" input-width="30px" button-size="22px" />
@@ -33,18 +33,18 @@
         </van-checkbox-group>
       </div>
       <div v-if="cartList.length==0" class="no-data">
-        <no-data text="购物车无商品" icon="cart-no-data" :font-size="64" /></div>
+        <no-data :text="`${$t('购物车无商品')}`" icon="cart-no-data" :font-size="64" /></div>
     </div>
     <div class="cart-footer">
       <div v-if="!isEdit" class="footer-operation">
-        <van-submit-bar :price="total*100" button-text="提交订单" @submit="onSubmit">
-          <van-checkbox v-model="checked" checked-color="#ff6034">全选</van-checkbox>
+        <van-submit-bar :price="total*100" :button-text="`${$t('提交订单')}`" @submit="onSubmit">
+          <van-checkbox v-model="checked" checked-color="#ff6034">{{ $t(`全选`) }}</van-checkbox>
         </van-submit-bar>
       </div>
       <div v-else class="footer-operation">
         <van-row type="flex" class="operation-box">
           <van-col span="12">
-            <van-checkbox v-model="checked" checked-color="#ff6034">全选</van-checkbox>
+            <van-checkbox v-model="checked" checked-color="#ff6034">{{ $t(`全选`) }}</van-checkbox>
           </van-col>
           <van-col span="12" class="delete-operat">
             <van-button round hairline type="danger" @click.stop="deleteCart">删除({{ checkedArr.length }})</van-button>
@@ -133,7 +133,7 @@ export default {
   methods: {
     onSubmit() {
       if (this.checkedItem.length === 0) {
-        Toast('请选择商品')
+        Toast(`${this.$t('请选择商品')}`)
       } else {
         const orderCartList = []
         this.checkedItem.map(item => {
@@ -159,11 +159,11 @@ export default {
     },
     deleteCart() {
       if (this.checkedArr.length === 0) {
-        Toast('您还没有选中商品')
+        Toast(`${this.$t('您还没有选中商品')}`)
       } else {
         Dialog.confirm({
           title: '',
-          message: '确定删除选中的商品？'
+          message: `${this.$t('确定删除选中的商品')}${this.$t('？')}`
         })
           .then(() => {
           // on confirm
@@ -179,7 +179,7 @@ export default {
           })
           .catch(() => {
           // on cancel
-            console.log('你点击了取消')
+            console.log(`${this.$t('你点击了取消')}`)
           })
       }
     }

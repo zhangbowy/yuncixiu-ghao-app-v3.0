@@ -6,63 +6,59 @@
     <div class="user-login-content">
       <div class="form-panle">
         <van-tabs line-width="30px" type="line" :border="false" @click="onClick">
-          <van-tab title="密码登录">
+          <van-tab :title="`${$t('密码登录')}`">
             <div class="form-tabal">
               <van-form label-width="60px" @submit="onSubmit" @resetValidation="resetForm">
                 <van-field
                   v-model="username"
                   name="username"
-                  label="账号"
-                  placeholder="请输入账号"
-                  :rules="[{ required: true, message: '请输入账号' }]"
+                  :label="`${$t('账号')}`"
+                  :placeholder="`${$t('请输入账号')}`"
+                  :rules="[{ required: true, message: `${$t('请输入账号')}` }]"
                 />
                 <van-field
                   v-model="password"
                   type="password"
                   name="password"
-                  label="密码"
-                  placeholder="请输入密码"
-                  :rules="[{ required: true, message: '请输入密码' }]"
+                  :label="`${$t('密码')}`"
+                  :placeholder="`${$t('请输入密码')}`"
+                  :rules="[{ required: true, message: `${$t('请输入密码')}` }]"
                 />
                 <div class="empower">
-                  <van-checkbox v-model="checked" checked-color="#07c160" icon-size="16px" :label-disabled="true">我已阅读并接受 <a href="">网站使用规则</a>、<a href="">隐私政策</a>。</van-checkbox>
+                  <van-checkbox v-model="checked" checked-color="#07c160" icon-size="16px" :label-disabled="true">{{ $t(`我已阅读并接受`) }}<a href="">{{ $t(`网站使用规则`) }}</a>{{ `${$t('、')}` }}<a href="">{{ $t(`隐私政策`) }}</a>{{ `${$t('。')}` }}</van-checkbox>
                 </div>
                 <div class="submit-btn">
-                  <van-button icon-size="16px" round block type="info" native-type="submit" color="linear-gradient(to right, #4bb0ff, #6149f6)">
-                    提交
-                  </van-button>
+                  <van-button icon-size="16px" round block type="info" native-type="submit" color="linear-gradient(to right, #4bb0ff, #6149f6)">{{ $t(`提交`) }}</van-button>
                 </div>
               </van-form>
             </div>
           </van-tab>
-          <van-tab title="快速登录">
+          <van-tab :title="`${$t('快速登录')}`">
             <div class="form-tabal">
               <van-form label-width="60px" @submit="onSubmit" @resetValidation="resetForm">
                 <van-field
                   v-model="username"
-                  name="手机号"
-                  label="手机号"
-                  placeholder="请输入手机号"
-                  :rules="[{ required: true, message: '请输入手机号' }]"
+                  :name="`${$t('手机号')}`"
+                  :label="`${$t('手机号')}`"
+                  :placeholder="`${$t('请输入手机号')}`"
+                  :rules="[{ required: true, message: `${$t('请输入手机号')}` }]"
                 />
                 <van-field
                   v-model="sms"
                   center
                   clearable
-                  label="验证码"
-                  placeholder="请输入短信验证码"
+                  :label="`${$t('验证码')}`"
+                  :placeholder="`${$t('请输入短信验证码')}`"
                 >
                   <template #button>
                     <van-button size="small" round type="primary" :disabled="codeDisaled" @click="sendMessage">{{ smsText }}</van-button>
                   </template>
                 </van-field>
                 <div class="empower">
-                  <van-checkbox v-model="checked" checked-color="#07c160" icon-size="16px" :label-disabled="true">我已阅读并接受 <a href="">网站使用规则</a>、<a href="">隐私政策</a>。</van-checkbox>
+                  <van-checkbox v-model="checked" checked-color="#07c160" icon-size="16px" :label-disabled="true">{{ $t(`我已阅读并接受`) }}<a href="">{{ $t(`网站使用规则`) }}</a>{{ `${$t('、')}` }}<a href="">{{ $t(`隐私政策`) }}</a>{{ `${$t('。')}` }}</van-checkbox>
                 </div>
                 <div class="submit-btn">
-                  <van-button round block type="info" native-type="submit" color="linear-gradient(to right, #4bb0ff, #6149f6)">
-                    提交
-                  </van-button>
+                  <van-button round block type="info" native-type="submit" color="linear-gradient(to right, #4bb0ff, #6149f6)">{{ $t(`提交`) }}</van-button>
                 </div>
               </van-form>
             </div>
@@ -71,7 +67,7 @@
 
         <div class="wx-login">
           <svg-icon icon-class="weixin" @click.native="wxLogin" />
-          <p>微信登录</p>
+          <p>{{ $t(`微信登录`) }}</p>
         </div>
       </div>
     </div>
@@ -94,7 +90,7 @@ export default {
       username: '18895364554',
       password: '123456',
       sms: '',
-      smsText: '发送验证码',
+      smsText: `${this.$t('发送验证码')}`,
       checked: false,
       codeDisaled: false,
       title: this.$route.meta.title
@@ -102,7 +98,7 @@ export default {
   },
   methods: {
     onClick(name, title) {
-      this.loginType = title === '密码登录' ? 1 : 2
+      this.loginType = title === `${this.$t('密码登录')}` ? 1 : 2
       // 重制表单
       this.resetForm()
     },
@@ -131,7 +127,7 @@ export default {
         this.smsText = time + 's'
         if (time === 0) {
           clearInterval(timer)
-          this.smsText = '发送验证码'
+          this.smsText = `${this.$t('发送验证码')}`
           this.codeDisaled = false
         }
       }, 1000)

@@ -15,13 +15,11 @@
     </div>
     <div v-if="list.length==0" class="no-address">
       <span><svg-icon icon-class="add-address" /></span>
-      <p>您还没有创建收货地址</p>
+      <p>{{ $t(`您还没有创建收货地址`) }}</p>
     </div>
 
     <div class="address-add">
-      <div class="add-btn" @click="addAddress">
-        新增地址
-      </div>
+      <div class="add-btn" @click="addAddress">{{ $t(`新增地址`) }}</div>
     </div>
   </div>
 </template>

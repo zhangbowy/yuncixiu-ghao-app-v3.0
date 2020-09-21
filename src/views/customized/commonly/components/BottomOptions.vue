@@ -3,25 +3,25 @@
     <div class="operate-btn">
       <div class="uoload-btn" @click="showTemplate">
         <svg-icon icon-class="template-icon" />
-        <!-- <p>选择模板</p> -->
+        <!-- <p>{{ $t(`选择模板`) }}</p> -->
         <p>{{ currentTemplate.template_name?currentTemplate.template_name:'选择模板' }}</p>
       </div>
       <div v-if="currentTemplate.emb_template_id!=2" class="model-btn" @click="showInputMode">
         <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'text' : 'cx'" />
-        <p>{{ isZh ? '中文字体' : '刺绣字体' }}</p>
+        <p>{{ isZh ? $t('中文字体') : $t('刺绣字体') }}</p>
       </div>
       <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
         <svg-icon icon-class="upload-img" />
-        <p>上传图片</p>
+        <p>{{ $t(`上传图片`) }}</p>
       </div>
       <div v-if="currentTemplate.emb_template_id!=1" class="picture-library" @click="showImgList">
         <svg-icon icon-class="picture-lib" />
-        <p>花样库</p>
+        <p>{{ $t(`花样库`) }}</p>
       </div>
     </div>
     <div class="footer-btn">
-      <van-button icon="eye" color="#333" plain size="small" type="primary" @click="preview">预览</van-button>
-      <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">完成设计</van-button>
+      <van-button icon="eye" color="#333" plain size="small" type="primary" @click="preview">{{ $t(`预览`) }}</van-button>
+      <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">{{ $t(`完成设计`) }}</van-button>
     </div>
   </div>
 </template>

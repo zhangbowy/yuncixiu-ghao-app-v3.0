@@ -5,7 +5,7 @@
         v-model="keyWords"
         shape="round"
         background="#fff"
-        placeholder="搜索商品"
+        :placeholder="`${$t('搜索商品')}`"
         @search="onSearch"
         @cancel="onCancel"
       />
@@ -16,12 +16,12 @@
       <!-- 加载更多 -->
       <div v-if="goodsList.length>=12" class="load-more">
         <infinite-loading @infinite="loadMore">
-          <span slot="no-results" style="padding-bottom:50px; font-size: 14px">没有更多了～</span>
-          <span slot="no-more" style="padding-bottom:50px; font-size: 14px">没有更多了～</span>
+          <span slot="no-results" style="padding-bottom:50px; font-size: 14px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
+          <span slot="no-more" style="padding-bottom:50px; font-size: 14px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
         </infinite-loading>
       </div>
       <div v-if="goodsList.length==0">
-        <no-data text="暂无商品" icon="no-data" :font-size="64" />
+        <no-data :text="`${$t('暂无商品')}`" icon="no-data" :font-size="64" />
       </div>
     </div>
   </div>

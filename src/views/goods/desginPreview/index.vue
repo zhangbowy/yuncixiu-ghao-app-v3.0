@@ -10,7 +10,7 @@
       @click.native="onImagePreviewClick"
     />
     <div class="preview-btns">
-      <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onBtnClick">进入商城</van-button>
+      <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onBtnClick">{{ $t(`进入商城`) }}</van-button>
     </div>
   </div>
 </template>
@@ -37,7 +37,7 @@ export default {
       this.img = img
     } else {
       this.$toast({
-        message: '图片加载出错！'
+        message: `${this.$t('图片加载出错')}${this.$t('！')}`
       })
     }
   },

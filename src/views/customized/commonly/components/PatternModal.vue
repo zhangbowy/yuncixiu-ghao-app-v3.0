@@ -1,7 +1,7 @@
 <template>
   <van-popup :value="value" :style="{ width: '80%', height: '60vh' }" round closeable @input="val => this.$emit('input', val)">
     <div class="modal">
-      <div class="modal-title">花样库</div>
+      <div class="modal-title">{{ $t(`花样库`) }}</div>
       <div class="modal-content figure-content">
         <div class="figure-list">
           <div v-for="(item,index) in figureList" :key="index" class="figure-item" :class="{checked: form.middleImg.design_id == item.design_id}">

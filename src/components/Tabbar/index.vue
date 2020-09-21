@@ -5,7 +5,7 @@
         v-for="(item,index) in tabbarDes"
         :key="item+index"
         :sel="selected"
-        :txt="item.txt"
+        :txt="$t(item.txt)"
         :page="item.page"
         @change="getVal"
       >
