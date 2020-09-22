@@ -4,7 +4,7 @@
       <img class="user-avator" :src="avatar" alt="">
       <div class="accout-info">
         <p class="user-name">{{ name }}</p>
-        <p v-if="userInfo.phone " class="user-phone">账号：{{ userInfo.phone }}</p>
+        <p v-if="userInfo.phone " class="user-phone">{{ $t('账号') }}: {{ userInfo.phone }}</p>
       </div>
     </div>
     <div class="content-view">
