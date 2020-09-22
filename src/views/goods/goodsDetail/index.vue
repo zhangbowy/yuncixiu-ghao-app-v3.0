@@ -23,7 +23,7 @@
         <div class="goods-price">
           {{ `${$t('￥')}` }}<span class="current-price">{{ parseFloat(goodsDetail.current_price).toFixed(2) }}</span>
           <span class="old-price">{{ $t('￥') }}{{ parseFloat(goodsDetail.old_price).toFixed(2) }}</span>
-          <span class="sale-num">{{ goodsDetail.sale_num }}人付款</span>
+          <span class="sale-num">{{ $t(`几人付款`, {num: goodsDetail.sale_num}) }}</span>
         </div>
         <div class="goods-name">
           <p>{{ goodsDetail.name }}</p>
@@ -46,7 +46,7 @@
               <img :src="skuItem.images?skuItem.images:goodsDetail.thumb_image_path" width="96" height="96" alt="">
               <div class="right-info">
                 <p class="price" :style="{textDecoration: is_batch ? 'line-through' : 'none'}">{{ $t('￥') }}{{ skuItem.current_price }}</p>
-                <p v-if="is_batch" class="batch-price"><span :style="{color: '#ee0a24'}">{{ $t('￥') }}{{ batchPrice }}</span> <br>  已达 {{ batchNumber }} 件, 享受批量定制价格 </p>
+                <p v-if="is_batch" class="batch-price"><span :style="{color: '#ee0a24'}">{{ $t('￥') }}{{ batchPrice }}</span> <br> {{ $t('小批量定制', {num: batchNumber }) }} </p>
                 <p>{{ $t('剩余') }}{{ skuItem.num }}</p>
                 <p>{{ `${$t('已选')}${$t('：')}` }}<span v-for="item in skuItem.skus" :key="item.k+item.v">{{ item.k }}:{{ item.v }}  </span>{{ skuItem.checked }}</p>
               </div>

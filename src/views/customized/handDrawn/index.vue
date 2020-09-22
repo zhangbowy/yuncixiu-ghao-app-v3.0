@@ -152,7 +152,7 @@ export default {
   },
   methods: {
     onLastHistory() {
-      this.$toast('不能再撤销啦 ~ ')
+      this.$toast(`${this.$t('不能再撤销啦')} ~ `)
     },
     onSignaturePadTouchstart(event) {
       this.saveSetting()

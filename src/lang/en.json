@@ -253,5 +253,9 @@
   "超时未支付,已取消": "Overdue, cancelled",
   "普通订单": "General order",
   "未支付": "Unpaid",
-  "商家已发货": "Merchant delivered"
+  "商家已发货": "Merchant delivered",
+  "双击开始编辑": "Double click to start editing",
+  "不能再撤销啦": "It can't be withdrawn",
+  "几人付款": "{num} person payment",
+  "小批量定制": "Up to { num } piece, enjoy the price of mass customization"
 }

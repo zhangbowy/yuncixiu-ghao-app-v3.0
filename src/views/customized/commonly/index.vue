@@ -157,7 +157,7 @@
             >
               <span
                 v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0"
-              >{{ form.bottomText.content? form.bottomText.content: '双击开始编辑' }}</span>
+              >{{ form.bottomText.content? form.bottomText.content: $t('双击开始编辑') }}</span>
               <div v-else class="bottom-img-content">
                 <span ref="bottomImgContent" :class="openArc && 'arc'">
                   <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item">

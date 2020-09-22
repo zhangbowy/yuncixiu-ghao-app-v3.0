@@ -47,7 +47,7 @@
             <van-checkbox v-model="checked" checked-color="#ff6034">{{ $t(`全选`) }}</van-checkbox>
           </van-col>
           <van-col span="12" class="delete-operat">
-            <van-button round hairline type="danger" @click.stop="deleteCart">删除({{ checkedArr.length }})</van-button>
+            <van-button round hairline type="danger" @click.stop="deleteCart">{{ $t('删除') }}({{ checkedArr.length }})</van-button>
           </van-col>
         </van-row>
       </div>
