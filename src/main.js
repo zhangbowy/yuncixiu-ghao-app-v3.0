@@ -6,6 +6,7 @@ import 'amfe-flexible'
 import './plugins/vant' // 引入vant
 import '@/icons'
 import App from './App.vue'
+import i18n from './plugins/i18n'
 import router from './router'
 import store from './store'
 import vueEsign from 'vue-esign'
@@ -18,29 +19,10 @@ import Directive from './directive'
 // 使用插件
 Vue.use(Directive)
 Vue.use(vueEsign)
-// 国际化
-import VueI18n from 'vue-i18n'
-import { Locale } from 'vant'
-import zhCN from 'vant/lib/locale/lang/zh-CN'
-import enUS from 'vant/lib/locale/lang/en-US'
 
-Vue.use(VueI18n)
+// 设置语言
 const lang = localStorage.getItem('lang') || 'zh'
-let enLang = localStorage.getItem('en')
-let zhLang = localStorage.getItem('cn')
-zhLang = zhLang && JSON.parse(zhLang)
-enLang = enLang && JSON.parse(enLang)
 store.dispatch('settings/changeSetting', { key: 'lang', value: lang })
-
-Locale.use(lang, lang === 'zh' ? zhCN : enUS)
-const i18n = new VueI18n({
-  locale: lang,
-  messages: {
-    'zh': Object.assign(require('./lang/zh.json'), enLang, zhCN),
-    'en': Object.assign(require('./lang/en.json'), zhLang, enUS)
-  },
-  silentFallbackWarn: true
-})
 
 Vue.config.productionTip = false
 

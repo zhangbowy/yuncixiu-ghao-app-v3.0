@@ -87,7 +87,7 @@ export default {
           is_default: form.is_default,
           post_code: form.post_code
         }).then(res => {
-          Toast(this.$t(res.msg))
+          Toast(this.$t(...res.msg))
           if (res.code === 0) {
             this.show = false
             this.fetchData()
@@ -108,7 +108,7 @@ export default {
           is_default: form.is_default,
           post_code: form.post_code
         }).then(res => {
-          Toast(this.$t(res.msg))
+          Toast(this.$t(...res.msg))
           if (res.code === 0) {
             this.show = false
             this.fetchData()
@@ -125,7 +125,7 @@ export default {
           addressApi.deleteAddress({
             address_id: id
           }).then(res => {
-            Toast(this.$t(res.msg))
+            Toast(this.$t(...res.msg))
             if (res.code === 0) {
               this.show = false
               this.fetchData()

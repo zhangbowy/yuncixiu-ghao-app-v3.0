@@ -1,13 +1,33 @@
 import axios from 'axios'
 import store from '@/store'
 import { Toast } from 'vant'
-
+import i18n from '../plugins/i18n'
+const { messages } = i18n
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   withCredentials: true, // 跨域请求时发送cookies
   timeout: 2000000 // 请求超时
 })
+
+// 翻译
+function translate(msg) {
+  const lang = i18n.locale
+  if (Array.isArray(msg)) {
+    const [key, params] = msg
+    const reg = /{\s{0,1}\w+\s{0,1}}/g
+    let value = messages[lang][key] || ''
+    value = value.replace(reg, val => {
+      const param = val.replace(/[{|}]/g, '')
+      return translate(params[param]) || params[param] || ''
+    })
+    return value || key
+  } else if (typeof msg === 'string') {
+    return messages[lang][msg] || msg
+  } else {
+    return msg
+  }
+}
 
 // 请求拦截器
 service.interceptors.request.use(
@@ -49,7 +69,7 @@ service.interceptors.response.use(
         store.dispatch('user/resetToken')
         return res
       }
-      Toast(res.msg || '请求异常')
+      Toast(translate(res.msg) || translate('请求异常'))
       return Promise.reject(res)
     } else {
       return res

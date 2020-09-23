@@ -693,7 +693,6 @@ export default {
     },
     // 获取花样库列表
     getFigureList() {
-      console.log()
       designApi.getFigure({
         pageSize: 1000,
         goods_id: this.goods_id
@@ -793,6 +792,7 @@ export default {
         if (type === 1) {
           this.getFontTop()
         }
+        resolve()
       })
     },
     // 文字图片点击
@@ -880,7 +880,7 @@ export default {
             this.imgRotate()
           }
         } else {
-          Toast(this.$t(res.msg))
+          Toast(this.$t(...res.msg))
         }
       })
     },
@@ -897,7 +897,7 @@ export default {
         if (res.code === 0) {
           this.bottomImg = res.data
         } else {
-          Toast(this.$t(res.msg))
+          Toast(this.$t(...res.msg))
         }
       })
     }, 500),
@@ -1071,8 +1071,24 @@ export default {
     },
     // 点击预览
     preview() {
-      this.getPreview()
-      this.previewModal = true
+      if (this.currentTemplate.emb_template_id === 1 && !this.form.topText.content) {
+        Toast(`${this.$t('请输入文字内容')}`)
+        return false
+      }
+      if (!this.topFocus && !this.bottomFocus) {
+        this.getPreview()
+        this.previewModal = true
+      } else {
+        const type = this.topFocus ? 1 : 2
+        this.inpuFocus(type).then(() => {
+          this.inputBlur(type).then(() => {
+            setTimeout(() => {
+              this.getPreview()
+              this.previewModal = true
+            }, 0)
+          })
+        })
+      }
     },
     // 将dom转成图片
     setImage() {
@@ -1144,13 +1160,26 @@ export default {
     },
     // 完成定制
     complete() {
-      if (this.currentTemplate.emb_template_id === 3 && !this.form.topText.content && !this.form.bottomText.content) {
-        this.$toast(`${this.$t('请输入文字')}`)
-        return
+      if (this.currentTemplate.emb_template_id === 1 && !this.form.topText.content) {
+        Toast(`${this.$t('请输入文字内容')}`)
+        return false
       }
-      this.previewModal = false
-      this.getPreview()
-      this.confirmModal = true
+      if (!this.topFocus && !this.bottomFocus) {
+        this.previewModal = false
+        this.getPreview()
+        this.confirmModal = true
+      } else {
+        const type = this.topFocus ? 1 : 2
+        this.inpuFocus(type).then(() => {
+          this.inputBlur(type).then(() => {
+            setTimeout(() => {
+              this.previewModal = false
+              this.getPreview()
+              this.confirmModal = true
+            }, 0)
+          })
+        })
+      }
     },
     // 立即购买
     buyNow() {

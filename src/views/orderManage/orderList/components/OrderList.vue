@@ -134,7 +134,7 @@ export default {
               order_no: order_no,
               machine_code: code
             }).then(res => {
-              Toast(this.$t(res.msg))
+              Toast(this.$t(...res.msg))
             })
           }
         }, (error) => {

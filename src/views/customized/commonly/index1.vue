@@ -567,7 +567,7 @@ export default {
           this.topImg = res.data
           this.imgRotate()
         } else {
-          Toast(this.$t(res.msg))
+          Toast(this.$t(...res.msg))
         }
       })
     }, 500),
@@ -583,7 +583,7 @@ export default {
         if (res.code === 0) {
           this.bottomImg = res.data
         } else {
-          Toast(this.$t(res.msg))
+          Toast(this.$t(...res.msg))
         }
       })
     }, 500),
