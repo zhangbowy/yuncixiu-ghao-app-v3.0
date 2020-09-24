@@ -200,7 +200,7 @@ export default {
           this.orderInfo = res.data
         })
         .catch((error) => {
-          Notify({ type: 'danger', message: error.msg || `${this.$t('请求异常')}` })
+          Notify({ type: 'danger', message: this.$t(error.msg) || `${this.$t('请求异常')}` })
           this.loading = false
         })
     },
@@ -224,6 +224,9 @@ export default {
         .then((res) => {
           this.submitLaoding = false
           this.orderPay(res.data.order_no)
+        })
+        .catch(() => {
+          this.submitLaoding = false
         })
     },
     // 订单支付

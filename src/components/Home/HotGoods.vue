@@ -11,7 +11,7 @@
           <p class="goods-price"><span>{{ $t('￥') }}{{ item[resultMap.current_price] }}</span> </p>
           <span v-if="item[resultMap.is_show]==1" class="corner-mark">{{ !isPresell ? $t('定制') : $t('预售') }}</span>
         </div>
-        <van-empty v-if="!data.length" :description="description" />
+        <van-empty v-if="!data.length" :description="$t(description)" />
       </div>
     </div>
   </div>

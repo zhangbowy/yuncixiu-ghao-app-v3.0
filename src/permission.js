@@ -26,10 +26,10 @@ router.beforeEach(async(to, from, next) => {
       next()
     } else {
       try {
+        // 获取语言包
+        store.dispatch('settings/getLanguage', { currentPage: 1, pageSize: 1000, platform: 3 })
         // 获取用户信息
         await store.dispatch('user/getInfo').catch((err) => {
-          // 获取语言包
-          store.dispatch('settings/getLanguage', { currentPage: 1, pageSize: 1000, platform: 3 })
           console.log(err)
           store.dispatch('user/resetToken')
           // Message.error(err || '验证失败，请重新登陆')
