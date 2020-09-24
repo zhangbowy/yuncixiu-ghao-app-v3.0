@@ -45,7 +45,7 @@ router.beforeEach(async(to, from, next) => {
   } else {
     await store.dispatch('user/checkLogin').then((res) => {
       if (!res) {
-        if (isWeiXin()) {
+        if (isWeiXin() || process.env.NODE_ENV === 'production') {
           // 生产环境
           store.dispatch('user/login')
         } else {
