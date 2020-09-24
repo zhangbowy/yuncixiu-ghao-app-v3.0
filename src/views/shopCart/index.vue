@@ -16,7 +16,7 @@
           <div v-for="(item,index) in cartList" :key="index" class="goods-item">
             <van-checkbox :name="item.sku_id" checked-color="#ff6034" />
             <div class="good-info">
-              <img v-lazy="item.images" alt="" width="100">
+              <img v-lazy="item.images" alt="" width="100" @click="onItemClick(item)">
               <div class="good-info-right">
                 <div class="good-name">{{ item.goods_info.name }}</div>
                 <div class="good-sku">{{ `${$t('规格')}${$t('：')}` }}<span v-for="sku in item.skus" :key="sku.k">{{ sku.v }} </span></div>
@@ -131,6 +131,9 @@ export default {
     }
   },
   methods: {
+    onItemClick(item) {
+      console.log(item)
+    },
     onSubmit() {
       if (this.checkedItem.length === 0) {
         Toast(`${this.$t('请选择商品')}`)
@@ -220,12 +223,18 @@ export default {
           border-radius: 6px;
         }
         .good-info-right{
-          width: 90%;
+          width: 70%;
           padding-left: 10px;
           position: relative;
           .good-sku{
             margin-top: 5px;
             color: #666;
+          }
+          .good-name {
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           .good-price{
             width: 100%;

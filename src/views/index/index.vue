@@ -44,7 +44,7 @@
     <div class="sample-box">
       <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
         <img :src="item.prev_png_path" alt="" @click="patternDialog(item)">
-        <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
+        <span v-if="item.is_presell==1" class="corner-mark">{{ $t('预售') }}</span>
       </div>
     </div>
     <!-- 热销商品 -->
