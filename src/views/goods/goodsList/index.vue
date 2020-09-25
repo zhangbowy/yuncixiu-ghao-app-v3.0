@@ -185,7 +185,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .goods-list{
   padding-bottom: 60px;
   .index-search{
