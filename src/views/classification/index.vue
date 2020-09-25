@@ -9,35 +9,34 @@
         @click="toSearch"
       />
     </div>
-    <van-tabs v-model="tabsActive" sticky swipeable @click="onTabsClick">
-      <van-tab :title="`${$t('商品')}`">
-        <div class="classify-content">
-          <van-tree-select height="89vh" :items="items" :active-id.sync="items.activeId" :main-active-index.sync="active" @click-nav="onNavClick">
-            <template #content>
-              <div class="right-content">
-                <img :src="currentImg" alt="" width="100%" @click="toGoodsList(currentId)">
-                <div v-for="(item,index) in subCategary" :key="index" class="sub-categary">
-                  <div class="sub-name" @click="toGoodsList(item.id)">{{ item.category_name }}</div>
-                  <div class="sub-child">
-                    <ul>
-                      <li v-for="(child,i) in item.children" :key="i" @click="toGoodsList(child.id)">
-                        <img :src="child.logo" alt="">
-                        <p>{{ child.category_name }}</p>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+    <!-- <van-tabs v-model="tabsActive" sticky swipeable @click="onTabsClick"> -->
+    <!-- <van-tab :title="`${$t('商品')}`"> -->
+    <div class="classify-content">
+      <van-tree-select height="89vh" :items="items" :active-id.sync="items.activeId" :main-active-index.sync="active" @click-nav="onNavClick">
+        <template #content>
+          <div class="right-content">
+            <img :src="currentImg" alt="" width="100%" @click="toGoodsList(currentId)">
+            <div v-for="(item,index) in subCategary" :key="index" class="sub-categary">
+              <div class="sub-name" @click="toGoodsList(item.id)">{{ item.category_name }}</div>
+              <div class="sub-child">
+                <ul>
+                  <li v-for="(child,i) in item.children" :key="i" @click="toGoodsList(child.id)">
+                    <img :src="child.logo" alt="">
+                    <p>{{ child.category_name }}</p>
+                  </li>
+                </ul>
               </div>
-            </template>
-          </van-tree-select>
-        </div>
-      </van-tab>
-      <van-tab :title="`${$t('花样')}`">
+            </div>
+          </div>
+        </template>
+      </van-tree-select>
+    </div>
+    <!-- </van-tab> -->
+    <!-- <van-tab :title="`${$t('花样')}`">
         <div class="classify-content">
           <van-tree-select height="89vh" :items="figureItems" :active-id.sync="figureItems.activeId" :main-active-index.sync="figureActive" @click-nav="onFigureCategoryNavClick">
             <template #content>
               <div class="content">
-                <!-- 花样列表 -->
                 <div class="sample-box">
                   <template v-for="(item,index) in figureList">
                     <div :key="index+item.prev_png_path" class="sample-box-item">
@@ -51,7 +50,7 @@
           </van-tree-select>
         </div>
       </van-tab>
-    </van-tabs>
+    </van-tabs> -->
   </div>
 </template>
 
@@ -183,7 +182,7 @@ export default {
     },
     // 前往搜索页面
     toGoodsList(id, category_id) {
-      this.$router.push({ path: `/goodsList?category_id=${id}` })
+      this.$router.push({ path: `/goodsList?category_id=${id}&has_figure=${true}` })
     },
     // tab 切换
     onTabsClick(value) {

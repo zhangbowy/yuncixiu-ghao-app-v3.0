@@ -32,8 +32,12 @@
                   <sketch-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
-            <van-dropdown-item v-model="fontSize" :options="sizeOptions" @change="fontSizeChange" />
-            <van-dropdown-item v-model="fontAlign" :options="alignment" />
+            <van-dropdown-item :title="`${fontHeight}mm`">
+              <van-cell :title="`${$t('字体高度')}`">
+                <van-stepper v-model="fontHeight" button-size="32px" :min="minFontSize" :max="maxFontSize" @change="fontSizeChange" />
+              </van-cell>
+            </van-dropdown-item>
+            <van-dropdown-item v-if="currentTemplate.emb_template_id !== 1" v-model="fontAlign" :options="alignment" />
             <van-dropdown-item v-if="topInput==true" ref="item" :title="`${$t('弧形')}`">
               <van-switch-cell v-model="openArc" :title="`${$t('是否开启')}`" @change="changeOpenArc" />
               <template v-if="currentTemplate.emb_template_id === 1">
@@ -103,7 +107,7 @@
               :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
               @click.stop="imgFocus(1)"
             >
-              <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content ? form.topText.content : '双击开始编辑' }}</span>
+              <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
               <div v-else class="top-img-content">
                 <span v-if="inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
                   <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
@@ -337,6 +341,9 @@ export default {
       bottomImg: [], // 底部图片
       fontTypeOptions: [], // 可选字体
       filtterFontTypeList: [], // 过滤后的可选字体
+      minFontSize: 12, // 最大字体
+      maxFontSize: 12, // 最小子体
+      fontHeight: 12, // 字体高度 mm
       currentTemplate: {}, // 当前模板
       topTextList: [], // 字体列表
       inputMode: '', // 输入模式
@@ -355,7 +362,7 @@ export default {
       fontColor: {
         hex: 'fff'
       },
-      fontSize: 12, // 字体高度
+      // fontSize: 12, // 字体高度
       sizeOptions: [
         { text: '8px', value: 8 },
         { text: '12px', value: 12 },
@@ -421,7 +428,17 @@ export default {
   computed: {
     ...mapState([
       'design'
-    ])
+    ]),
+    fontSize: {
+      get() {
+        const design_height = this.customInfo?.custom_info.design_height || 150
+        const box_height = parseFloat(this.designBoxStyle.height) || 300
+        return (this.fontHeight / design_height) * box_height
+      },
+      set(value) {
+        // console.log(value)
+      }
+    }
   },
   watch: {
     inputMode: {
@@ -537,7 +554,6 @@ export default {
   },
   created() {
     // 获取字体列表
-    this.getFontList()
     // 弧形文字
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
       this.goods_id = this.$route.query.goods_id
@@ -679,6 +695,7 @@ export default {
       designApi.getFontList().then(res => {
         this.fontTypeOptions = res.data
         this.fontType = res.data[0].font_id
+        this.fontChange(res.data[0])
         this.inputMode = 'en'
       })
     },
@@ -716,6 +733,7 @@ export default {
       }).then(res => {
         this.customInfo = res.data
         this.initPage(res.data)
+        this.getFontList()
       })
     },
     // 初始化页面方法
@@ -817,20 +835,20 @@ export default {
       this.fontSize = value
       if (this.topInput === true) {
         this.form.topText.fontSize = value
-        await this.getFontTop()
-        if (this.openArc === true) {
-          this.inpuFocus(1).then(() => {
-            this.inputBlur(1).then(() => {
-              this.imgRotate()
-            })
-          })
-        } else {
-          this.inpuFocus(1).then(() => {
-            this.inputBlur(1).then(() => {
-              this.getFontTop()
-            })
-          })
-        }
+        // await this.getFontTop()
+        // if (this.openArc === true) {
+        //   this.inpuFocus(1).then(() => {
+        //     this.inputBlur(1).then(() => {
+        //       this.imgRotate()
+        //     })
+        //   })
+        // } else {
+        //   this.inpuFocus(1).then(() => {
+        //     this.inputBlur(1).then(() => {
+        //       // this.getFontTop()
+        //     })
+        //   })
+        // }
       }
       if (this.bottomInput === true) {
         this.form.bottomText.fontSize = value
@@ -966,8 +984,12 @@ export default {
     },
     // 字体选择
     fontChange(item) {
-      const { font_id: value, ttf } = item
+      // console.log('fontChange')
+      const { font_id: value, ttf, max_height, min_height } = item
       this.fontType = value
+      this.maxFontSize = max_height
+      this.minFontSize = min_height
+      this.fontHeight = this.minFontSize
       if (this.topInput === true) {
         this.form.topText.fontType = value
         this.getFontTop()

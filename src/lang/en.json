@@ -259,5 +259,6 @@
   "几人付款": "{num} person payment",
   "小批量定制": "Up to {num} piece, enjoy the price of mass customization",
   "剩余": "surplus",
-  "暂不支持自提": "Self collection is not supported at the moment"
+  "暂不支持自提": "Self collection is not supported at the moment",
+  "字体大小": "Font Size"
 }
