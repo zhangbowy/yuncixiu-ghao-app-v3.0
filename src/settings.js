@@ -10,7 +10,7 @@ module.exports = {
     },
     'en': {
       name: 'en',
-      title: 'Englist',
+      title: 'English',
       path: path.resolve(__dirname, '../src/lang/en.json'),
       type: 'ZH_CN2EN'
     }
