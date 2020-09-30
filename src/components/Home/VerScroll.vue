@@ -76,11 +76,7 @@ export default {
       })
     },
     toCategory(id) {
-      if (this.resultMap.id === 'design_category_id') {
-        this.$router.push({ path: `/classify?design_category_id=${id}` })
-      } else {
-        this.$router.push({ path: `/classify?category_id=${id}` })
-      }
+      this.$router.push({ path: `/classify?category_id=${id}` })
     }
   }
 }
