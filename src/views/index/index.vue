@@ -40,7 +40,7 @@
     <ver-scroll :data="indexData.category" :title="`${$t('定制推荐')}`" />
     <!-- 推荐种类 -->
     <ver-scroll :data="indexData.design_category" :props-map="propsMap" :title="`${$t('花样种类推荐')}`" />
-    <!-- 样本 -->
+    <!-- 花样 -->
     <div class="sample-box">
       <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
         <img :src="item.prev_png_path" alt="" @click="patternDialog(item)">

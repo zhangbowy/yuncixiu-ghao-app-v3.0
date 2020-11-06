@@ -344,7 +344,9 @@ export default {
       minFontSize: 12, // 最大字体
       maxFontSize: 12, // 最小子体
       fontHeight: 12, // 字体高度 mm
-      currentTemplate: {}, // 当前模板
+      currentTemplate: {
+        emb_template_id: 2
+      }, // 当前模板
       topTextList: [], // 字体列表
       inputMode: '', // 输入模式
       topText: '', // 上输入框文本
@@ -633,7 +635,7 @@ export default {
       }
     },
     /**
-     * 获取非透明区域x 轴和y 轴上的最近最远值
+     * 获取非透明区域x 轴和y
      * @param {imageData} imgData
      * @param {number} imgWidth
      * @param {number} imgHeight
@@ -705,7 +707,7 @@ export default {
         template_type: 1 // 1 一般定制 2 特殊定制
       }).then(res => {
         this.templateList = res.data
-        this.currentTemplate = this.templateList[2]
+        this.currentTemplate = this.templateList[1]
       })
     },
     // 获取花样库列表
@@ -1177,6 +1179,7 @@ export default {
           this.loading = false
         })
       }).catch(() => {
+        this.loading = false
         Toast(`${this.$t('定制图案生成失败')}!`)
       })
     },
