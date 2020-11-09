@@ -27,6 +27,10 @@ export default {
     propsMap: {
       type: Object,
       default: () => {}
+    },
+    tabsActive: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -76,7 +80,7 @@ export default {
       })
     },
     toCategory(id) {
-      this.$router.push({ path: `/classify?category_id=${id}` })
+      this.$router.push({ path: `/goodsList?category_id=${id}&has_figure=true&tabsActive=${this.tabsActive}` })
     }
   }
 }

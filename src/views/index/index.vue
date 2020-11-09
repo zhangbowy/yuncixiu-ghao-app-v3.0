@@ -37,16 +37,11 @@
       />
     </div>
     <!-- 推荐种类 -->
-    <ver-scroll :data="indexData.category" :title="`${$t('定制推荐')}`" />
+    <ver-scroll :data="indexData.category" :tabs-active="0" :title="`${$t('定制推荐')}`" />
     <!-- 推荐种类 -->
-    <ver-scroll :data="indexData.design_category" :props-map="propsMap" :title="`${$t('花样种类推荐')}`" />
+    <ver-scroll :data="indexData.category" :tabs-active="1" :title="`${$t('花样种类推荐')}`" />
     <!-- 花样 -->
-    <div class="sample-box">
-      <div v-for="(item,index) in indexData.hot_design" :key="index+item.prev_png_path" class="sample-box-item">
-        <img :src="item.prev_png_path" alt="" @click="patternDialog(item)">
-        <span v-if="item.is_presell==1" class="corner-mark">{{ $t('预售') }}</span>
-      </div>
-    </div>
+    <slide-figure title="花样推荐" />
     <!-- 热销商品 -->
     <hot-goods :data="indexData.hot_goods" :title="`${$t('热销商品')}`" />
     <!-- 预售商品 -->
@@ -58,12 +53,14 @@
 
 import HotGoods from '@/components/Home/HotGoods'
 import VerScroll from '@/components/Home/VerScroll'
+import SlideFigure from '@/components/Home/SlideFigure'
 import { indexApi } from '@/api/home'
 import { Dialog } from 'vant'
 export default {
   components: {
     HotGoods,
-    VerScroll
+    VerScroll,
+    SlideFigure
   },
   data() {
     return {

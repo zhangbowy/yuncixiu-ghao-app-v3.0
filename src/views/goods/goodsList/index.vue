@@ -106,10 +106,10 @@ export default {
   methods: {
     init() {
       this.category_id = this.$route.query.category_id
-      const { design_id = null, has_figure = false } = this.$route.query || {}
+      const { design_id = null, has_figure = false, tabsActive = 0 } = this.$route.query || {}
       this.design_id = design_id
       this.has_figure = has_figure === 'true'
-      console.log(this.has_figure)
+      this.tabsActive = Number(tabsActive)
       this.fetchData(this.category_id)
     },
     fetchData(id) {
