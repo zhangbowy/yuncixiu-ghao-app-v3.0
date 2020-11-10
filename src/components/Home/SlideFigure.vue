@@ -55,20 +55,33 @@ export default {
       return list
     }
   },
+  watch: {
+    '$route': {
+      handler(newValue) {
+        if (newValue.name === 'Index') {
+          console.log('Index')
+          this.verScroll()
+        }
+      }
+    }
+  },
   created() {
     this.getData()
   },
   mounted() {
-    this.$nextTick(() => {
-      const timer = setTimeout(() => {
-        if (timer) {
-          clearTimeout(timer)
-          this.verScroll()
-        }
-      }, 1000)
-    })
+    this.init()
   },
   methods: {
+    init() {
+      this.$nextTick(() => {
+        const timer = setTimeout(() => {
+          if (timer) {
+            clearTimeout(timer)
+            this.verScroll()
+          }
+        }, 1000)
+      })
+    },
     getData() {
       this.loading = true
       return designApi.getFigure({
@@ -87,7 +100,6 @@ export default {
         } else {
           this.currentPage++
         }
-        console.log(this.loading)
         this.loading = false
       }).catch(err => {
         this.loading = false
@@ -105,7 +117,6 @@ export default {
           let maxHeight = 0
           groupsList.forEach(group => {
             maxHeight = Math.max(maxHeight, group.clientHeight)
-            console.log(maxHeight, 'maxHeight')
           })
 
           groupsList.forEach(group => {
@@ -132,7 +143,6 @@ export default {
       })
     },
     patternDialog(item) {
-      console.log(this.scroll, 'srcoll')
       Dialog.confirm({
         title: `${this.$t('提示')}`,
         message: item.is_presell ? `${this.$t('该花样正在预售中')}` : `${this.$t('请先选择定制商品')}${this.$t('，')}${this.$t('再选择定制花样')}${this.$t('。')}`,
@@ -189,7 +199,7 @@ export default {
   }
   .figure-list{
     display: flex;
-    // flex-flow: wrap;
+    flex-flow: nowrap;
     align-items: center;
     justify-content: space-around;
     background: #fff;

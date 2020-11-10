@@ -253,7 +253,8 @@
               width="100%"
               :value="form.middleImg.height"
               :label="`${$t('图片高度')}`"
-              :max="middleImgHeight"
+              :max="middleImgMaxHeght || 1"
+              :min="middleImgMinHeight"
               :placeholder="`${$t('请输入高度')}`"
               unit="mm"
             />
@@ -395,6 +396,8 @@ export default {
       },
       middleImgWidth: 0, // 中间图片的最大宽度
       middleImgHeight: 0, // 中间图片的最大高度
+      middleImgMaxHeght: 0, // 中间图片的最大高度
+      middleImgMinHeight: 0, // 中间图片的最小高度
       patternPicture: [], // 花样图片库
       imgSize: '', // 图片大小
       customInfo: {
@@ -516,32 +519,14 @@ export default {
       immediate: true,
       handler(newValue, old) {
         const type = newValue.emb_template_id
-        if (type === 1) {
-          this.form.middleImg = {}
-          this.form.bottomText.content = ''
-          this.bottomImg = []
-          this.deleteMiddleImg()
-          if (this.form.topText.content) {
-            this.inpuFocus(1).then(() => {
-              this.inputBlur(1)
-            })
-          }
-        }
-        if (type === 2) {
-          this.topImg = []
-          this.bottomImg = []
-          this.form.middleImg.width = this.formatNumber(this.design_box.design_W / this.design_box.design_scale)
-          this.form.middleImg.height = this.formatNumber(this.design_box.design_H / this.design_box.design_scale)
-          this.middleImgHeight = this.formatNumber(this.design_box.design_H / this.design_box.design_scale)
-          this.middleImgWidth = this.formatNumber(this.design_box.design_W / this.design_box.design_scale)
-        }
-        if (type === 3) {
-          this.middleImgHeight = this.formatNumber(this.design_box.design_H / this.design_box.design_scale - 90 / this.design_box.design_scale)
-          this.form.middleImg.height = this.middleImgHeight
-          if (this.form.topText.content) {
-            this.getFontTop()
-          }
-        }
+        this.init(type, this.design_box)
+      }
+    },
+    design_box: {
+      deep: true,
+      handler(newValue) {
+        const type = this.currentTemplate.emb_template_id
+        this.init(type, newValue)
       }
     },
     previewModal: {
@@ -576,6 +561,34 @@ export default {
     this.$refs.commonly && (this.$refs.commonly.style.minHeight = document.body.offsetHeight + 'px')
   },
   methods: {
+    init(type, design_box) {
+      if (type === 1) {
+        this.form.middleImg = {}
+        this.form.bottomText.content = ''
+        this.bottomImg = []
+        this.deleteMiddleImg()
+        if (this.form.topText.content) {
+          this.inpuFocus(1).then(() => {
+            this.inputBlur(1)
+          })
+        }
+      }
+      if (type === 2) {
+        this.topImg = []
+        this.bottomImg = []
+        this.form.middleImg.width = this.formatNumber(design_box.design_W / design_box.design_scale)
+        this.form.middleImg.height = this.formatNumber(design_box.design_H / design_box.design_scale)
+        this.middleImgHeight = this.formatNumber(design_box.design_H / design_box.design_scale)
+        this.middleImgWidth = this.formatNumber(design_box.design_W / design_box.design_scale)
+      }
+      if (type === 3) {
+        this.middleImgHeight = this.formatNumber(design_box.design_H / design_box.design_scale - 90 / design_box.design_scale)
+        this.form.middleImg.height = this.middleImgHeight
+        if (this.form.topText.content) {
+          this.getFontTop()
+        }
+      }
+    },
     removeBG() {
       // if (this.patternPicture[0].oldContent) {
       //   return
@@ -1074,8 +1087,10 @@ export default {
       await commonApi.getImage({ url: item.prev_png_path }).then(res => {
         this.form.middleImg.prev_png_path = res.data
       })
+      this.middleImgMaxHeght = Math.min(this.middleImgHeight, item.max_height || item.best_height || this.middleImgHeight)
       this.form.middleImg.width = this.middleImgWidth
-      this.form.middleImg.height = this.middleImgHeight
+      this.form.middleImg.height = this.middleImgMaxHeght
+      this.middleImgMinHeight = item.min_height
       this.patternModal = false
       this.middleVisible = true
     },
