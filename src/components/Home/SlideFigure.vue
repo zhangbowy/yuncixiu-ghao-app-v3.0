@@ -52,7 +52,6 @@ export default {
           flag = 0
         }
       })
-      console.log(list)
       return list
     }
   },
@@ -61,10 +60,6 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      const wrapper = this.$refs['cont']
-      wrapper.addEventListener('scroll', function(e) {
-        console.log(e, 'wrapper')
-      })
       const timer = setTimeout(() => {
         if (timer) {
           clearTimeout(timer)
@@ -124,15 +119,13 @@ export default {
             scrollX: true,
             scrollY: false,
             // scrollbar: true,
-            threshold: -20,
+            // threshold: -20,
             eventPassthrough: 'vertical'
           })
 
           this.scroll.on('scrollEnd', () => {
-            console.log(this.loading)
             !this.loading && !this.finished && this.getData()
           })
-          console.log(this.scroll)
         } else {
           this.scroll.refresh()
         }
@@ -158,6 +151,7 @@ export default {
 .slide-figure {
   width: 100%;
   .slide-figure-title{
+    background: #fff;
     font-size: 16px;
     color: #000;
     padding: 10px 0 20px;
@@ -177,7 +171,7 @@ export default {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      right: -60px;
+      right: -35px;
       background: rgba(0, 0,0, 0.4);
       transition: right ease-in-out 0.2s;
       color: #fff;
@@ -199,7 +193,7 @@ export default {
     align-items: center;
     justify-content: space-around;
     background: #fff;
-    padding-top: 10px;
+    // padding-top: 10px;
     border-bottom: 10px solid #f5f5f5;
     padding-right: 10px;
     width: 500px;
@@ -217,7 +211,7 @@ export default {
       align-items: center;
       justify-content: center;
     }
-    &-item{
+    &-item {
       position: relative;
       width: 100%;
       border: 1px solid #f5f5f5;
