@@ -53,7 +53,7 @@
 
 import HotGoods from '@/components/Home/HotGoods'
 import VerScroll from '@/components/Home/VerScroll'
-import SlideFigure from '@/components/Home/SlideFigure'
+import SlideFigure from '@/components/Home/SlideFigure1'
 import { indexApi } from '@/api/home'
 import { Dialog } from 'vant'
 export default {
