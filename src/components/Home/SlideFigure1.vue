@@ -135,7 +135,6 @@ export default {
           return
         }
       })
-      console.log(this.listData[current].width)
       this.$refs.cont.style.width = this.listData[current].width + 'px'
       this.$nextTick(() => {
         this.loading = false
@@ -181,7 +180,6 @@ export default {
           return
         }
       })
-      console.log(img.width, img.height)
       this.listData[current].list.push(item)
       this.listData[current].width += img.width / img.height * 108 + 12
     },
