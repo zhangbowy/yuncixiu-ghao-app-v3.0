@@ -18,6 +18,8 @@
   "用户授权": "User authorization",
   "开始设计": "Start designing",
   "一般定制": "General customization",
+  "一般定制订单": "General custom order",
+  "特殊定制订单": "Special customization order",
   "特殊定制": "Special customization",
   "手绘": "Hand painted",
   "页面": "Page",
@@ -260,5 +262,11 @@
   "小批量定制": "Up to {num} piece, enjoy the price of mass customization",
   "剩余": "surplus",
   "暂不支持自提": "Self collection is not supported at the moment",
-  "字体大小": "Font Size"
+  "字体大小": "Font Size",
+  "建议小于等于12色": "Up to 12 colors are recommended",
+  "默认5个工作日": "Default 5 working days",
+  "宽": "widht",
+  "高": "height",
+  "上传成功!": "Upload succeeded!",
+  "上传失败!": "Upload failed!"
 }

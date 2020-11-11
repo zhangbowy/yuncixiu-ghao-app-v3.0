@@ -203,10 +203,10 @@
       <div class="modal">
         <div class="modal-title">{{ $t(`上传图片`) }}</div>
         <div class="modal-content">
-          <van-uploader v-model="patternPicture" multiple :max-count="1" />
+          <van-uploader v-model="patternPicture" multiple :max-count="1" :after-read="onUploadImg" />
         </div>
         <div class="footer-button">
-          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal=false">{{ $t(`确定`) }}</van-button>
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal = false">{{ $t(`确定`) }}</van-button>
         </div>
         <div v-if="patternPicture.length" class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">{{ $t(`去除背景`) }}</van-button>
@@ -561,6 +561,19 @@ export default {
     this.$refs.commonly && (this.$refs.commonly.style.minHeight = document.body.offsetHeight + 'px')
   },
   methods: {
+    onUploadImg(file) {
+      const fileData = new FormData()
+      fileData.append('image', file.file)
+      designApi.uploadImg(fileData).then(({ data, code, msg }) => {
+        if (code === 0) {
+          this.patternPicture[0].url = data
+          this.$toast.success(`${this.$t(...msg)}`)
+        }
+      }).catch(err => {
+        console.log(err)
+        this.$toast.fail(`${this.$t('上传失败!')}`)
+      })
+    },
     init(type, design_box) {
       if (type === 1) {
         this.form.middleImg = {}
@@ -1237,6 +1250,7 @@ export default {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
         }
       }
+      console.log(this.patternPicture[0])
       // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].design_info = {
@@ -1254,11 +1268,12 @@ export default {
         design_width: this.form.middleImg.width,
         design_height: this.form.middleImg.height,
         is_choose_design: this.form.middleImg.design_id ? '1' : '0',
-        custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
+        custom_image: this.patternPicture[0] ? this.patternPicture[0].url : '',
         custom_template_id: this.currentTemplate.emb_template_id,
         preview_image: this.previewImg,
         design_area_image: this.design_area_image
       }
+      console.log(goodsInfo)
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm', query: { is_wilcom: this.is_wilcom }})
       })

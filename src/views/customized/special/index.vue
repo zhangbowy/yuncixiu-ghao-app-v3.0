@@ -70,7 +70,7 @@
           ]"
         >
           <template #input>
-            <van-uploader v-model="uploader" multiple :max-count="1" />
+            <van-uploader v-model="uploader" multiple :max-count="1" :after-read="onUploadImg" />
           </template>
         </van-field>
         <van-field
@@ -129,8 +129,18 @@ export default {
     this.getTemplate()
   },
   methods: {
-    uploadValidate(val) {
-      console.val
+    onUploadImg(file) {
+      const fileData = new FormData()
+      fileData.append('image', file.file)
+      designApi.uploadImg(fileData).then(({ data, code, msg }) => {
+        if (code === 0) {
+          this.uploader[0].url = data
+          this.$toast.success(`${this.$t(...msg)}`)
+        }
+      }).catch(err => {
+        console.log(err)
+        this.$toast.fail(`${this.$t('上传失败!')}`)
+      })
     },
     chooseTemp() {
       const item = this.templateList[this.templateList.length - 1]
@@ -168,7 +178,7 @@ export default {
         special_color_num: this.form.colorNum,
         special_custom_desc: this.form.desc,
         is_only_design: this.form.is_only_design === true ? 0 : 1,
-        special_custom_image: this.uploader[0].content ? this.uploader[0].content : ''
+        special_custom_image: this.uploader[0].url ? this.uploader[0].url : ''
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm' })

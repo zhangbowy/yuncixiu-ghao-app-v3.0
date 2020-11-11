@@ -89,5 +89,19 @@ export const designApi = {
       method: 'post',
       data
     })
+  },
+  /**
+   * 上传图片
+   */
+  uploadImg(data) {
+    console.log(data)
+    return request({
+      url: '/custom/uploadImg',
+      method: 'post',
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      data
+    })
   }
 }
