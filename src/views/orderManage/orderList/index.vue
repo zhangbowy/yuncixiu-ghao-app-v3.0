@@ -178,7 +178,6 @@ export default {
       }
     },
     orderChange(data) {
-      console.log(data)
       if (data.name === 'replay') {
         this.showReplay = true
         this.replayForm.order_no = data.order_no

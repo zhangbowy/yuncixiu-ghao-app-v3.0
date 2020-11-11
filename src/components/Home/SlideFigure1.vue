@@ -71,7 +71,7 @@ export default {
     '$route': {
       handler(newValue) {
         if (newValue.name === 'Index') {
-          this.verScroll()
+          this.init()
         }
       }
     }
@@ -80,6 +80,11 @@ export default {
     this.getData()
   },
   methods: {
+    init() {
+      this.$nextTick(() => {
+        this.verScroll()
+      })
+    },
     getData() {
       this.loading = true
       return designApi.getFigure({
@@ -118,7 +123,7 @@ export default {
           this.currentPage++
         }
         // this.loading = false
-        this.verScroll()
+        // this.init()
       }).catch(err => {
         this.loading = false
         console.log(err)
@@ -171,17 +176,22 @@ export default {
     async dealImg(item) {
       const img = new Image()
       img.src = item.prev_png_path
-      let current = 0
-      let currentWidth = this.listData[0].width
-      this.listData.forEach((list, index) => {
-        if (currentWidth > list.width) {
-          currentWidth = list.width
-          current = index
-          return
+      img.onload = () => {
+        let current = 0
+        let currentWidth = this.listData[0].width
+        this.listData.forEach((list, index) => {
+          if (currentWidth > list.width) {
+            currentWidth = list.width
+            current = index
+            return
+          }
+        })
+        this.listData[current].list.push(item)
+        this.listData[current].width += (img.width || 100) / (img.height || 100) * 108 + 12
+        if (item === this.figureList[this.figureList.length - 1]) {
+          this.init()
         }
-      })
-      this.listData[current].list.push(item)
-      this.listData[current].width += img.width / img.height * 108 + 12
+      }
     },
     patternDialog(item) {
       Dialog.confirm({

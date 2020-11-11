@@ -94,7 +94,6 @@ export const designApi = {
    * 上传图片
    */
   uploadImg(data) {
-    console.log(data)
     return request({
       url: '/custom/uploadImg',
       method: 'post',
