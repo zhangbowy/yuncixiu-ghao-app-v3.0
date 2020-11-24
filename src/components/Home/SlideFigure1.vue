@@ -265,14 +265,14 @@ export default {
       justify-content: center;
       align-items: center;
       border: 1px solid #f5f5f5;
-      box-shadow: 0px 10px 20px #f3f3f3;
+      box-shadow: 0px 0px 20px #f3f3f3;
       border-radius: 6px;
       box-sizing: border-box;
-      padding: 10px;
+      padding: 6px;
       margin:0 6px;
       img{
         height: 90%;
-        border-radius: 6px;
+        // border-radius: 6px;
         display: block;
       }
     }

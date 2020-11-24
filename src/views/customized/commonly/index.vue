@@ -253,7 +253,7 @@
               width="100%"
               :value="form.middleImg.height"
               :label="`${$t('图片高度')}`"
-              :max="middleImgMaxHeght || 1"
+              :max="middleImgMaxHeght || middleImgHeight"
               :min="middleImgMinHeight"
               :placeholder="`${$t('请输入高度')}`"
               unit="mm"
@@ -786,6 +786,7 @@ export default {
       // 中间图片的最大宽高 单位毫米
       this.middleImgWidth = this.design_box.design_W / design_scale
       this.middleImgHeight = this.design_box.design_H / design_scale - 90 / design_scale
+      console.log(this.middleImgHeight, 'this.middleImgHeight')
       // 背景图位置style
       this.designImgStyle = {
         position: 'absolute',
