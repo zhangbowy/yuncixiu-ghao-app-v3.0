@@ -206,7 +206,7 @@
           <van-uploader v-model="patternPicture" multiple :max-count="1" :after-read="onUploadImg" />
         </div>
         <div class="footer-button">
-          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="uploadModal = false">{{ $t(`确定`) }}</van-button>
+          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onUploadImgConfirm">{{ $t(`确定`) }}</van-button>
         </div>
         <div v-if="patternPicture.length" class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">{{ $t(`去除背景`) }}</van-button>
@@ -247,6 +247,10 @@
       <div class="modal">
         <div class="modal-title">{{ $t(`修改图片尺寸`) }}</div>
         <div class="modal-content">
+          <div v-if="currentBestHeight" class="modal-hint">
+            <span>最佳尺寸</span>
+            <span>{{ currentBestHeight }}</span>
+          </div>
           <div class="img-size">
             <number-input
               v-model="form.middleImg.height"
@@ -337,6 +341,7 @@ export default {
       // minHeight: 812,
       goods_id: '',
       figureList: [], // 花样库
+      currentBestHeight: 0, // 当前花样最佳高度
       templateList: [], // 模板列表
       topImg: [], // 上图片
       bottomImg: [], // 底部图片
@@ -561,12 +566,16 @@ export default {
     this.$refs.commonly && (this.$refs.commonly.style.minHeight = document.body.offsetHeight + 'px')
   },
   methods: {
+    onUploadImgConfirm() {
+      this.uploadModal = false
+    },
     onUploadImg(file) {
       const fileData = new FormData()
       fileData.append('image', file.file)
       designApi.uploadImg(fileData).then(({ data, code, msg }) => {
         if (code === 0) {
           this.patternPicture[0].url = data
+          this.currentBestHeight = 0
           this.$toast.success(`${this.$t(...msg)}`)
         }
       }).catch(err => {
@@ -786,7 +795,6 @@ export default {
       // 中间图片的最大宽高 单位毫米
       this.middleImgWidth = this.design_box.design_W / design_scale
       this.middleImgHeight = this.design_box.design_H / design_scale - 90 / design_scale
-      console.log(this.middleImgHeight, 'this.middleImgHeight')
       // 背景图位置style
       this.designImgStyle = {
         position: 'absolute',
@@ -1096,6 +1104,7 @@ export default {
     // 选中花样图片
     async checkFigureItem(item) {
       this.form.middleImg.design_id = item.design_id
+      this.currentBestHeight = item.best_height
       this.patternPicture = [] // 上传的花样图片设为空
       // 解决花样图片跨域问题
       await commonApi.getImage({ url: item.prev_png_path }).then(res => {
@@ -1536,6 +1545,18 @@ export default {
       font-size: 16px;
       padding: 18px;
       border-bottom: 1px solid #f5f5f5;
+    }
+    &-hint {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #999;
+      margin: 4px;
+      span {
+        margin-right: 6px;
+      }
     }
     .modal-content{
       padding: 12px;
