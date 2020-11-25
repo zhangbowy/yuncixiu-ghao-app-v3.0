@@ -122,7 +122,7 @@ export default {
         } else {
           this.currentPage++
         }
-        // this.loading = false
+        this.loading = false
         // this.init()
       }).catch(err => {
         this.loading = false
@@ -142,7 +142,6 @@ export default {
       })
       this.$refs.cont.style.width = this.listData[current].width + 'px'
       this.$nextTick(() => {
-        this.loading = false
         const groupsList = this.$refs['group']
         if (groupsList && Array.isArray(groupsList)) {
           let maxHeight = 0

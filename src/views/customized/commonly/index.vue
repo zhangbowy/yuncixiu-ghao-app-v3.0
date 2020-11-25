@@ -104,7 +104,7 @@
             <div
               v-if="topFocus==false"
               class="top-img-list"
-              :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
+              :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
               @click.stop="imgFocus(1)"
             >
               <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
@@ -112,7 +112,7 @@
                 <span v-if="inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
                   <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
                 </span>
-                <span v-if="inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
+                <span v-if="inputMode === 'zh'" ref="topImgContent" :class="openArc && 'arc'">
                   <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
                 </span>
               </div>
@@ -123,7 +123,7 @@
                 v-model="form.topText.content"
                 :placeholder="`${$t('点击输入文字')}`"
                 type="text"
-                :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`}"
+                :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
                 @blur="inputBlur(1, $event)"
                 @focus="inpuFocus(1)"
               >
@@ -156,7 +156,7 @@
             <div
               v-if="bottomFocus==false"
               class="bottom-img-list"
-              :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}"
+              :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
               @click.stop="imgFocus(2)"
             >
               <span
@@ -174,7 +174,7 @@
                 v-model="form.bottomText.content"
                 :placeholder="`${$t('点击输入文字')}`"
                 type="text"
-                :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`}"
+                :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
                 @input="getFontBottom()"
                 @blur="inputBlur(2, $event)"
                 @focus="inpuFocus(2)"
@@ -1394,6 +1394,7 @@ export default {
     .commonly-bg-box{
       width: 100%;
       height: 375px;
+      max-height: 375px;
       overflow: hidden;
       position: absolute;
       top: 50%;
@@ -1526,6 +1527,7 @@ export default {
         width: 99.2%;
         display: flex;
         align-items: center;
+        margin: 10px;
         img{
           display: block;
           margin: 0 auto;
