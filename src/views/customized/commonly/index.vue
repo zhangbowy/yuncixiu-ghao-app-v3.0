@@ -962,6 +962,7 @@ export default {
       this.showTextOperate = false
       this.topFocus = false
       this.bottomFocus = false
+      this.visible = false
     },
     // 删除中间图片
     deleteMiddleImg() {
@@ -1122,7 +1123,7 @@ export default {
       this.currentTemplate = item
       this.templateModal = false
       if (item.emb_template_id !== 1) {
-        this.middleVisible = true
+        // this.middleVisible = true
         this.visible = false
       } else {
         this.middleVisible = false
@@ -1315,7 +1316,7 @@ export default {
     box-sizing: border-box;
     .operate-btn{
       position: relative;
-      z-index: auto;
+      z-index: 100;
       .middle-img-menu{
         display: flex;
         align-items: center;
