@@ -112,7 +112,7 @@
                 <span v-if="inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
                   <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
                 </span>
-                <span v-if="inputMode === 'zh'" ref="topImgContent" :class="openArc && 'arc'">
+                <span v-if="inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
                   <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
                 </span>
               </div>
@@ -360,6 +360,7 @@ export default {
       fontType: '', // 字体类型
       fontAlign: 'center', // 字体对齐方式
       design_id: '', // 当前选中的花样id
+      currentFigure: {}, // 当前花样
       alignment: [{
         text: `${this.$t('左对齐')}`, value: 'left'
       }, {
@@ -458,6 +459,7 @@ export default {
           this.filtterFontTypeList = this.fontTypeOptions.filter(item => (item.font_type === type))
           this.fontType = this.filtterFontTypeList[0]?.font_id || ''
           this.getFontTop()
+          this.getFontBottom()
         }
       }
     },
@@ -604,12 +606,13 @@ export default {
         this.middleImgWidth = this.formatNumber(design_box.design_W / design_box.design_scale)
       }
       if (type === 3) {
-        this.middleImgHeight = this.formatNumber(design_box.design_H / design_box.design_scale - 90 / design_box.design_scale)
+        this.middleImgHeight = this.formatNumber(design_box.design_H / design_box.design_scale - 110 / design_box.design_scale)
         this.form.middleImg.height = this.middleImgHeight
         if (this.form.topText.content) {
           this.getFontTop()
         }
       }
+      this.setFigureItemSizeRange(this.currentFigure)
     },
     removeBG() {
       // if (this.patternPicture[0].oldContent) {
@@ -989,8 +992,8 @@ export default {
       // })
       // 图片旋转
       $(function() {
+        const topImgList = Array.isArray(_self.$refs['topImg']) ? _self.$refs['topImg'] : (_self.$refs['topImg'] ? [_self.$refs['topImg']] : [])
         if (_self.currentTemplate?.emb_template_id === 1) {
-          const topImgList = Array.isArray(_self.$refs['topImg']) ? _self.$refs['topImg'] : (_self.$refs['topImg'] ? [_self.$refs['topImg']] : [])
           const radiusWidth = _self.radiusWidth
           const count = topImgList.length
           const radius = _self.radian / (count - (_self.radian === 360 ? 0 : 1)) // 平均角度)
@@ -1011,11 +1014,26 @@ export default {
             item.style.transform = ` translate(calc( -50% + ${offsetX}px), calc( -50% + ${-offsetY}px)) rotate(${currentRadius}deg)`
           })
         } else {
-          $('.top-img-list .top-img-content span').arctext({
-            radius: 120,
-            dir: 1,
-            rotate: true,
-            fitText: false
+          // /**
+          // *  45： 上文字框高度
+          // *  150: _self.radiusWidth 上文字框二分之一宽
+          // *  45 + x = r
+          // *  x^2 + 150^2 = r^2
+          // *  (r - 45)^2 + 150^2 = r^2
+          // *  r^2 - 90r + 45^2 + 150^2 = r^2
+          // *  r = (45^2 + 150^2) / 90
+          // */
+          const radiusWidth = (Math.pow(_self.radiusWidth, 2) + Math.pow(45, 2)) / 90
+          const count = topImgList.length
+          const radian = 2 * Math.sin(150 / radiusWidth) * 180 / Math.PI
+          const radius = radian / (count - 1)
+          if (count <= 1) return
+          topImgList.forEach((item, index) => {
+            // 根据角度， 半径计算位置
+            const currentRadius = -(radian / 2) + (radius * index)
+            const offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius)
+            const offsetY = (radiusWidth - 20) - radiusWidth * Math.cos(2 * Math.PI / 360 * currentRadius)
+            item.style.transform = ` translate(${offsetX}px, ${offsetY}px) rotate(${currentRadius}deg)`
           })
         }
       })
@@ -1105,18 +1123,23 @@ export default {
     // 选中花样图片
     async checkFigureItem(item) {
       this.form.middleImg.design_id = item.design_id
-      this.currentBestHeight = item.best_height
       this.patternPicture = [] // 上传的花样图片设为空
+      this.currentFigure = item
+      this.setFigureItemSizeRange(item)
       // 解决花样图片跨域问题
       await commonApi.getImage({ url: item.prev_png_path }).then(res => {
         this.form.middleImg.prev_png_path = res.data
       })
-      this.middleImgMaxHeght = Math.min(this.middleImgHeight, item.max_height || item.best_height || this.middleImgHeight)
       this.form.middleImg.width = this.middleImgWidth
       this.form.middleImg.height = this.middleImgMaxHeght
-      this.middleImgMinHeight = item.min_height
       this.patternModal = false
       this.middleVisible = true
+    },
+    // 重置花样最大最小高
+    setFigureItemSizeRange(item) {
+      this.currentBestHeight = item.best_height
+      this.middleImgMaxHeght = Math.min(this.middleImgHeight, item.max_height || item.best_height || this.middleImgHeight)
+      this.middleImgMinHeight = item.min_height
     },
     // checked定制模板
     checkTeplateItem(item) {
@@ -1261,7 +1284,6 @@ export default {
           bottom_w = this.$refs.bottomImgContent.offsetWidth
         }
       }
-      console.log(this.patternPicture[0])
       // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
       goodsInfo[0].design_info = {
@@ -1466,6 +1488,18 @@ export default {
         &.focus {
           .input-box {
             width: 100%;
+          }
+        }
+        &.topBottom {
+          position: relative;
+          #img.arc, #text.arc {
+            height: 100%;
+            img, span{
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
           }
         }
         &.middle{
