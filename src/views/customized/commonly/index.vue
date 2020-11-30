@@ -1179,8 +1179,8 @@ export default {
     // 将dom转成图片
     setImage() {
       return new Promise((resolve, reject) => {
-        this.$refs.designBox.style.background = 'none'
-        this.$refs.designBox.style.border = 'none'
+        this.$refs.designBox.style.background = 'transparent'
+        this.$refs.designBox.style.border = 'transparent'
         html2canvas(this.$refs.designBox, {
           useCORS: true,
           allowTaint: true,
