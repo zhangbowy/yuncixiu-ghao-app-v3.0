@@ -1427,6 +1427,7 @@ export default {
       position: absolute;
       background: rgba(0, 0, 0, 0.5);
       border: 5px solid rgba(192, 192, 192, 0.5);
+      box-sizing: border-box;
       z-index: 999;
       display: flex;
       flex-direction: column;
