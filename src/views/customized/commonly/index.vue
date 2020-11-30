@@ -1433,7 +1433,7 @@ export default {
       align-items: center;
       justify-content: center;
       // box-sizing: border-box;
-      padding: 4px;
+      // padding: 4px;
       .top-input,.bottom-input{
         font-size: 12px;
         z-index: 1;
