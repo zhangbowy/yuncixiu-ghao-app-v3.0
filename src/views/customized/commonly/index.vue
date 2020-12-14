@@ -1016,7 +1016,7 @@ export default {
         } else {
           // /**
           // *  45： 上文字框高度
-          // *  150: _self.radiusWidth 上文字框二分之一宽
+          // *  _self.radiusWidth 上文字框二分之一宽
           // *  45 + x = r
           // *  x^2 + 150^2 = r^2
           // *  (r - 45)^2 + 150^2 = r^2
@@ -1031,7 +1031,7 @@ export default {
           topImgList.forEach((item, index) => {
             // 根据角度， 半径计算位置
             const currentRadius = -(radian / 2) + (radius * index)
-            const offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius)
+            const offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius) - (_self.fontHeight / 2 || 0)
             const offsetY = (radiusWidth - 20) - radiusWidth * Math.cos(2 * Math.PI / 360 * currentRadius)
             item.style.transform = ` translate(${offsetX}px, ${offsetY}px) rotate(${currentRadius}deg)`
           })
@@ -1563,7 +1563,7 @@ export default {
         width: 99.2%;
         display: flex;
         align-items: center;
-        margin: 10px;
+        // margin: 10px;
         img{
           display: block;
           margin: 0 auto;
