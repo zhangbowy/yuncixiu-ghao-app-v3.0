@@ -5,7 +5,7 @@
       <van-tab v-for="item in tabs" :key="item.name" :title="item.name">
         <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
           <div class="tab-content">
-            <order-list v-if="orderList.length>0" :data="orderList" @getList="fetchData()" @change="orderChange" />
+            <order-list v-if="orderList.length>0" :data="orderList" @getList="fetchData()" @change="orderChange" @showPrevPop="showPrev"/>
             <div v-if="orderList.length>=10" class="load-more">
               <infinite-loading :identifier="infiniteId" @infinite="loadMore">
                 <span slot="no-results" style="font-size: 12px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
@@ -45,6 +45,13 @@
         </van-form>
       </div>
     </form-popup>
+
+    <preview-modal
+        v-model="isShowPrevPop"
+        :operate="false"
+        :img="previewImg"
+        @change="value => isShowPrevPop = value"
+    />
   </div>
 </template>
 
@@ -56,13 +63,15 @@ import NoData from '@/components/NoData'
 import { orderApi } from '@/api/order'
 import FormPopup from '@/components/PopModal/FormPopup'
 import { Toast } from 'vant'
+import PreviewModal from '@/views/customized/commonly/components/PreviewModal'
 export default {
   components: {
     TopBar,
     OrderList,
     InfiniteLoading,
     NoData,
-    'form-popup': FormPopup
+    'form-popup': FormPopup,
+    'preview-modal': PreviewModal
   },
 
   data() {
@@ -105,7 +114,9 @@ export default {
       page: 1,
       pagesize: 10,
       order_no: '',
-      order_type: 1
+      order_type: 1,
+      isShowPrevPop: false,
+      previewImg: ''
     }
   },
   created() {
@@ -179,9 +190,14 @@ export default {
     },
     orderChange(data) {
       if (data.name === 'replay') {
-        this.showReplay = true
+        this.showReplay = true;
         this.replayForm.order_no = data.order_no
       }
+    },
+    showPrev($row) {
+      console.log($row)
+      this.previewImg = $row.order_item[0].image
+      this.isShowPrevPop = true
     }
   }
 }

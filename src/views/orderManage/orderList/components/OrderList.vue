@@ -56,6 +56,7 @@
           <van-button v-if="item.status==4 || item.status==-2" color="#ee0a24" round size="mini" plain @click.stop="deleteOrder(item.order_no)">{{ $t(`删除订单`) }}</van-button>
           <van-button v-if="item.status==3" color="#ee0a24" round size="mini" plain @click.stop="confirmRceipt(item.order_no)">{{ $t(`确认收货`) }}</van-button>
           <van-button v-if="item.status==6" color="#ee0a24" round size="mini" plain @click.stop="replayOrder(item.order_no)">{{ $t(`回复报价`) }}</van-button>
+          <van-button v-if="item.order_type != 1"  color="#ee0a24" round size="mini" plain @click.stop="onClick_showPrevPop(item)">{{ $t(`预览`) }}</van-button>
         </div>
       </div>
     </div>
@@ -160,6 +161,9 @@ export default {
         })
       }).catch(() => {
       })
+    },
+    onClick_showPrevPop($row) {
+      this.$emit('showPrevPop', $row)
     }
   }
 }
