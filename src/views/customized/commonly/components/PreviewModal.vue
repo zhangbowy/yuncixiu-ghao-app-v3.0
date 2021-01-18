@@ -28,9 +28,9 @@
         <van-button size="small" style="width: 30%" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onShareBtnClick">{{ $t(`定制分享`) }}</van-button>
       </div>
       <van-dialog v-model="showShare" title="" :show-cancel-button="false" :show-confirm-button="false" :close-on-click-overlay="true" @closed="onShareSheetCancel">
-      <span>
-        快去点击右上角分享好友吧 ~
-      </span>
+        <span>
+          快去点击右上角分享好友吧 ~
+        </span>
       </van-dialog>
     </div>
   </div>

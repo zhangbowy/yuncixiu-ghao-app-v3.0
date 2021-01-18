@@ -137,7 +137,7 @@
               alt=""
               :style="{
                 maxWidth: `${form.middleImg.width*design_box.design_scale || 300}px`,
-                height: `${Math.min(form.middleImg.height*design_box.design_scale, (customInfo.custom_info.design_height - 3 * fontHeight) *design_box.design_scale)}px`
+                height: `${Math.min(form.middleImg.height*design_box.design_scale, customInfo.custom_info.design_height *design_box.design_scale)}px`
               }"
               @click.stop="showMiddleMemu()"
             >
@@ -1340,6 +1340,7 @@ export default {
       this.inputBlur(1)
       this.inputBlur(2)
       this.showTextOperate = false
+      this.middleVisible = false
     }
   }
 }

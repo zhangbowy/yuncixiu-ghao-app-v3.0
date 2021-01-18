@@ -5,7 +5,7 @@
       <van-tab v-for="item in tabs" :key="item.name" :title="item.name">
         <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
           <div class="tab-content">
-            <order-list v-if="orderList.length>0" :data="orderList" @getList="fetchData()" @change="orderChange" @showPrevPop="showPrev"/>
+            <order-list v-if="orderList.length>0" :data="orderList" @getList="fetchData()" @change="orderChange" @showPrevPop="showPrev" />
             <div v-if="orderList.length>=10" class="load-more">
               <infinite-loading :identifier="infiniteId" @infinite="loadMore">
                 <span slot="no-results" style="font-size: 12px">{{ `${$t('没有更多了')}${$t('～')}` }}</span>
@@ -47,10 +47,10 @@
     </form-popup>
 
     <preview-modal
-        v-model="isShowPrevPop"
-        :operate="false"
-        :img="previewImg"
-        @change="value => isShowPrevPop = value"
+      v-model="isShowPrevPop"
+      :operate="false"
+      :img="previewImg"
+      @change="value => isShowPrevPop = value"
     />
   </div>
 </template>
@@ -190,12 +190,11 @@ export default {
     },
     orderChange(data) {
       if (data.name === 'replay') {
-        this.showReplay = true;
+        this.showReplay = true
         this.replayForm.order_no = data.order_no
       }
     },
     showPrev($row) {
-      console.log($row)
       this.previewImg = $row.order_item[0].image
       this.isShowPrevPop = true
     }
