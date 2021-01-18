@@ -5,7 +5,7 @@
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
-            <van-dropdown-item ref="fontType" :title="`${$t('字体')}`">
+            <van-dropdown-item ref="fontType" :title="`${$t('字体')}`" @open="onDropdownMenuOpen">
               <van-cell
                 v-for="item in filtterFontTypeList"
                 :key="item.font_id"
@@ -23,7 +23,7 @@
                 </template>
               </van-cell>
             </van-dropdown-item>
-            <van-dropdown-item ref="fontColor" :title="`${$t('颜色')}`">
+            <van-dropdown-item ref="fontColor" :title="`${$t('颜色')}`" @open="onDropdownMenuOpen">
               <van-tabs type="card" color="#333" background="#fff">
                 <van-tab :title="`${$t('标准色')}`">
                   <compact-picker v-model="fontColor" @change="imgColorChnage" />
@@ -32,13 +32,13 @@
                   <sketch-picker v-model="fontColor" @change="imgColorChnage" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
-            <van-dropdown-item :title="`${fontHeight}mm`">
+            <van-dropdown-item :title="`${fontHeight}mm`" @open="onDropdownMenuOpen">
               <van-cell :title="`${$t('字体高度')}`">
-                <van-stepper v-model="fontHeight" button-size="32px" :min="minFontSize" :max="maxFontSize" @change="fontSizeChange" />
+                <van-stepper v-model="fontHeight" button-size="32px" @change="fontSizeChange" />
               </van-cell>
             </van-dropdown-item>
-            <van-dropdown-item v-if="currentTemplate.emb_template_id !== 1" v-model="fontAlign" :options="alignment" />
-            <van-dropdown-item v-if="topInput==true" ref="item" :title="`${$t('弧形')}`">
+            <van-dropdown-item v-if="currentTemplate.emb_template_id !== 1" v-model="fontAlign" :options="alignment" @open="onDropdownMenuOpen" />
+            <van-dropdown-item v-if="topInput==true" ref="item" :title="`${$t('弧形')}`" @open="onDropdownMenuOpen">
               <van-switch-cell v-model="openArc" :title="`${$t('是否开启')}`" @change="changeOpenArc" />
               <template v-if="currentTemplate.emb_template_id === 1">
                 <van-cell :title="`${$t('弧度')}`">
@@ -135,7 +135,10 @@
               v-if="patternPicture[0] || form.middleImg.prev_png_path"
               :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path"
               alt=""
-              :style="{maxWidth: `${form.middleImg.width*design_box.design_scale || 300}px`,height: `${form.middleImg.height*design_box.design_scale}px`}"
+              :style="{
+                maxWidth: `${form.middleImg.width*design_box.design_scale || 300}px`,
+                height: `${Math.min(form.middleImg.height*design_box.design_scale, (customInfo.custom_info.design_height - 3 * fontHeight) *design_box.design_scale)}px`
+              }"
               @click.stop="showMiddleMemu()"
             >
           </div>
@@ -492,7 +495,13 @@ export default {
     },
     radian: {
       handler(newValue, oldValue) {
+        console.log(newValue)
         if (this.openArc) {
+          if (newValue > 180) {
+            this.maxRadiusWidth = (Math.min(this.design_box.design_W, this.design_box.design_H) - this.form.topText.fontSize || 0) / 2
+          } else {
+            this.maxRadiusWidth = (Math.max(this.design_box.design_W, this.design_box.design_H) - this.form.topText.fontSize || 0) / 2
+          }
           this.imgRotate()
         }
       }
@@ -601,16 +610,21 @@ export default {
         this.topImg = []
         this.bottomImg = []
         this.form.middleImg.width = this.formatNumber(design_box.design_W / design_box.design_scale)
-        this.form.middleImg.height = this.formatNumber(design_box.design_H / design_box.design_scale)
         this.middleImgHeight = this.formatNumber(design_box.design_H / design_box.design_scale)
+        this.form.middleImg.height = this.middleImgHeight
         this.middleImgWidth = this.formatNumber(design_box.design_W / design_box.design_scale)
       }
       if (type === 3) {
-        this.middleImgHeight = this.formatNumber(design_box.design_H / design_box.design_scale - 110 / design_box.design_scale)
-        this.form.middleImg.height = this.middleImgHeight
-        if (this.form.topText.content) {
-          this.getFontTop()
-        }
+        this.$nextTick(() => {
+          const bottomInput = document.getElementsByClassName('bottom-input')[0]
+          const topInput = document.getElementsByClassName('top-input')[0]
+          const fontHeight = (bottomInput ? bottomInput.offsetHeight : 0) + (topInput ? topInput.offsetHeight : 0) + 20
+          this.middleImgHeight = this.formatNumber((design_box.design_H - fontHeight) / design_box.design_scale)
+          this.form.middleImg.height = this.middleImgHeight
+          if (this.form.topText.content) {
+            this.getFontTop()
+          }
+        })
       }
       this.setFigureItemSizeRange(this.currentFigure)
     },
@@ -816,7 +830,7 @@ export default {
         marginTop: `${-this.design_box.design_H / 2}px`
       }
       // 计算最大最小半径
-      this.maxRadiusWidth = Math.max(this.design_box.design_W, this.design_box.design_H) / 2
+      this.maxRadiusWidth = (Math.max(this.design_box.design_W, this.design_box.design_H) - this.form.topText.fontSize || 0) / 2
       this.minRadiusWidth = this.form.topText.fontSize
       !this.radiusWidth && (this.radiusWidth = this.maxRadiusWidth)
     },
@@ -865,6 +879,7 @@ export default {
         this.topInput = false
         this.bottomFocus = true
         this.bottomInput = true
+        this.imgRotate()
       }
       this.showTextOperate = true
       if (this.currentTemplate.emb_template_id === 3) {
@@ -874,7 +889,7 @@ export default {
     async fontSizeChange(value) {
       this.fontSize = value
       if (this.topInput === true) {
-        this.form.topText.fontSize = value
+        // this.form.topText.fontSize = value
         // await this.getFontTop()
         // if (this.openArc === true) {
         //   this.inpuFocus(1).then(() => {
@@ -889,11 +904,16 @@ export default {
         //     })
         //   })
         // }
+        this.imgRotate()
       }
       if (this.bottomInput === true) {
         this.form.bottomText.fontSize = value
         this.getFontBottom()
       }
+      const bottomInput = document.getElementsByClassName('bottom-input')[0]
+      const topInput = document.getElementsByClassName('top-input')[0]
+      const fontHeight = (bottomInput ? bottomInput.offsetHeight : 0) + (topInput ? topInput.offsetHeight : 0) + 20
+      this.middleImgHeight = Math.max(this.formatNumber((this.design_box.design_H - fontHeight) / this.design_box.design_scale), 0)
     },
     // 是否弧形
     changeOpenArc() {
@@ -966,6 +986,9 @@ export default {
       this.topFocus = false
       this.bottomFocus = false
       this.visible = false
+      if (this.currentTemplate.emb_template_id === 3) {
+        this.imgRotate()
+      }
     },
     // 删除中间图片
     deleteMiddleImg() {
@@ -1023,7 +1046,8 @@ export default {
           // *  r^2 - 90r + 45^2 + 150^2 = r^2
           // *  r = (45^2 + 150^2) / 90
           // */
-          const radiusWidth = (Math.pow(_self.radiusWidth, 2) + Math.pow(45, 2)) / 90
+          const fontHeight = Math.max(_self.form.topText.fontSize || 0, 45)
+          const radiusWidth = (Math.pow(_self.radiusWidth, 2) + Math.pow(Math.max(fontHeight, 45), 2)) / 90
           const count = topImgList.length
           const radian = 2 * Math.sin(150 / radiusWidth) * 180 / Math.PI
           const radius = radian / (count - 1)
@@ -1031,9 +1055,8 @@ export default {
           topImgList.forEach((item, index) => {
             // 根据角度， 半径计算位置
             const currentRadius = -(radian / 2) + (radius * index)
-            const offsetX = radiusWidth * Math.sin(2 * Math.PI / 360 * currentRadius) - (_self.fontHeight / 2 || 0)
-            const offsetY = (radiusWidth - 20) - radiusWidth * Math.cos(2 * Math.PI / 360 * currentRadius)
-            item.style.transform = ` translate(${offsetX}px, ${offsetY}px) rotate(${currentRadius}deg)`
+            const offsetY = radiusWidth * (1 - Math.cos(2 * Math.PI / 360 * currentRadius))
+            item.style.transform = ` translateY(${offsetY}px) rotate(${currentRadius}deg)`
           })
         }
       })
@@ -1310,6 +1333,13 @@ export default {
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm', query: { is_wilcom: this.is_wilcom }})
       })
+    },
+
+    // 菜单打开
+    onDropdownMenuOpen() {
+      this.inputBlur(1)
+      this.inputBlur(2)
+      this.showTextOperate = false
     }
   }
 }
@@ -1438,6 +1468,8 @@ export default {
       .top-input,.bottom-input{
         font-size: 12px;
         z-index: 1;
+        height: unset !important;
+        min-height: 1.2rem;
         .input-box{
           border: 1px solid #4bb1ff00;
           display: flex;
@@ -1479,7 +1511,7 @@ export default {
       }
       .top-img-list,.bottom-img-list{
         width: 100%;
-
+        height: 2em !important;
       }
       .top-input{
         // position: absolute;
@@ -1495,11 +1527,10 @@ export default {
           position: relative;
           #img.arc, #text.arc {
             height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
             img, span{
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
             }
           }
         }
@@ -1532,7 +1563,6 @@ export default {
                 font-family: 'font';
               }
               #img.arc, #text.arc {
-                height: 100%;
                 img, span{
                   position: absolute;
                   top: 50%;

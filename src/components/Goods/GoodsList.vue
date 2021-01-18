@@ -70,6 +70,7 @@ export default {
           height: 159px;
           border-radius: 6px;
           display: block;
+          object-fit: cover;
         }
         p{
           font-size: 14px;
