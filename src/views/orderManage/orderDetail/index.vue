@@ -106,7 +106,6 @@ import { wxSdkApi } from '@/api/common'
 import { wxPay } from '@/utils/wxPay'
 import wechatInterface from '@/utils/wxUtils'
 export default {
-
   data() {
     return {
       order_no: this.$route.query.order_no,
@@ -116,7 +115,8 @@ export default {
         express_amount: 0,
         pay_amount: 0,
         order_item: []
-      }
+      },
+      isShowPrevPop: false
     }
   },
   created() {
