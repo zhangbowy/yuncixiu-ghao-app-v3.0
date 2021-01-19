@@ -34,7 +34,7 @@
             </van-dropdown-item>
             <van-dropdown-item :title="`${fontHeight}mm`" @open="onDropdownMenuOpen">
               <van-cell :title="`${$t('字体高度')}`">
-                <van-stepper v-model="fontHeight" button-size="32px" @change="fontSizeChange" />
+                <van-stepper v-model="fontHeight" button-size="32px" :min="minFontSize" :max="maxFontSize" @change="fontSizeChange" />
               </van-cell>
             </van-dropdown-item>
             <van-dropdown-item v-if="currentTemplate.emb_template_id !== 1" v-model="fontAlign" :options="alignment" @open="onDropdownMenuOpen" />
