@@ -5,7 +5,7 @@
         <div v-show="visible" class="operate-btn">
           <van-dropdown-menu>
             <!-- <van-dropdown-item v-model="fontType" :options="fontTypeOptions" @change="fontChange" /> -->
-            <van-dropdown-item ref="fontType" :title="`${$t('字体')}`" @open="onDropdownMenuOpen">
+            <van-dropdown-item ref="fontType" :title="`${$t('字体')}`" @opened="onDropdownMenuOpen" @close="onDropdownMenuClose">
               <van-cell
                 v-for="item in filtterFontTypeList"
                 :key="item.font_id"
@@ -23,29 +23,29 @@
                 </template>
               </van-cell>
             </van-dropdown-item>
-            <van-dropdown-item ref="fontColor" :title="`${$t('颜色')}`" @open="onDropdownMenuOpen">
+            <van-dropdown-item ref="fontColor" :title="`${$t('颜色')}`" @opened="onDropdownMenuOpen" @close="onDropdownMenuClose">
               <van-tabs type="card" color="#333" background="#fff">
                 <van-tab :title="`${$t('标准色')}`">
-                  <compact-picker v-model="fontColor" @change="imgColorChnage" />
+                  <compact-picker v-model="fontColor" @change="imgColorChange" />
                 </van-tab>
                 <van-tab :title="`${$t('自定义')}`">
-                  <sketch-picker v-model="fontColor" @change="imgColorChnage" />
+                  <sketch-picker v-model="fontColor" @change="imgColorChange" />
                 </van-tab></van-tabs>
             </van-dropdown-item>
-            <van-dropdown-item :title="`${fontHeight}mm`" @open="onDropdownMenuOpen">
+            <van-dropdown-item :title="`${fontHeight}mm`" @opened="onDropdownMenuOpen" @close="onDropdownMenuClose">
               <van-cell :title="`${$t('字体高度')}`">
-                <van-stepper v-model="fontHeight" button-size="32px" :min="minFontSize" :max="maxFontSize" @change="fontSizeChange" />
+                <van-stepper v-model="fontHeight" button-size="32px" :min="minFontHeight" :max="maxFontHeight" @change="fontSizeChange" />
               </van-cell>
             </van-dropdown-item>
-            <van-dropdown-item v-if="currentTemplate.emb_template_id !== 1" v-model="fontAlign" :options="alignment" @open="onDropdownMenuOpen" />
-            <van-dropdown-item v-if="topInput==true" ref="item" :title="`${$t('弧形')}`" @open="onDropdownMenuOpen">
+            <van-dropdown-item v-if="currentTemplate.emb_template_id !== 1 || (currentTemplate.emb_template_id === 3 && !openArc)" v-model="fontAlign" :options="alignment" @opened="onDropdownMenuOpen" @close="onDropdownMenuClose" />
+            <van-dropdown-item v-if="topWrapperFocus" ref="item" :title="`${$t('弧形')}`" @opened="onDropdownMenuOpen" @close="onDropdownMenuClose">
               <van-switch-cell v-model="openArc" :title="`${$t('是否开启')}`" @change="changeOpenArc" />
               <template v-if="currentTemplate.emb_template_id === 1">
                 <van-cell :title="`${$t('弧度')}`">
                   <van-stepper v-model="radian" button-size="32px" :min="120" :max="360" />
                 </van-cell>
                 <van-cell :title="`${$t('半径')}`">
-                  <van-stepper v-model="radiusWidth" button-size="32px" :min="minRadiusWidth" :max="maxRadiusWidth" />
+                  <van-stepper v-model="radiusWidth" button-size="32px" :max="maxRadiusWidth" />
                 </van-cell>
               </template>
             </van-dropdown-item>
@@ -67,7 +67,7 @@
         </div>
       </transition>
       <transition name="van-slide-down">
-        <div v-show="showTextOperate" class="operate-btn img-btns">
+        <div v-show="showTextOperate" class="operate-btn text-btns">
           <van-dropdown-menu>
             <div class="middle-img-menu" :overlay="false">
               <div class="menu-item  img-btn">
@@ -99,33 +99,33 @@
           <div
             v-if="currentTemplate.emb_template_id!==2 && showTopText"
             class="top-input"
-            :class="{'focus':topFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}"
+            :class="{'focus':topWrapperFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}"
           >
             <div
-              v-if="topFocus==false"
+              v-if="!topWrapperFocus"
               class="top-img-list"
-              :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
-              @click.stop="imgFocus(1)"
+              :style="{ textAlign: form.topText.align,fontSize: `${getFontSize(form.topText.fontSize)}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
+              @click.stop="inputWrapperFocus(1)"
             >
-              <span v-if="topFocus==false && topInput==false && topImg.length==0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
+              <span v-if="topFocus==false && topImg.length==0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
               <div v-else class="top-img-content">
                 <span v-if="inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
-                  <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="form.topText.fontSize" :src="item" alt="">
+                  <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="getFontSize(form.topText.fontSize)" :src="item" alt="">
                 </span>
                 <span v-if="inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
                   <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
                 </span>
               </div>
             </div>
-            <div v-if="topFocus==true" class="input-box">
+            <div v-if="topWrapperFocus" class="input-box">
               <input
                 ref="topInput"
                 v-model="form.topText.content"
                 :placeholder="`${$t('点击输入文字')}`"
                 type="text"
-                :style="{ textAlign: form.topText.align,fontSize: `${form.topText.fontSize}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
+                :style="{ textAlign: form.topText.align,fontSize: `${getFontSize(form.topText.fontSize)}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
                 @blur="inputBlur(1, $event)"
-                @focus="inpuFocus(1)"
+                @focus="inputFocus(1)"
               >
             </div>
           </div>
@@ -154,33 +154,33 @@
           <div
             v-if="currentTemplate.emb_template_id==3 && showBottomText"
             class="bottom-input"
-            :class="{'focus':bottomFocus==true,'topBottom': currentTemplate.emb_template_id==3}"
+            :class="{'focus':bottomWrapperFocus==true,'topBottom': currentTemplate.emb_template_id==3}"
           >
             <div
-              v-if="bottomFocus==false"
+              v-if="bottomWrapperFocus==false"
               class="bottom-img-list"
-              :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
-              @click.stop="imgFocus(2)"
+              :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
+              @click.stop="inputWrapperFocus(2)"
             >
               <span
-                v-if="bottomFocus==false && bottomFocus==false && bottomImg.length==0"
+                v-if="bottomFocus==false && bottomImg.length==0"
               >{{ form.bottomText.content? form.bottomText.content: $t('双击开始编辑') }}</span>
               <div v-else class="bottom-img-content">
                 <span ref="bottomImgContent" :class="openArc && 'arc'">
-                  <img v-for="(item,index) in bottomImg" :key="index" :height="form.bottomText.fontSize" :src="item">
+                  <img v-for="(item,index) in bottomImg" :key="index" :height="getFontSize(form.bottomText.fontSize)" :src="item">
                 </span>
               </div>
             </div>
-            <div v-if="bottomFocus==true" class="input-box">
+            <div v-if="bottomWrapperFocus" class="input-box">
               <input
                 ref="bottomInput"
                 v-model="form.bottomText.content"
                 :placeholder="`${$t('点击输入文字')}`"
                 type="text"
-                :style="{textAlign: form.bottomText.align,fontSize: `${form.bottomText.fontSize}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
+                :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
                 @input="getFontBottom()"
                 @blur="inputBlur(2, $event)"
-                @focus="inpuFocus(2)"
+                @focus="inputFocus(2)"
               >
             </div>
           </div>
@@ -327,9 +327,9 @@ export default {
       visible: false, // 顶部操作是否显示
       middleVisible: false, // 顶部图片属性是否显示
       topFocus: false, // 上输入框聚焦
+      topWrapperFocus: false,
       bottomFocus: false, // 底部输入框聚焦
-      topInput: false,
-      bottomInput: false,
+      bottomWrapperFocus: false,
       loading: false, // 加载动画
       showInput: false, // 显示上传图片弹框
       openArc: true, // 是否开启弧形
@@ -338,7 +338,6 @@ export default {
       showTextOperate: false, // 展示输入框操作按钮
       radian: 120, // 弧度，最小值120
       maxRadiusWidth: 120, // 最大半径
-      minRadiusWidth: 20, // 最小半径
       radiusWidth: 0, // 半径
       is_wilcom: 0,
       // minHeight: 812,
@@ -350,8 +349,8 @@ export default {
       bottomImg: [], // 底部图片
       fontTypeOptions: [], // 可选字体
       filtterFontTypeList: [], // 过滤后的可选字体
-      minFontSize: 12, // 最大字体
-      maxFontSize: 12, // 最小子体
+      minFontHeight: 12, // 最大字体高度
+      maxFontHeight: 12, // 最小子体高度
       fontHeight: 12, // 字体高度 mm
       currentTemplate: {
         emb_template_id: 2
@@ -442,17 +441,7 @@ export default {
   computed: {
     ...mapState([
       'design'
-    ]),
-    fontSize: {
-      get() {
-        const design_height = this.customInfo?.custom_info.design_height || 150
-        const box_height = parseFloat(this.designBoxStyle.height) || 300
-        return (this.fontHeight / design_height) * box_height
-      },
-      set(value) {
-        // console.log(value)
-      }
-    }
+    ])
   },
   watch: {
     inputMode: {
@@ -495,30 +484,22 @@ export default {
     },
     radian: {
       handler(newValue, oldValue) {
-        console.log(newValue)
         if (this.openArc) {
+          const fontHeight = this.form.topText.fontSize
           if (newValue > 180) {
-            this.maxRadiusWidth = (Math.min(this.design_box.design_W, this.design_box.design_H) - this.form.topText.fontSize || 0) / 2
+            this.maxRadiusWidth = (Math.min(this.design_box.design_W, this.design_box.design_H) - this.getFontSize(fontHeight) || 0) / 2
           } else {
-            this.maxRadiusWidth = (Math.max(this.design_box.design_W, this.design_box.design_H) - this.form.topText.fontSize || 0) / 2
+            this.maxRadiusWidth = (Math.max(this.design_box.design_W, this.design_box.design_H) - this.getFontSize(fontHeight) || 0) / 2
           }
           this.imgRotate()
         }
       }
     },
-    fontSize(newValue, oldValue) {
-      if (this.topInput === true) {
-        this.form.topText.fontSize = newValue
-      }
-      if (this.bottomInput === true) {
-        this.form.bottomText.fontSize = newValue
-      }
-    },
     fontAlign(newValue, oldValue) {
-      if (this.topInput === true) {
+      if (this.topWrapperFocus === true) {
         this.form.topText.align = newValue
       }
-      if (this.bottomInput === true) {
+      if (this.bottomWrapperFocus === true) {
         this.form.bottomText.align = newValue
       }
     },
@@ -554,6 +535,59 @@ export default {
         }
       }
     }
+    // ,
+    // topFocus: {
+    //   handler(newValue, old) {
+    //     if (newValue) {
+    //       this.showTextOperate = true
+    //       this.middleVisible = false
+    //       this.visible = true
+    //     } else {
+    //       this.showTextOperate = false
+    //       // this.visible = false
+    //       if (this.currentTemplate.emb_template_id === 3) {
+    //         this.middleVisible = true
+    //       }
+    //     }
+    //   }
+    // },
+    // bottomFocus: {
+    //   handler(newValue, old) {
+    //     if (newValue) {
+    //       console.log(newValue)
+    //     } else {
+    //       this.showTextOperate = false
+    //       // this.visible = false
+    //       if (this.currentTemplate.emb_template_id === 3) {
+    //         this.middleVisible = false
+    //       }
+    //     }
+    //   }
+    // },
+    // topWrapperFocus: {
+    //   handler(newValue, old) {
+    //     if (newValue) {
+    //       this.visible = true
+    //       this.middleVisible = false
+    //       this.showTextOperate = true
+    //     } else {
+    //       this.showTextOperate = false
+    //       this.visible = false
+    //       if (this.currentTemplate.emb_template_id === 3) {
+    //         this.middleVisible = false
+    //       }
+    //     }
+    //   }
+    // },
+    // bottomWrapperFocus: {
+    //   handler(newValue, old) {
+    //     if (newValue) {
+    //       this.visible = true
+    //     } else {
+    //       this.visible = false
+    //     }
+    //   }
+    // }
   },
   created() {
     // 获取字体列表
@@ -575,8 +609,23 @@ export default {
   mounted() {
     // 696
     this.$refs.commonly && (this.$refs.commonly.style.minHeight = document.body.offsetHeight + 'px')
+
+    // 模拟失焦
+    this.$refs.commonly && this.$refs.commonly.addEventListener('click', (e) => {
+      const target = e.target
+      console.dir(target)
+      if (target.nodeName !== 'INPUT' && target.className.indexOf('van-') === -1) {
+        this.inputWrapperBlur()
+      }
+    })
   },
   methods: {
+    // 获取文字真实高度（px）
+    getFontSize(height) {
+      const design_height = this.customInfo?.custom_info.design_height || 150
+      const box_height = parseFloat(this.designBoxStyle.height) || 300
+      return (height / design_height) * box_height
+    },
     onUploadImgConfirm() {
       this.uploadModal = false
     },
@@ -601,7 +650,7 @@ export default {
         this.bottomImg = []
         this.deleteMiddleImg()
         if (this.form.topText.content) {
-          this.inpuFocus(1).then(() => {
+          this.inputFocus(1).then(() => {
             this.inputBlur(1)
           })
         }
@@ -721,18 +770,14 @@ export default {
       this.showTextOperate = false
     },
     onTextInputReplay() {
-      if (this.topFocus) {
-        this.$nextTick(() => {
-          this.$refs.topInput.value = ''
-          this.form.topText.content = ''
-          this.topImg = []
-        })
-      } else {
-        this.$nextTick(() => {
-          this.$refs.bottomInput.value = ''
-          this.form.bottomText.content = ''
-          this.bottomImg = []
-        })
+      if (this.topWrapperFocus) {
+        this.$refs.topInput.value = ''
+        this.form.topText.content = ''
+        this.topImg = []
+      } else if (this.bottomFocus) {
+        this.$refs.bottomInput.value = ''
+        this.form.bottomText.content = ''
+        this.bottomImg = []
       }
     },
     onInputModeChange(mode) {
@@ -831,28 +876,49 @@ export default {
       }
       // 计算最大最小半径
       this.maxRadiusWidth = (Math.max(this.design_box.design_W, this.design_box.design_H) - this.form.topText.fontSize || 0) / 2
-      this.minRadiusWidth = this.form.topText.fontSize
       !this.radiusWidth && (this.radiusWidth = this.maxRadiusWidth)
     },
+    // 输入框外层聚焦
+    inputWrapperFocus(type) {
+      this.middleVisible = false
+      this.visible = true
+      this.showTextOperate = true
+      if (type === 1) {
+        this.fontHeight = this.form.topText.fontSize
+        this.topWrapperFocus = true
+        this.bottomWrapperFocus = false
+      } else {
+        this.fontHeight = this.form.bottomText.fontSize
+        this.topWrapperFocus = false
+        this.bottomWrapperFocus = true
+      }
+      this.imgRotate()
+    },
     // 输入框聚焦
-    inpuFocus(type) {
+    inputFocus(type) {
       return new Promise((resolve, reject) => {
-        this.visible = true
-        this.$nextTick(() => {
-          if (this.$refs[type === 1 ? 'topInput' : 'bottomInput']) {
-            this.$refs[type === 1 ? 'topInput' : 'bottomInput'].focus()
-          }
-        })
         if (type === 1) {
-          this.fontSize = this.form.topText.fontSize
+          this.fontHeight = this.form.topText.fontSize
           this.topFocus = true
         } else {
-          this.fontSize = this.form.bottomText.fontSize
+          this.fontHeight = this.form.bottomText.fontSize
           this.bottomFocus = true
         }
-        this.showTextOperate = false
         resolve()
       })
+    },
+    // 输入框外层失去焦点
+    inputWrapperBlur() {
+      this.topWrapperFocus = false
+      this.bottomWrapperFocus = false
+      this.visible = false
+      this.showTextOperate = false
+      if (this.currentTemplate.emb_template_id === 3) {
+        this.middleVisible = true
+      }
+      if (this.openArc === true) {
+        this.imgRotate()
+      }
     },
     // 输入框失去焦点
     inputBlur(type, event) {
@@ -867,69 +933,37 @@ export default {
         resolve()
       })
     },
-    // 文字图片点击
-    imgFocus(type) {
-      if (type === 1) {
-        this.topFocus = true
-        this.topInput = true
-        this.bottomFocus = false
-        this.bottomInput = false
-      } else {
-        this.topFocus = false
-        this.topInput = false
-        this.bottomFocus = true
-        this.bottomInput = true
-        this.imgRotate()
-      }
-      this.showTextOperate = true
-      if (this.currentTemplate.emb_template_id === 3) {
-        this.middleVisible = false
-      }
-    },
     async fontSizeChange(value) {
-      this.fontSize = value
-      if (this.topInput === true) {
-        // this.form.topText.fontSize = value
-        // await this.getFontTop()
-        // if (this.openArc === true) {
-        //   this.inpuFocus(1).then(() => {
-        //     this.inputBlur(1).then(() => {
-        //       this.imgRotate()
-        //     })
-        //   })
-        // } else {
-        //   this.inpuFocus(1).then(() => {
-        //     this.inputBlur(1).then(() => {
-        //       // this.getFontTop()
-        //     })
-        //   })
-        // }
-        this.imgRotate()
+      if (this.topWrapperFocus === true) {
+        this.form.topText.fontSize = value
+        this.getFontTop()
       }
-      if (this.bottomInput === true) {
+      if (this.bottomWrapperFocus === true) {
         this.form.bottomText.fontSize = value
         this.getFontBottom()
       }
       const bottomInput = document.getElementsByClassName('bottom-input')[0]
       const topInput = document.getElementsByClassName('top-input')[0]
       const fontHeight = (bottomInput ? bottomInput.offsetHeight : 0) + (topInput ? topInput.offsetHeight : 0) + 20
+      console.log(fontHeight)
       this.middleImgHeight = Math.max(this.formatNumber((this.design_box.design_H - fontHeight) / this.design_box.design_scale), 0)
     },
     // 是否弧形
     changeOpenArc() {
       // if (this.openArc === true) {
       //   this.imgRotate()
-      //   this.inpuFocus(1).then(() => {
+      //   this.inputFocus(1).then(() => {
       //     this.inputBlur(1).then(() => {
       //     })
       //   })
       // } else {
-      //   this.inpuFocus(1).then(() => {
+      //   this.inputFocus(1).then(() => {
       //     this.inputBlur(1).then(() => {
       //       })
       //   })
       // }
-      this.inpuFocus(1).then(() => {
+      this.fontAlign = 'center'
+      this.inputFocus(1).then(() => {
         this.inputBlur(1).then(() => {
           this.getFontTop()
         })
@@ -984,7 +1018,9 @@ export default {
       this.middleVisible = true
       this.showTextOperate = false
       this.topFocus = false
+      this.topWrapperFocus = false
       this.bottomFocus = false
+      this.bottomWrapperFocus = false
       this.visible = false
       if (this.currentTemplate.emb_template_id === 3) {
         this.imgRotate()
@@ -1066,9 +1102,17 @@ export default {
       // console.log('fontChange')
       const { font_id: value, ttf, max_height, min_height } = item
       this.fontType = value
-      this.maxFontSize = max_height
-      this.minFontSize = min_height
-      this.fontHeight = this.minFontSize
+      if (this.fontHeight > max_height) {
+        this.fontHeight = max_height
+      } else if (this.fontHeight < min_height) {
+        this.fontHeight = min_height
+      }
+      console.log(this.fontHeight, 'fontHeight')
+      this.maxFontHeight = max_height
+      this.minFontHeight = min_height
+      this.form.bottomText.fontSize = this.fontHeight
+      this.form.topText.fontSize = this.fontHeight
+      console.log(max_height, min_height, value)
       if (this.topInput === true) {
         this.form.topText.fontType = value
         this.getFontTop()
@@ -1099,8 +1143,8 @@ export default {
       this.$refs.fontType.toggle()
     },
     // 图片颜色选择
-    imgColorChnage(e) {
-      if (this.topInput === true) {
+    imgColorChange(e) {
+      if (this.topFocus === true) {
         this.form.topText.fontColor = e.hex
         designApi.reColor({
           color: e.hex,
@@ -1108,7 +1152,7 @@ export default {
         }).then(res => {
           this.topImg = res.data
           if (this.openArc === true) {
-            this.inpuFocus(1).then(() => {
+            this.inputFocus(1).then(() => {
               this.inputBlur(1).then(() => {
                 this.imgRotate()
               })
@@ -1189,7 +1233,7 @@ export default {
         this.previewModal = true
       } else {
         const type = this.topFocus ? 1 : 2
-        this.inpuFocus(type).then(() => {
+        this.inputFocus(type).then(() => {
           this.inputBlur(type).then(() => {
             setTimeout(() => {
               this.getPreview()
@@ -1228,27 +1272,27 @@ export default {
       // 获取设计区图片
       this.setImage().then((design_image) => {
         this.setImage()
-        // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
-        const top_scale = 45 / this.design_box.design_H
-        const bottom_scale = 45 / this.design_box.design_H
-        // 计算文字图片和文字输入框的比例
-        const top_font_scale = this.form.topText.fontSize / 45
-        const bottom_font_scale = this.form.bottomText.fontSize / 45
-        // 计算图片高度和设计区的比例
-        const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
+        // // 计算文字输入框和设计区的比例 当前输入框高度默认为45px
+        // const top_scale = 45 / this.design_box.design_H
+        // const bottom_scale = 45 / this.design_box.design_H
+        // // 计算文字图片和文字输入框的比例
+        // const top_font_scale = this.form.topText.fontSize / 45
+        // const bottom_font_scale = this.form.bottomText.fontSize / 45
+        // // 计算图片高度和设计区的比例
+        // const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
         // 请求预览图接口
         designApi.getPreview({
           id: this.$route.query.goods_id,
           design_id: this.form.middleImg.design_id,
           design_image: design_image,
-          top_scale: top_scale,
-          top_font_scale: top_font_scale,
+          // top_scale: top_scale,
+          // top_font_scale: top_font_scale,
           top_font_content: this.topImg,
           top_font_color: this.form.topText.fontColor,
           font_id: this.fontType,
-          middle_scale: middle_scale,
-          bottom_scale: bottom_scale,
-          bottom_font_scale: bottom_font_scale,
+          // middle_scale: middle_scale,
+          // bottom_scale: bottom_scale,
+          // bottom_font_scale: bottom_font_scale,
           bottom_font_content: this.bottomImg,
           bottom_font_color: this.form.bottomText.fontColor,
           custom_template_id: this.currentTemplate.emb_template_id,
@@ -1280,7 +1324,7 @@ export default {
         this.confirmModal = true
       } else {
         const type = this.topFocus ? 1 : 2
-        this.inpuFocus(type).then(() => {
+        this.inputFocus(type).then(() => {
           this.inputBlur(type).then(() => {
             setTimeout(() => {
               this.previewModal = false
@@ -1312,11 +1356,11 @@ export default {
       goodsInfo[0].design_info = {
         design_id: this.form.middleImg.design_id,
         top_font_width: top_w / parseInt(this.designBoxStyle.width) * (this.customInfo?.custom_info.design_width || 150),
-        top_font_height: this.form.topText.fontSize / parseInt(this.designBoxStyle.height) * (this.customInfo?.custom_info.design_height || 150),
+        top_font_height: this.form.topText.fontSize,
         top_font_content: this.form.topText.content,
         top_font_color: this.form.topText.fontColor,
         bottom_font_width: bottom_w / parseInt(this.designBoxStyle.width) * (this.customInfo?.custom_info.design_width || 150),
-        bottom_font_height: this.form.bottomText.fontSize / parseInt(this.designBoxStyle.height) * (this.customInfo?.custom_info.design_height || 150),
+        bottom_font_height: this.form.bottomText.fontSize,
         bottom_font_content: this.form.bottomText.content,
         bottom_font_color: this.form.bottomText.fontColor,
         font_id: this.fontType,
@@ -1337,10 +1381,18 @@ export default {
 
     // 菜单打开
     onDropdownMenuOpen() {
-      this.inputBlur(1)
-      this.inputBlur(2)
-      this.showTextOperate = false
-      this.middleVisible = false
+      // this.inputBlur(1)
+      // this.inputBlur(2)
+      this.$nextTick(() => {
+        this.showTextOperate = false
+        this.middleVisible = false
+      })
+    },
+    // 菜单关闭
+    onDropdownMenuClose() {
+      this.$nextTick(() => {
+        (this.topWrapperFocus || this.bottomWrapperFocus) ? this.showTextOperate = true : this.middleVisible = true
+      })
     }
   }
 }
@@ -1352,9 +1404,14 @@ export default {
   .img-btn {
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
   }
+  .text-btns  .van-dropdown-menu__bar,
   .img-btns  .van-dropdown-menu__bar {
     height: 0;
     margin-bottom: 12px;
+  }
+  .text-btns,
+  .img-btns {
+    z-index: 99 !important;
   }
   .van-dropdown-item__content {
     padding: 10px;
@@ -1472,6 +1529,7 @@ export default {
         height: unset !important;
         min-height: 1.2rem;
         .input-box{
+          box-sizing: border-box;
           border: 1px solid #4bb1ff00;
           display: flex;
           justify-content: space-between;
@@ -1512,7 +1570,7 @@ export default {
       }
       .top-img-list,.bottom-img-list{
         width: 100%;
-        height: 2em !important;
+        height: 1.6em !important;
       }
       .top-input{
         // position: absolute;
