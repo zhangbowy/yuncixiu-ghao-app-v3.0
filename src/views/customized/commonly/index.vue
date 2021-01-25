@@ -71,10 +71,10 @@
           <van-dropdown-menu>
             <div class="middle-img-menu" :overlay="false">
               <div class="menu-item  img-btn">
-                <van-button icon="replay" size="small" plain type="default" @click.self="onTextInputReplay">{{ $t(`重新输入`) }}</van-button>
+                <van-button class="text-btn" icon="replay" size="small" plain type="default" @click.self="onTextInputReplay">{{ $t(`重新输入`) }}</van-button>
               </div>
               <div v-if="currentTemplate.emb_template_id !== 1" class="menu-item  img-btn">
-                <van-button icon="delete" size="small" plain type="default" @click="onTextInputDelete">{{ $t(`删除`) }}</van-button>
+                <van-button class="text-btn" icon="delete" size="small" plain type="default" @click="onTextInputDelete">{{ $t(`删除`) }}</van-button>
               </div>
             </div>
           </van-dropdown-menu>
@@ -107,12 +107,12 @@
               :style="{ textAlign: form.topText.align,fontSize: `${getFontSize(form.topText.fontSize)}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
               @click.stop="inputWrapperFocus(1)"
             >
-              <span v-if="topFocus==false && topImg.length==0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
+              <span v-if="topFocus==false && topImg.length === 0 && topTextList.length === 0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
               <div v-else class="top-img-content">
-                <span v-if="inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
+                <span v-if="form.topText.inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
                   <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="getFontSize(form.topText.fontSize)" :src="item" alt="">
                 </span>
-                <span v-if="inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
+                <span v-if="form.topText.inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
                   <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
                 </span>
               </div>
@@ -191,7 +191,7 @@
     <!-- 底部操作 -->
     <bottom-options
       :current-template="currentTemplate"
-      :is-zh="inputMode === 'zh'"
+      :is-zh="topWrapperFocus ? form.topText.inputMode === 'zh' : form.bottomText.inputMode === 'zh'"
       @change="bottomBtn"
     />
     <!-- 选择定制模板 -->
@@ -373,21 +373,14 @@ export default {
       fontColor: {
         hex: 'fff'
       },
-      // fontSize: 12, // 字体高度
-      sizeOptions: [
-        { text: '8px', value: 8 },
-        { text: '12px', value: 12 },
-        { text: '18px', value: 18 },
-        { text: '24px', value: 24 },
-        { text: '45px', value: 45 }
-      ],
       form: {
         topText: {
           content: '',
           fontSize: 12,
           fontColor: '#fff',
           fontType: '',
-          align: 'center'
+          align: 'center',
+          inputMode: 'en'
         },
         middleImg: {
           width: 0,
@@ -399,7 +392,8 @@ export default {
           fontSize: 12,
           fontColor: '#fff',
           fontType: '',
-          align: 'center'
+          align: 'center',
+          inputMode: 'en'
         }
       },
       middleImgWidth: 0, // 中间图片的最大宽度
@@ -444,17 +438,6 @@ export default {
     ])
   },
   watch: {
-    inputMode: {
-      handler(newValue, oldValue) {
-        if (newValue !== oldValue) {
-          const type = newValue === 'en' ? 1 : 2
-          this.filtterFontTypeList = this.fontTypeOptions.filter(item => (item.font_type === type))
-          this.fontType = this.filtterFontTypeList[0]?.font_id || ''
-          this.getFontTop()
-          this.getFontBottom()
-        }
-      }
-    },
     radiusWidth: {
       handler(newValue, oldValue) {
         this.imgRotate()
@@ -463,7 +446,7 @@ export default {
     'form.bottomText.content': {
       handler(newValue, oldValue) {
         const reg = /[\u4e00-\u9fa5]+/g
-        if (this.inputMode === 'en' && reg.test(newValue)) {
+        if (this.form.bottomText.inputMode === 'en' && reg.test(newValue)) {
           this.$toast({
             message: `${this.$t('该模式下无法输入中文')}!`
           })
@@ -474,7 +457,7 @@ export default {
     'form.topText.content': {
       handler(newValue, oldValue) {
         const reg = /[\u4e00-\u9fa5]+/g
-        if (this.inputMode === 'en' && reg.test(newValue)) {
+        if (this.form.topText.inputMode === 'en' && reg.test(newValue)) {
           this.$toast({
             message: `${this.$t('该模式下无法输入中文')}!`
           })
@@ -612,9 +595,18 @@ export default {
 
     // 模拟失焦
     this.$refs.commonly && this.$refs.commonly.addEventListener('click', (e) => {
+      if (!this.topWrapperFocus && !this.bottomWrapperFocus) return
       const target = e.target
       console.dir(target)
-      if (target.nodeName !== 'INPUT' && target.className.indexOf('van-') === -1) {
+      if (
+        target.nodeName !== 'INPUT' &&
+        target.nodeName !== 'svg' &&
+        target.nodeName !== 'P' &&
+        !target.classList.contains('model-btn') &&
+        !target.classList.contains('van-ellipsis') &&
+        !target.classList.contains('van-dropdown-menu__item') &&
+        !target.classList.contains('text-btn') &&
+        !target.classList.contains('van-dropdown-menu__title')) {
         this.inputWrapperBlur()
       }
     })
@@ -757,12 +749,12 @@ export default {
       return [x1, x2, y1, y2]
     },
     onTextInputDelete() {
-      const type = this.topFocus ? 'top' : 'bottom'
+      const type = this.topWrapperFocus ? 'top' : 'bottom'
       this.$nextTick(() => {
         this.$refs[type + 'Input'].value = ''
         this.form[type + 'Text'].content = ''
         this[type + 'Img'] = []
-        this[`show${this.topFocus ? 'Top' : 'Bottom'}Text`] = false
+        this[`show${this.topWrapperFocus ? 'Top' : 'Bottom'}Text`] = false
         if (!this.showBottomText && !this.showTopText) {
           this.currentTemplate = this.templateList[1]
         }
@@ -781,7 +773,16 @@ export default {
       }
     },
     onInputModeChange(mode) {
-      this.inputMode = mode
+      if (this.topWrapperFocus) {
+        this.form.topText.inputMode = mode
+        this.getFontTop()
+      } else {
+        this.form.bottomText.inputMode = mode
+        this.getFontBottom()
+      }
+      const type = mode === 'en' ? 1 : 2
+      this.filtterFontTypeList = this.fontTypeOptions.filter(item => (item.font_type === type))
+      this.fontType = this.filtterFontTypeList[0]?.font_id || ''
       this.inputModeModel = false
     },
     // 数字同一位小数点后两位
@@ -795,7 +796,7 @@ export default {
         this.fontTypeOptions = res.data
         this.fontType = res.data[0].font_id
         this.fontChange(res.data[0])
-        this.inputMode = 'en'
+        this.onInputModeChange('en')
       })
     },
     // 获取定制模板
@@ -929,6 +930,8 @@ export default {
         }
         if (type === 1) {
           this.getFontTop()
+        } else {
+          this.getFontBottom()
         }
         resolve()
       })
@@ -974,7 +977,7 @@ export default {
       const text = this.form.topText.content
       if (text.trim() === '') return
       arr = text.split('')
-      if (this.inputMode === 'zh') {
+      if (this.form.topText.inputMode === 'zh') {
         this.topTextList = arr
         if (this.openArc === true) {
           this.imgRotate()
@@ -1001,6 +1004,10 @@ export default {
       const text = this.form.bottomText.content
       if (text.trim() === '') return
       arr = text.split('')
+      if (this.form.bottomText.inputMode === 'zh') {
+        this.bottomImg = []
+        return
+      }
       designApi.getTextImage({
         font_id: this.fontType,
         font_list: JSON.stringify(arr),
@@ -1107,7 +1114,6 @@ export default {
       } else if (this.fontHeight < min_height) {
         this.fontHeight = min_height
       }
-      console.log(this.fontHeight, 'fontHeight')
       this.maxFontHeight = max_height
       this.minFontHeight = min_height
       this.form.bottomText.fontSize = this.fontHeight
@@ -1121,7 +1127,7 @@ export default {
         this.form.bottomText.fontType = value
         this.getFontBottom()
       }
-      if (this.inputMode === 'zh') {
+      if (this.form.topText.inputMode === 'zh' || this.form.bottomText.inputMode === 'zh') {
         const oldStyle = document.querySelector('style[id="font"]')
         oldStyle && document.body.removeChild(oldStyle)
         const style = document.createElement('style')
@@ -1174,7 +1180,9 @@ export default {
       if (name === 'showImgList') this.patternModal = true // 显示花样库
       if (name === 'showUpload') this.uploadModal = true // 显示上传图片弹框
       if (name === 'showTemplate') this.templateModal = true // 显示模板弹框
-      if (name === 'showInputMode') this.inputModeModel = true // 显示输入模式选择弹框
+      if (name === 'showInputMode') {
+        (this.topWrapperFocus || this.bottomWrapperFocus) && (this.inputModeModel = true)
+      } // 显示输入模式选择弹框
       if (name === 'preview') this.preview()
       if (name === 'complete') this.complete()
     },
@@ -1228,11 +1236,11 @@ export default {
         Toast(`${this.$t('请输入文字内容')}`)
         return false
       }
-      if (!this.topFocus && !this.bottomFocus) {
+      if (!this.topWrapperFocus && !this.bottomWrapperFocus) {
         this.getPreview()
         this.previewModal = true
       } else {
-        const type = this.topFocus ? 1 : 2
+        const type = this.topWrapperFocus ? 1 : 2
         this.inputFocus(type).then(() => {
           this.inputBlur(type).then(() => {
             setTimeout(() => {
@@ -1318,12 +1326,12 @@ export default {
         Toast(`${this.$t('请输入文字内容')}`)
         return false
       }
-      if (!this.topFocus && !this.bottomFocus) {
+      if (!this.topWrapperFocus && !this.bottomWrapperFocus) {
         this.previewModal = false
         this.getPreview()
         this.confirmModal = true
       } else {
-        const type = this.topFocus ? 1 : 2
+        const type = this.topWrapperFocus ? 1 : 2
         this.inputFocus(type).then(() => {
           this.inputBlur(type).then(() => {
             setTimeout(() => {
@@ -1520,7 +1528,7 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-around;
       // box-sizing: border-box;
       // padding: 4px;
       .top-input,.bottom-input{
