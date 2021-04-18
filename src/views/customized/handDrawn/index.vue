@@ -352,7 +352,7 @@ export default {
       // }
       if (this.oldLineColorList.length) {
         this.oldLineColorList.shift()
-        this.lineColor = this.oldLineColorList[0] || '#fff'
+        // this.lineColor = this.oldLineColorList[0] || '#fff'
       }
       // if (this.oldMinWidthList.length) {
       //   this.oldMinWidthList.shift()

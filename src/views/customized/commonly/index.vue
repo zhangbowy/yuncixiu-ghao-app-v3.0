@@ -11,7 +11,7 @@
                 :key="item.font_id"
                 clickable
                 class="font-dropdown"
-                @click="fontChange(item)"
+                @click.prevent="fontChange(item)"
               >
                 <!-- 使用 right-icon 插槽来自定义右侧图标 -->
                 <template #title>
@@ -159,7 +159,7 @@
             <div
               v-if="bottomWrapperFocus==false"
               class="bottom-img-list"
-              :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
+              :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font_b'}"
               @click.stop="inputWrapperFocus(2)"
             >
               <span
@@ -177,7 +177,7 @@
                 v-model="form.bottomText.content"
                 :placeholder="`${$t('点击输入文字')}`"
                 type="text"
-                :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font'}"
+                :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font_b'}"
                 @input="getFontBottom()"
                 @blur="inputBlur(2, $event)"
                 @focus="inputFocus(2)"
@@ -429,7 +429,10 @@ export default {
       designBoxStyle: {}, // 设计区域style
       previewImg: '', // 预览图片
       design_area_image: '', // 设计区域整体图片
-      design_image: '' // 设计区域整体图片
+      design_image: '', // 设计区域整体图片
+
+      isFirstClickTop: 1,
+      isFirstClickBom: 1
     }
   },
   computed: {
@@ -888,10 +891,23 @@ export default {
         this.fontHeight = this.form.topText.fontSize
         this.topWrapperFocus = true
         this.bottomWrapperFocus = false
+        if (this.isFirstClickTop) {
+          console.log('-----------')
+          this.$nextTick(() => {
+            this.bottomBtn('showInputMode')
+            this.isFirstClickTop = 0
+          })
+        }
       } else {
         this.fontHeight = this.form.bottomText.fontSize
         this.topWrapperFocus = false
         this.bottomWrapperFocus = true
+        if (this.isFirstClickBom) {
+          this.$nextTick(() => {
+            this.bottomBtn('showInputMode')
+            this.isFirstClickBom = 0
+          })
+        }
       }
       this.imgRotate()
     },
@@ -1019,7 +1035,7 @@ export default {
           Toast(this.$t(...res.msg))
         }
       })
-    }, 500),
+    }, 100),
     showMiddleMemu(type) {
       // type==1个人上传，type==2花样库选择
       this.middleVisible = true
@@ -1106,7 +1122,8 @@ export default {
     },
     // 字体选择
     fontChange(item) {
-      // console.log('fontChange')
+      // debugger
+      console.log('fontChange')
       const { font_id: value, ttf, max_height, min_height } = item
       this.fontType = value
       if (this.fontHeight > max_height) {
@@ -1119,25 +1136,32 @@ export default {
       this.form.bottomText.fontSize = this.fontHeight
       this.form.topText.fontSize = this.fontHeight
       console.log(max_height, min_height, value)
-      if (this.topInput === true) {
+      // if (this.topInput === true) {
+      if (this.topWrapperFocus === true) {
         this.form.topText.fontType = value
         this.getFontTop()
       }
-      if (this.bottomInput === true) {
+      if (this.bottomWrapperFocus === true) {
         this.form.bottomText.fontType = value
         this.getFontBottom()
       }
       if (this.form.topText.inputMode === 'zh' || this.form.bottomText.inputMode === 'zh') {
-        const oldStyle = document.querySelector('style[id="font"]')
+        let font_id
+        if (this.topWrapperFocus) {
+          font_id = 'font'
+        } else {
+          font_id = 'font_b'
+        }
+        const oldStyle = document.querySelector('style[id=font_id]')
         oldStyle && document.body.removeChild(oldStyle)
         const style = document.createElement('style')
         const str = `
           @font-face {
-            font-family: 'font';
+            font-family: ${font_id};
             src: url("${ttf}");
           }
         `
-        style.id = 'font'
+        style.id = font_id
         style.type = 'text/css'
         if (style.styleSheet) { // ie下
           style.styleSheet.cssText = str
@@ -1150,7 +1174,7 @@ export default {
     },
     // 图片颜色选择
     imgColorChange(e) {
-      if (this.topFocus === true) {
+      if (this.topWrapperFocus === true) {
         this.form.topText.fontColor = e.hex
         designApi.reColor({
           color: e.hex,
@@ -1398,9 +1422,9 @@ export default {
     },
     // 菜单关闭
     onDropdownMenuClose() {
-      this.$nextTick(() => {
-        (this.topWrapperFocus || this.bottomWrapperFocus) ? this.showTextOperate = true : this.middleVisible = true
-      })
+      // this.$nextTick(() => {
+      //   (this.topWrapperFocus || this.bottomWrapperFocus) ? this.showTextOperate = true : this.middleVisible = true
+      // })
     }
   }
 }
@@ -1493,9 +1517,9 @@ export default {
       padding-top: 10px;
     }
     .mode-en, .mode-zh {
-    width: 60px !important;
-    height: 60px !important;
-    color: #666666;
+      width: 60px !important;
+      height: 60px !important;
+      color: #666666;
     }
     .mode-en {
       width: 30px !important;

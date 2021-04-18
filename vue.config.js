@@ -34,12 +34,23 @@ module.exports = {
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
+  // devServer: {
+  //   port: port,
+  //   open: true,
+  //   overlay: {
+  //     warnings: false,
+  //     errors: true
+  //   }
+  // },
   devServer: {
-    port: port,
-    open: true,
-    overlay: {
-      warnings: false,
-      errors: true
+    proxy: {
+      '/api/wx': {
+        target: 'http://cxgh.tecqm.club',
+        changeOrigin: true,
+        pathRewrite: {
+          // '^/bs': '',
+        }
+      }
     }
   },
   configureWebpack: {

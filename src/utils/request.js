@@ -69,7 +69,11 @@ service.interceptors.response.use(
         store.dispatch('user/resetToken')
         return res
       }
-      Toast(translate(res.msg) || translate('请求异常'))
+      // eslint-disable-next-line no-empty
+      if (res.config.url === '/api/wx/custom/reColor') {
+      } else {
+        Toast(translate(res.msg) || translate('请求异常'))
+      }
       return Promise.reject(res)
     } else {
       return res
