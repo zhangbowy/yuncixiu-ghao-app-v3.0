@@ -74,9 +74,6 @@ export default {
       'userInfo',
       'langsType'
     ])
-    // name() {
-    //   return this.data
-    // }
   },
   created() {
 

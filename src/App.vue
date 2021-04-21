@@ -9,7 +9,6 @@
 </template>
 <script>
 import Tabbar from './components/Tabbar'
-// import { isWeiXin } from '@/utils'
 import { mapGetters } from 'vuex'
 export default {
   components: {
@@ -20,11 +19,6 @@ export default {
   },
   created() {
     document.documentElement.dataset.lang = this.lang
-    // checkLogin().then(res => {
-    //   if (res.code === 0) {
-    //     this.$store.commit('SET_LOGIN_STATUS', true)
-    //   }else{}
-    // })
   }
 }
 </script>
