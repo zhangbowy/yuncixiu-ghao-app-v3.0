@@ -18,7 +18,7 @@ const name = defaultSettings.title || '云易绣商城' // 页面标题
 // 例如，Mac:sudo npm run
 // 您可以通过以下方法更改端口：
 // 端口=8080 npm运行开发或npm运行开发--端口=8080
-const port = process.env.port || process.env.npm_config_port || 8080 // dev port
+// const port = process.env.port || process.env.npm_config_port || 8080 // dev port
 
 // 所有配置项解释都可以在https://cli.vuejs.org/config中找到/
 module.exports = {
