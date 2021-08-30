@@ -65,6 +65,10 @@ export default {
     operate: {
       type: Boolean,
       default: true
+    },
+    isBeta: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

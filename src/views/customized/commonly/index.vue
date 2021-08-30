@@ -191,6 +191,7 @@
     <!-- 底部操作 -->
     <bottom-options
       :current-template="currentTemplate"
+      :is-beta="is_beta"
       :is-zh="topWrapperFocus ? form.topText.inputMode === 'zh' : form.bottomText.inputMode === 'zh'"
       @change="bottomBtn"
     />
@@ -282,11 +283,20 @@
         </div>
       </div>
     </van-dialog>
+
+    <!-- 2021-08-29新增 -->
+    <goods-modal
+      v-model="goodsModal"
+      :goods-list="goodsList"
+      :form="form"
+      @change="choose_goods"
+    />
   </div>
 </template>
 
 <script>
 import { designApi } from '@/api/design'
+import { goodsApi } from '@/api/goods'
 import { commonApi } from '@/api/common'
 import Sketch from '@/components/VueColorPicker/Sketch'
 import Compact from '@/components/VueColorPicker/Compact'
@@ -295,6 +305,7 @@ import ConfirmModal from './components/ConfirmModal'
 import PreviewModal from './components/PreviewModal'
 import TemplateModal from './components/TemplateModal'
 import PatternModal from './components/PatternModal'
+import GoodsModal from './components/GoodsModal'
 import BottomOptions from './components/BottomOptions'
 import { debounce } from '@/utils'
 import { mapState } from 'vuex'
@@ -313,6 +324,7 @@ export default {
     'template-modal': TemplateModal,
     'pattern-modal': PatternModal,
     'bottom-options': BottomOptions,
+    'goods-modal': GoodsModal,
     [Dialog.Component.name]: Dialog.Component
   },
 
@@ -432,7 +444,11 @@ export default {
       design_image: '', // 设计区域整体图片
 
       isFirstClickTop: 1,
-      isFirstClickBom: 1
+      isFirstClickBom: 1,
+      is_beta: false, // 是否简易版云易绣
+      goodsModal: false, // 是否显示商品列表弹窗的开关
+      goodsList: [], // 商品列表,
+      currentGoods: {}
     }
   },
   computed: {
@@ -576,6 +592,7 @@ export default {
     // }
   },
   created() {
+    this.is_beta = !!this.$route.query.beta
     // 获取字体列表
     // 弧形文字
     if (this.$route.query.goods_id && this.$route.query.sku_id) {
@@ -588,7 +605,10 @@ export default {
     this.customDetail(this.goods_id, this.sku_id)
     this.getFigureList() // 获取花样库
     this.getTemplate() // 获取定制模板
-
+    // 如果是简易版
+    if (this.is_beta) {
+      this.getGoodsList()
+    }
     // 初始化页面显示模板弹框
     this.templateModal = true
   },
@@ -826,6 +846,23 @@ export default {
             }
           })
         }
+      })
+    },
+    // 获取产品列表
+    getGoodsList() {
+      goodsApi.getGoodsList({
+        pageSize: 1000,
+        design_id: this.form.middleImg.design_id || this.design_id
+      }).then(res => {
+        this.goodsList = res.data.data
+        // if (this.design_id) {
+        //   this.figureList.forEach(item => {
+        //     if (Number(this.design_id) === item.design_id) {
+        //       this.checkFigureItem(item)
+        //       return
+        //     }
+        //   })
+        // }
       })
     },
     // 获取定制分类模板信息
@@ -1209,6 +1246,8 @@ export default {
       } // 显示输入模式选择弹框
       if (name === 'preview') this.preview()
       if (name === 'complete') this.complete()
+      if (name === 'showGoods') this.showGoods()
+
     },
     // 隐藏遮罩
     hiddenVisible() {
@@ -1222,6 +1261,7 @@ export default {
     // 选中花样图片
     async checkFigureItem(item) {
       this.form.middleImg.design_id = item.design_id
+      this.getGoodsList()
       this.patternPicture = [] // 上传的花样图片设为空
       this.currentFigure = item
       this.setFigureItemSizeRange(item)
@@ -1314,7 +1354,7 @@ export default {
         // const middle_scale = (this.form.middleImg.height * this.design_box.design_scale) / this.design_box.design_H
         // 请求预览图接口
         designApi.getPreview({
-          id: this.$route.query.goods_id,
+          id: this.currentGoods.id || this.$route.query.goods_id,
           design_id: this.form.middleImg.design_id,
           design_image: design_image,
           // top_scale: top_scale,
@@ -1329,7 +1369,7 @@ export default {
           bottom_font_color: this.form.bottomText.fontColor,
           custom_template_id: this.currentTemplate.emb_template_id,
           custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
-          background: this.customInfo.item?.background
+          background: this.currentGoods.skuList ? this.currentGoods.skuList[0].images : this.customInfo.item?.background
         }).then(res => {
           this.loading = false
           this.previewImg = res.data.preview_image
@@ -1339,7 +1379,8 @@ export default {
           Toast(`${this.$t('预览图生成失败')}!`)
           this.loading = false
         })
-      }).catch(() => {
+      }).catch((e) => {
+        debugger
         this.loading = false
         Toast(`${this.$t('定制图案生成失败')}!`)
       })
@@ -1425,6 +1466,19 @@ export default {
       // this.$nextTick(() => {
       //   (this.topWrapperFocus || this.bottomWrapperFocus) ? this.showTextOperate = true : this.middleVisible = true
       // })
+    },
+    showGoods() {
+      this.goodsModal = true
+    },
+    choose_goods($item) {
+      const { sku_list } = $item
+      try {
+        $item.skuList = JSON.parse(sku_list)
+        this.currentGoods = $item
+      } catch(e) {
+
+      }
+      this.complete()
     }
   }
 }

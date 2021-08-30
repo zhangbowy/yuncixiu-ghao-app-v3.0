@@ -20,8 +20,9 @@
       </div>
     </div>
     <div class="footer-btn">
-      <van-button icon="eye" color="#333" plain size="small" type="primary" @click="preview">{{ $t(`预览`) }}</van-button>
-      <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">{{ $t(`完成设计`) }}</van-button>
+      <van-button v-show="!isBeta" icon="eye" color="#333" plain size="small" type="primary" @click="preview">{{ $t(`预览`) }}</van-button>
+      <van-button v-show="!isBeta" size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="complete">{{ $t(`完成设计`) }}</van-button>
+      <van-button v-show="isBeta" size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" style="width:100%" @click="choose_goods">{{ $t(`选择商品预览`) }}</van-button>
     </div>
   </div>
 </template>
@@ -34,6 +35,10 @@ export default {
       default: () => {}
     },
     isZh: {
+      type: Boolean,
+      default: false
+    },
+    isBeta: {
       type: Boolean,
       default: false
     }
@@ -56,6 +61,9 @@ export default {
     },
     complete() {
       this.$emit('change', 'complete')
+    },
+    choose_goods() {
+      this.$emit('change', 'showGoods')
     }
   }
 }
