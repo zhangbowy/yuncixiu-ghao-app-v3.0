@@ -18,7 +18,7 @@
       <!-- <van-action-sheet v-model="show" :actions="actions" @select="onSelect" /> -->
     </div>
     <div
-      v-if="orderType.type == 1 && orderInfo.address.phone"
+      v-if="orderType.type == 1 && orderInfo.address.phone && !is_beta"
       class="order-address"
       @click="toAddress"
     >
@@ -39,7 +39,7 @@
       </span>
     </div>
     <div
-      v-if="orderType.type == 1 && !orderInfo.address.phone"
+      v-if="orderType.type == 1 && !orderInfo.address.phone && !is_beta"
       class="order-address"
       @click="toAddress"
     >
@@ -160,7 +160,8 @@ export default {
           phone: ''
         }
       },
-      message: ''
+      message: '',
+      is_beta: false
     }
   },
   computed: {
@@ -168,6 +169,13 @@ export default {
   },
   created() {
     this.is_wilcom = Number(this.$route?.query.is_wilcom) || 0
+    this.is_beta = this.$route?.query.is_beta
+    if (this.is_beta) {
+      this.actions = [
+        { name: `${this.$t('远程下发')}`, type: 1 },
+        { name: `${this.$t('门店自提')}`, type: 2 }
+      ]
+    }
     if (this.$route.query.address_id) {
       this.address_id = this.$route.query.address_id
       this.getConfirmData()
