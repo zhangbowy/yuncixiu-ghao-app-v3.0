@@ -124,7 +124,19 @@ const constantRoutes = [
       name: 'HandDrawn',
       component: () => import('@/views/customized/handDrawn'),
       meta: { title: '手绘' }
+    },
+    {
+      path: 'beta1',
+      name: 'beta1',
+      component: () => import('@/views/beta/index'),
+      meta: { title: '体验系统' }
     }]
+  },
+  {
+    path: '/beta',
+    name: 'beta1',
+    component: () => import('@/views/beta/index'),
+    meta: { title: '体验系统' }
   },
   {
     path: '/404',
