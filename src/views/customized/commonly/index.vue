@@ -448,7 +448,8 @@ export default {
       is_beta: false, // 是否简易版云易绣
       goodsModal: false, // 是否显示商品列表弹窗的开关
       goodsList: [], // 商品列表,
-      currentGoods: {}
+      currentGoods: {},
+      subMenu: false
     }
   },
   computed: {
@@ -619,8 +620,10 @@ export default {
     // 模拟失焦
     this.$refs.commonly && this.$refs.commonly.addEventListener('click', (e) => {
       if (!this.topWrapperFocus && !this.bottomWrapperFocus) return
+      // if (!this.subMenu) return
       const target = e.target
       console.dir(target)
+
       if (
         target.nodeName !== 'INPUT' &&
         target.nodeName !== 'svg' &&
@@ -629,7 +632,10 @@ export default {
         !target.classList.contains('van-ellipsis') &&
         !target.classList.contains('van-dropdown-menu__item') &&
         !target.classList.contains('text-btn') &&
-        !target.classList.contains('van-dropdown-menu__title')) {
+        !target.classList.contains('van-dropdown-menu__title') &&
+        !target.classList.contains('van-stepper__plus') &&
+        !target.classList.contains('van-stepper__minus')
+        ) {
         this.inputWrapperBlur()
       }
     })
@@ -990,6 +996,7 @@ export default {
       })
     },
     async fontSizeChange(value) {
+      debugger
       if (this.topWrapperFocus === true) {
         this.form.topText.fontSize = value
         this.getFontTop()
@@ -1003,6 +1010,7 @@ export default {
       const fontHeight = (bottomInput ? bottomInput.offsetHeight : 0) + (topInput ? topInput.offsetHeight : 0) + 20
       console.log(fontHeight)
       this.middleImgHeight = Math.max(this.formatNumber((this.design_box.design_H - fontHeight) / this.design_box.design_scale), 0)
+      this.visible = true
     },
     // 是否弧形
     changeOpenArc() {
@@ -1463,9 +1471,11 @@ export default {
         this.showTextOperate = false
         this.middleVisible = false
       })
+      this.subMenu = true
     },
     // 菜单关闭
     onDropdownMenuClose() {
+      this.subMenu = false
       // this.$nextTick(() => {
       //   (this.topWrapperFocus || this.bottomWrapperFocus) ? this.showTextOperate = true : this.middleVisible = true
       // })
