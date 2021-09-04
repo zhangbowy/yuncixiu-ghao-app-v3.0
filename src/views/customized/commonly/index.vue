@@ -634,8 +634,7 @@ export default {
         !target.classList.contains('text-btn') &&
         !target.classList.contains('van-dropdown-menu__title') &&
         !target.classList.contains('van-stepper__plus') &&
-        !target.classList.contains('van-stepper__minus')
-        ) {
+        !target.classList.contains('van-stepper__minus')) {
         this.inputWrapperBlur()
       }
     })
@@ -1434,6 +1433,7 @@ export default {
       }
       // 获取vuex->design->state->goodsInfo
       var goodsInfo = JSON.parse(this.design.goodsInfo)
+      goodsInfo[0].is_beta = this.is_beta
       goodsInfo[0].design_info = {
         design_id: this.form.middleImg.design_id,
         top_font_width: top_w / parseInt(this.designBoxStyle.width) * (this.customInfo?.custom_info.design_width || 150),
