@@ -145,7 +145,6 @@ export default {
 .title {
   text-align: center;
   margin: 10px;
-  flex: 1;
   font-size: 30px;
 }
 .van-button {
