@@ -3,17 +3,17 @@
     <div class="title">刺绣展示</div>
 
     <div class="first-page-show">
-        <div class="sample-box">
-          <template v-for="(item,index) in figureList">
-            <div :key="index+item.prev_png_path" class="sample-box-item">
-              <img :src="item.prev_png_path" alt="" lazy-load @click="patternDialog(item)">
-              <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
-            </div>
-          </template>
-        </div>
-        <div v-if="figureList.length==0">
-          <no-data :text="`${$t('暂无花样')}`" icon="no-data" :font-size="64" />
-        </div>
+      <div class="sample-box">
+        <template v-for="(item,index) in figureList">
+          <div :key="index+item.prev_png_path" class="sample-box-item">
+            <img :src="item.prev_png_path" alt="" lazy-load @click="patternDialog(item)">
+            <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
+          </div>
+        </template>
+      </div>
+      <div v-if="figureList.length==0">
+        <no-data :text="`${$t('暂无花样')}`" icon="no-data" :font-size="64" />
+      </div>
     </div>
     <div class="div-content">
       <div style="display:flex">
@@ -77,8 +77,8 @@ export default {
   },
 
   methods: {
-    patternDialog() {
-
+    patternDialog($item) {
+      this.$router.push(`/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=${$item.design_id}&beta=1`)
     },
     getFigure() {
       designApi.getFigure({
@@ -92,10 +92,10 @@ export default {
     onclick_qrCode() {
     },
     to_design: function() {
-      this.$router.push('/demo')
+      this.$router.push('/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1')
     },
     to_letter: function() {
-      this.$router.push('/letter')
+      this.$router.push('/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1&template_id=1')
     },
     to_img: function() {
       this.$router.push('/demo')
@@ -120,9 +120,7 @@ export default {
     },
 
     to_pencil: function() {
-      this.$router.push({
-        path: '/onlyPencil'
-      })
+      this.$router.push('/customized/handDrawn?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&beta=true')
     }
   }
 }

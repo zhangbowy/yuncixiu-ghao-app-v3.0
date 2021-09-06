@@ -608,10 +608,14 @@ export default {
     this.getTemplate() // 获取定制模板
     // 如果是简易版
     if (this.is_beta) {
+      if (this.$route.query?.template_id == 1) {
+        this.currentTemplate.emb_template_id = 1
+      }
       this.getGoodsList()
+    } else {
+      // 初始化页面显示模板弹框
+      this.templateModal = true
     }
-    // 初始化页面显示模板弹框
-    this.templateModal = true
   },
   mounted() {
     // 696
@@ -833,7 +837,15 @@ export default {
         template_type: 1 // 1 一般定制 2 特殊定制
       }).then(res => {
         this.templateList = res.data
-        this.currentTemplate = this.templateList[1]
+        if (this.is_beta) {
+          if (this.$route.query?.template_id == 1) {
+            this.currentTemplate = this.templateList.find(item => item.emb_template_id === 1)
+          } else {
+            this.currentTemplate = this.templateList[1]
+          }
+        } else {
+          this.currentTemplate = this.templateList[1]
+        }
       })
     },
     // 获取花样库列表
@@ -1487,10 +1499,12 @@ export default {
       const { sku_list } = $item
       try {
         $item.skuList = JSON.parse(sku_list)
+        debugger
         this.currentGoods = $item
       } catch(e) {
 
       }
+      debugger
       this.complete()
     }
   }
