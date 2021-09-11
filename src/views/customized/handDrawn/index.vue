@@ -40,10 +40,17 @@
       <van-button v-if="isFullPage" type="default" color="linear-gradient(to right, #ff6034,#ee0a24)" size="small" @click="initPage(0.8)">{{ $t(`完成`) }}</van-button>
       <van-button type="default" size="small" @click="handleReset">{{ $t(`清空`) }}</van-button>
       <van-button v-if="isFullPage" type="default" size="small" @click="undo">{{ $t(`撤销`) }}</van-button>
-      <van-button v-if="!isFullPage" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" :disabled="!resultImg" size="small" @click="handleGenerate">{{ $t(`完成绘制`) }}</van-button>
+      <van-button v-if="!isFullPage && !is_beta" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" :disabled="!resultImg" size="small" @click="handleGenerate">{{ $t(`完成绘制`) }}</van-button>
+      <van-button v-if="!isFullPage && is_beta" type="primary" color="linear-gradient(to right, #ff6034,#ee0a24)" :disabled="!resultImg" size="small" @click="showGoods">{{ $t(`选择商品预览`) }}</van-button>
     </div>
     <!-- 完成设计弹出层 -->
     <confirm-modal v-model="confirmModal" :loading="loading" :img="previewImg" @dobuy="buyNow" @hidden="confirmModal=false" />
+    <!-- 2021-08-29新增 -->
+    <goods-modal
+      v-model="goodsModal"
+      :goods-list="goodsList"
+      @change="choose_goods"
+    />
   </div>
 </template>
 
@@ -52,9 +59,11 @@ import { designApi } from '@/api/design'
 import DesignArea from '@/components/Design/DesignArea'
 import ConfirmModal from '../commonly/components/ConfirmModal'
 import SettingBoard from './components/SettingBoard'
+import GoodsModal from './../commonly/components/GoodsModal'
 import store from '@/store'
 import { mapState } from 'vuex'
 import { Toast } from 'vant'
+import { goodsApi } from '@/api/goods'
 export default {
   beforeRouteLeave: (go, from, next) => {
     document.body.parentNode.setAttribute('class', 'portrait')
@@ -63,7 +72,8 @@ export default {
   components: {
     'design-area': DesignArea,
     ConfirmModal,
-    SettingBoard
+    SettingBoard,
+    'goods-modal': GoodsModal
   },
   data() {
     return {
@@ -98,7 +108,11 @@ export default {
       designImg: {},
       is_horizontal: false,
       is_wilcom: 0,
-      is_get_data: true
+      is_get_data: true,
+      goodsModal: false,
+      currentGoods: {},
+      is_beta: false,
+      goodsList: []
     }
   },
   computed: {
@@ -131,6 +145,10 @@ export default {
       this.goods_id = this.$route.query.goods_id
       this.sku_id = this.$route.query.sku_id
     }
+    if (this.$route.query.beta) {
+      this.is_beta = true
+      this.getGoodsList()
+    }
     // 获取定制信息
     this.customDetail(this.goods_id, this.sku_id)
     // 监测横竖屏
@@ -151,6 +169,38 @@ export default {
     window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', onOrientationChange, false)
   },
   methods: {
+    showGoods() {
+      this.goodsModal = true
+    },
+    choose_goods($item) {
+      const { sku_list } = $item
+      try {
+        $item.skuList = JSON.parse(sku_list)
+        this.currentGoods = $item
+      } catch (e) {
+
+      }
+      this.handleGenerate()
+    },
+    // 获取产品列表
+    getGoodsList() {
+      goodsApi.getGoodsList({
+        pageSize: 1000
+      }).then(res => {
+        this.goodsList = res.data.data
+      // if (this.design_id) {
+      //   this.figureList.forEach(item => {
+      //     if (Number(this.design_id) === item.design_id) {
+      //       this.checkFigureItem(item)
+      //       return
+      //     }
+      //   })
+      // }
+      })
+    },
+    change(key) {
+      this.goodsModal = true
+    },
     onLastHistory() {
       this.$toast(`${this.$t('不能再撤销啦')} ~ `)
     },
@@ -319,13 +369,13 @@ export default {
       const draw_top_scale = this.cropInfo.top / this.design_box.design_H
       // 请求预览图接口
       designApi.getPreview({
-        id: this.$route.query.goods_id,
+        id: this.currentGoods.id || this.$route.query.goods_id,
         type: 4,
         draw_image: this.resultImg,
         draw_height_scale: draw_height_scale,
         draw_left_scale: draw_left_scale,
         draw_top_scale: draw_top_scale,
-        background: this.customInfo.item?.background
+        background: this.currentGoods.skuList ? this.currentGoods.skuList[0].images : this.customInfo.item?.background
       }).then(res => {
         this.loading = false
         this.previewImg = res.data.preview_image
@@ -452,6 +502,7 @@ export default {
     // 立即购买
     buyNow() {
       var goodsInfo = JSON.parse(this.design.goodsInfo)
+      goodsInfo[0].is_beta = this.is_beta
       goodsInfo[0].shopping_type = 4
       goodsInfo[0].design_info = {
         design_width: this.width ? this.width : this.cropInfo.width / this.design_box.design_scale,
@@ -461,7 +512,10 @@ export default {
         design_area_image: this.design_area_image
       }
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
-        this.$router.push({ path: '/orderConfirm', query: { is_wilcom: this.is_wilcom }})
+        this.$router.push({ path: '/orderConfirm', query: {
+          is_wilcom: this.is_wilcom,
+          is_beta: this.is_beta
+        }})
       })
     },
     onPropChange({ type, value }) {
@@ -670,4 +724,81 @@ export default {
     }
   }
 }
+
+  // 弹框
+  .modal{
+    position: relative;
+    .modal-title{
+      font-size: 16px;
+      padding: 18px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    &-hint {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #999;
+      margin: 4px;
+      span {
+        margin-right: 6px;
+      }
+    }
+    .modal-content{
+      padding: 12px;
+      text-align: center;
+      .van-uploader{
+        border: 1px solid #cccccc;
+        border-radius: 0.21333rem;
+        .van-uploader__upload{
+          text-align: center;
+          margin: 0;
+        }
+        .van-uploader__wrapper{
+          align-items: center;
+          padding: 10px;
+          box-sizing: border-box;
+        }
+        .van-uploader__preview{
+          background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3LjkzNyA3LjkzOCIgaGVpZ2h0PSIzMCIgd2lkdGg9IjMwIj48cGF0aCBwYWludC1vcmRlcj0ic3Ryb2tlIGZpbGwgbWFya2VycyIgZD0iTS4wMTQuMDE0SDMuOTdWMy45N0guMDE0ek0zLjk3IDMuOTY4aDMuOTU0djMuOTU1SDMuOTd6IiBmaWxsPSIjZWVlZmYwIi8+PC9zdmc+");
+          margin: 0 auto;
+          .van-uploader__preview-image{
+            width: 100%;
+            height: auto;
+          }
+          .van-uploader__preview-delete {
+            top: -5px;
+            right: -5px;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+    .footer-button{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 5px 0 10px;
+      &_message {
+        display: flex;
+        align-items: center;
+        color: #8a8a8a;
+        margin-top: 6px;
+        i {
+          font-size: 14px;
+        }
+        & > span {
+          padding-top: 2px;
+          font-size: 12px;
+          line-height: 12px;
+          margin-left: 4px;
+        }
+      }
+      button{
+        width: 70%;
+      }
+    }
+  }
 </style>

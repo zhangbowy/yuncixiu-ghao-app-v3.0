@@ -1,7 +1,7 @@
 <template>
   <div class="bottomOptions">
     <div class="operate-btn">
-      <div class="uoload-btn" @click="showTemplate">
+      <div v-if="!isBeta" class="uoload-btn" @click="showTemplate">
         <svg-icon icon-class="template-icon" />
         <!-- <p>{{ $t(`选择模板`) }}</p> -->
         <p>{{ currentTemplate.template_name?currentTemplate.template_name:'选择模板' }}</p>
@@ -10,11 +10,11 @@
         <svg-icon :class="`mode-${isZh ? 'zh' : 'en'}`" :icon-class="isZh ? 'text' : 'cx'" />
         <p>{{ isZh ? $t('中文字体') : $t('刺绣字体') }}</p>
       </div>
-      <div v-if="currentTemplate.emb_template_id!=1" class="uoload-btn" @click="showUpload">
+    <div v-if="(isBeta && !design_id && currentTemplate.emb_template_id == 2) || (!isBeta && currentTemplate.emb_template_id!=1)" class="uoload-btn" @click="showUpload">
         <svg-icon icon-class="upload-img" />
         <p>{{ $t(`上传图片`) }}</p>
       </div>
-      <div v-if="currentTemplate.emb_template_id!=1" class="picture-library" @click="showImgList">
+      <div v-if="(!isBeta && currentTemplate.emb_template_id!=1)" class="picture-library" @click="showImgList">
         <svg-icon icon-class="picture-lib" />
         <p>{{ $t(`花样库`) }}</p>
       </div>
@@ -42,6 +42,16 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  data() {
+    return {
+      design_id: 0,
+      template_id: 0
+    }
+  },
+  created() {
+    this.design_id = this.$route.query.design_id
+    this.template_id = this.$route.query.template_id
   },
   methods: {
     showInputMode() {

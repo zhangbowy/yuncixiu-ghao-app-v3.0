@@ -24,7 +24,7 @@
     />
     <div class="confirm-footer">
       <van-button size="small" color="#333" plain type="primary" @click="hidden">{{ $t(`返回修改`) }}</van-button>
-      <van-button size="small" color="#333" plain type="primary" @click="hidden">{{ $t(`切换预览商品`) }}</van-button>
+      <van-button v-if="isBeta" size="small" color="#333" plain type="primary" @click="hidden">{{ $t(`切换预览商品`) }}</van-button>
       <van-button size="small" color="linear-gradient(to right, #ff6034,#ee0a24)" @click="dobuy">{{ $t(`立即购买`) }}</van-button>
     </div>
   </div>

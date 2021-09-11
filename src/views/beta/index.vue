@@ -78,7 +78,7 @@ export default {
 
   methods: {
     patternDialog($item) {
-      this.$router.push(`/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=${$item.design_id}&beta=1`)
+      this.$router.push(`/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=${$item.design_id}&beta=1&template_id=2`)
     },
     getFigure() {
       designApi.getFigure({
@@ -92,7 +92,7 @@ export default {
     onclick_qrCode() {
     },
     to_design: function() {
-      this.$router.push('/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1')
+      this.$router.push('/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1&template_id=2')
     },
     to_letter: function() {
       this.$router.push('/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1&template_id=1')

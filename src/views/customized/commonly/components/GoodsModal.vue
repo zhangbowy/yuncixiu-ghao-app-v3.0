@@ -4,7 +4,7 @@
       <div class="modal-title">{{ $t(`商品列表`) }}</div>
       <div class="modal-content figure-content">
         <div class="figure-list">
-          <div v-for="(item,index) in goodsList" :key="index" class="figure-item" :class="{checked: form.middleImg.design_id == item.design_id}">
+          <div v-for="(item,index) in goodsList" :key="index" class="figure-item">
             <img v-lazy="item.thumb_image_path" alt="" @click="checkFigureItem(item)">
           </div>
         </div>
@@ -19,10 +19,6 @@ export default {
     value: {
       type: Boolean,
       default: false
-    },
-    form: {
-      type: Object,
-      default: () => {}
     },
     goodsList: {
       type: Array,
