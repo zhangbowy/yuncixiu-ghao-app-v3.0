@@ -228,6 +228,7 @@ export default {
           address_id: this.orderInfo.address.address_id,
           buyer_message: this.message,
           logistics_type: this.orderType.type,
+          is_beta: this.is_beta,
           shopping_type: this.orderInfo.order_type
         })
         .then((res) => {
