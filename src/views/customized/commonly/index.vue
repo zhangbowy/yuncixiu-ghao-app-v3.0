@@ -853,7 +853,7 @@ export default {
     getFigureList() {
       designApi.getFigure({
         pageSize: 1000,
-        goods_id: this.goods_id
+        goods_id: !this.is_beta && this.goods_id
       }).then(res => {
         this.figureList = res.data.data
         if (this.design_id) {
