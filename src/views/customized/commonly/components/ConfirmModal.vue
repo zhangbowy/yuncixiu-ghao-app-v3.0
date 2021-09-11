@@ -49,10 +49,11 @@ export default {
     img: {
       type: String,
       default: ''
-    },
-    isBeta: {
-      type: Boolean,
-      default: false
+    }
+  },
+  computed: {
+    isBeta() {
+      return !!this.$route.query.beta
     }
   },
   methods: {
