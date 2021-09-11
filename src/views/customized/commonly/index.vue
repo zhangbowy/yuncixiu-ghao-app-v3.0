@@ -86,6 +86,12 @@
     </div>
     <div class="designArea">
       <div class="commonly-bg-box" @click="hiddenVisible">
+        <div class="design_info">
+          <div>
+            花样名称: [{{ currentFigure.design_name }}]
+          </div>
+        </div>
+
         <!-- 背景图 -->
         <img
           v-if="!is_beta"
@@ -1267,7 +1273,6 @@ export default {
       if (name === 'preview') this.preview()
       if (name === 'complete') this.complete()
       if (name === 'showGoods') this.showGoods()
-
     },
     // 隐藏遮罩
     hiddenVisible() {
@@ -1502,7 +1507,7 @@ export default {
         $item.skuList = JSON.parse(sku_list)
         debugger
         this.currentGoods = $item
-      } catch(e) {
+      } catch (e) {
 
       }
       debugger
@@ -1624,7 +1629,13 @@ export default {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(211, 211, 211, 0.8)
+      background: rgba(211, 211, 211, 0.8);
+      .design_info {
+        font-size: 20px;
+        margin-left: 40px;
+        height: 42px;
+        line-height: 42px;
+      }
     }
     .design-box{
       position: absolute;

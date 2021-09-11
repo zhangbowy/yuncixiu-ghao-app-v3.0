@@ -9,7 +9,7 @@
         @click-left="onClickLeft"
       >
         <template #right>
-          <van-dropdown-menu style="height: 45px;border: none">
+          <van-dropdown-menu v-if="!is_beta" style="height: 45px;border: none">
             <van-dropdown-item ref="item">
               <van-cell :title="`${$t('一般定制')}`" is-link :to="`/customized/commonly?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
               <van-cell :title="`${$t('特殊定制')}`" is-link :to="`/customized/special?goods_id=${goods_id}&sku_id=${sku_id}`" @click="onConfirm" />
@@ -34,6 +34,7 @@ export default {
       value1: 0,
       goods_id: this.$route.query.goods_id,
       sku_id: this.$route.query.sku_id,
+      is_beta: !!this.$route.query.beta,
       option1: [
         { text: `${this.$t('一般定制')}`, value: 0 },
         { text: `${this.$t('特殊定制')}`, value: 1 },
