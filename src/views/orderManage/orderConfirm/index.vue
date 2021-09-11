@@ -201,6 +201,7 @@ export default {
         .calculation({
           address_id: this.address_id,
           cart_list: cartList,
+          is_beta: this.is_beta,
           logistics_type: this.orderType.type
         })
         .then((res) => {
