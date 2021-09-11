@@ -88,6 +88,7 @@
       <div class="commonly-bg-box" @click="hiddenVisible">
         <!-- 背景图 -->
         <img
+          v-if="!is_beta"
           class="bg-img"
           :src="customInfo.item && customInfo.item.background ? customInfo.item.background : customInfo.custom_info.design_bg"
           :style="designImgStyle"
@@ -1623,6 +1624,7 @@ export default {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
+      background: rgba(211, 211, 211, 0.8)
     }
     .design-box{
       position: absolute;
