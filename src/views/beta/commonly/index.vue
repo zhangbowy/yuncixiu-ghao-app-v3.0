@@ -210,10 +210,10 @@
         <van-cell>
           <template>
             <span class="custom-title" style="width: 12%">顺序</span>
-            <span class="custom-title" style="width: 18%">绣线号</span>
-            <span class="custom-title" style="width: 34%">颜色</span>
+            <span class="custom-title" style="width: 18%">绣线色号</span>
+            <span class="custom-title" style="width: 34%">颜色RGB</span>
             <span class="custom-title" style="width: 18%">品牌</span>
-            <span class="custom-title" style="width: 15%">待定</span>
+            <span class="custom-title" style="width: 15%">针号</span>
           </template>
         </van-cell>
         <van-cell v-for="(item, index) in currentFigure.color" :value="item[2]">
