@@ -1,5 +1,5 @@
 <template>
-  <div ref="commonly" class="commonly-beta">
+  <div ref="commonly" class="commonly-beta" v-loading="loading">
     <div class="topOptions">
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
@@ -498,7 +498,7 @@ export default {
       goodsList: [], // 商品列表,
       currentGoods: {},
       subMenu: false,
-      isShowPrevPop: false
+      isShowPrevPop: false,
     }
   },
   computed: {
@@ -642,6 +642,7 @@ export default {
     // }
   },
   created() {
+    this.loading = true
     this.is_beta = !!this.$route.query.beta
     // 获取字体列表
     // 弧形文字
@@ -1341,6 +1342,7 @@ export default {
       this.form.middleImg.height = this.middleImgMaxHeght
       this.patternModal = false
       this.middleVisible = true
+      this.loading = false
     },
     // 重置花样最大最小高
     setFigureItemSizeRange(item) {
