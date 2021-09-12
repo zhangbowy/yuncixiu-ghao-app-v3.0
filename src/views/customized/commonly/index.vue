@@ -86,12 +86,6 @@
     </div>
     <div class="designArea">
       <div class="commonly-bg-box" @click="hiddenVisible">
-        <div class="design_info">
-          <div>
-            花样名称: [{{ currentFigure.design_name }}]
-          </div>
-        </div>
-
         <!-- 背景图 -->
         <img
           v-if="!is_beta"
