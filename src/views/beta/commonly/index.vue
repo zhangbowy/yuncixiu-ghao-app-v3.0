@@ -210,19 +210,19 @@
         <van-cell>
           <template>
             <span class="custom-title" style="width: 12%">顺序</span>
-            <span class="custom-title" style="width: 18%">绣线色号</span>
+            <span class="custom-title" style="width: 21%">绣线色号</span>
             <span class="custom-title" style="width: 34%">颜色RGB</span>
             <span class="custom-title" style="width: 18%">品牌</span>
-            <span class="custom-title" style="width: 15%">针号</span>
+            <span class="custom-title" style="width: 12%">针号</span>
           </template>
         </van-cell>
         <van-cell v-for="(item, index) in currentFigure.color" :value="item[2]">
           <template>
             <span class="custom-title" style="width: 12%">{{ item[0] }}</span>
-            <span class="custom-title" style="width: 18%">{{ item[1] }}</span>
+            <span class="custom-title" style="width: 21%">{{ item[1] }}</span>
             <span class="custom-title" @click="change_color(item, index)" :style="{textAlign: 'center', color: '#fff', marginRight: '4%', width: '30%', background: `rgb${item[2] }`}">{{ item[2] }}</span>
             <span class="custom-title" style="width: 18%">{{ item[3] }}</span>
-            <span class="custom-title" style="width: 15%">{{ item[4] }}</span>
+            <span class="custom-title" style="width: 12%">{{ item[4] }}</span>
             <!--            <van-tag type="danger" style="width: 50px">标签</van-tag>-->
           </template>
         </van-cell>
