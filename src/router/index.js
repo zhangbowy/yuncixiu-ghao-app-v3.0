@@ -130,7 +130,14 @@ const constantRoutes = [
       name: 'beta1',
       component: () => import('@/views/beta/index'),
       meta: { title: '体验系统' }
-    }]
+    },
+    {
+      path: 'commonly-beta',
+      name: 'Commonly-beta',
+      component: () => import('@/views/beta/commonly'),
+      meta: { title: '一般定制-beta' }
+    },
+  ]
   },
   {
     path: '/beta',

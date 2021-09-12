@@ -54,6 +54,7 @@ export default {
 </script>
 <style lang="scss">
 .customized{
+  overflow: auto;
   .navbar{
     position: fixed;
     top: 0;
@@ -76,4 +77,5 @@ export default {
     border: 0;
   }
 }
+
 </style>

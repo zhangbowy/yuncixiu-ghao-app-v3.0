@@ -1288,7 +1288,8 @@ export default {
       this.form.middleImg.design_id = item.design_id
       this.getGoodsList()
       this.patternPicture = [] // 上传的花样图片设为空
-      this.currentFigure = item
+      const { data: design } = await designApi.getDesignById({ design_id: item.design_id });
+      this.currentFigure = design
       this.setFigureItemSizeRange(item)
       // 解决花样图片跨域问题
       await commonApi.getImage({ url: item.prev_png_path }).then(res => {
@@ -1516,7 +1517,7 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .commonly{
   position: relative;
   height: 100%;
@@ -1886,4 +1887,12 @@ export default {
     }
   }
 }
+
+// .fade-enter-active, .fade-leave-active {
+//   transition: opacity .5s;
+  
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+// }
 </style>

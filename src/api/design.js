@@ -102,5 +102,12 @@ export const designApi = {
       },
       data
     })
+  },
+  getDesignById(params) {
+    return request({
+      url: '/custom/getDesignById',
+      method: 'get',
+      params
+    })
   }
 }

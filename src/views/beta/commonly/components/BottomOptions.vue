@@ -1,6 +1,6 @@
 <template>
   <div class="bottomOptions">
-    <div class="operate-btn">
+    <div v-if="!isBeta" class="operate-btn">
       <div v-if="!isBeta" class="uoload-btn" @click="showTemplate">
         <svg-icon icon-class="template-icon" />
         <!-- <p>{{ $t(`选择模板`) }}</p> -->
