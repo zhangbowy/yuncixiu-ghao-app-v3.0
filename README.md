@@ -1,4 +1,5 @@
 # 云易绣SAAS系统手机端
+使用Vue开发
 
 ## Project setup
 ```
