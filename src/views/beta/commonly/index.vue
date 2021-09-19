@@ -1,5 +1,5 @@
 <template>
-  <div ref="commonly" class="commonly-beta" v-loading="loading">
+  <div ref="commonly" v-loading="loading" class="commonly-beta">
     <div class="topOptions">
       <transition name="van-slide-down">
         <div v-show="visible" class="operate-btn">
@@ -220,7 +220,7 @@
           <template>
             <span class="custom-title" style="width: 12%">{{ item[0] }}</span>
             <span class="custom-title" style="width: 21%">{{ item[1] }}</span>
-            <span class="custom-title" @click="change_color(item, index)" :style="{textAlign: 'center', color: '#fff', marginRight: '4%', width: '30%', background: `rgb${item[2] }`}">{{ item[2] }}</span>
+            <span class="custom-title" :style="{textAlign: 'center', color: '#fff', marginRight: '4%', width: '30%', background: `rgb${item[2] }`}" @click="change_color(item, index)">{{ item[2] }}</span>
             <span class="custom-title" style="width: 18%">{{ item[3] }}</span>
             <span class="custom-title" style="width: 12%">{{ item[4] }}</span>
             <!--            <van-tag type="danger" style="width: 50px">标签</van-tag>-->
@@ -338,6 +338,14 @@
       :img="currentFigure.txt_png_path"
       @change="value => isShowPrevPop = value"
     />
+    <van-popup v-model="isShowChooseColor" position="bottom" :style="{ height: '30%' }">
+      <div style="margin:10px 10px; display: flex; flex-direction: row; flex-wrap: wrap;">
+        <van-button style="margin: 10px 10px" v-for="(item, index) in currentGoods.color_hash" :key="index" type="default" @click="onClick_chooseColor(item)">
+          {{ index }}
+        </van-button>
+      </div>
+    </van-popup>
+    </van-popup>
   </div>
 </template>
 
@@ -499,6 +507,7 @@ export default {
       currentGoods: {},
       subMenu: false,
       isShowPrevPop: false,
+      isShowChooseColor: false
     }
   },
   computed: {
@@ -1439,7 +1448,7 @@ export default {
           bottom_font_color: this.form.bottomText.fontColor,
           custom_template_id: this.currentTemplate.emb_template_id,
           custom_image: this.patternPicture[0] ? this.patternPicture[0].content : '',
-          background: this.currentGoods.skuList ? this.currentGoods.skuList[0].images : this.customInfo.item?.background
+          background: this.currentGoods.currentSku ? this.currentGoods.currentSku.images : this.customInfo.item?.background
         }).then(res => {
           this.loading = false
           this.previewImg = res.data.preview_image
@@ -1548,13 +1557,30 @@ export default {
     },
     choose_goods($item) {
       const { sku_list } = $item
+      const _color_hash = {}
       try {
         $item.skuList = JSON.parse(sku_list)
+        for (const sku of $item.skuList) {
+          for (const skus of sku.skus) {
+            if (skus.k == '颜色') {
+              if (!_color_hash[skus.v]) {
+                _color_hash[skus.v] = sku
+              }
+            }
+          }
+        }
+        console.log(_color_hash, '_color_hash')
+        $item.color_hash = _color_hash
         this.currentGoods = $item
+        if (Object.keys(_color_hash).length == 0) {
+          this.currentGoods.currentSku = $item.skuList[0]
+          this.complete()
+        } else {
+          this.isShowChooseColor = true
+        }
       } catch (e) {
 
       }
-      this.complete()
     },
     look_txt_png(file) {
       this.isShowPrevPop = true
@@ -1562,14 +1588,19 @@ export default {
     change_color(color_item, index) {
       console.log(color_item)
       this.$toast({
-          message: `换色功能开发中!`
-        })
+        message: `换色功能开发中!`
+      })
+    },
+    onClick_chooseColor(item) {
+      this.currentGoods.currentSku = item;
+      console.log(item, '当前选中的颜色')
+      this.complete()
     }
   }
 }
 </script>
 <style lang="scss">
-.commonly-beta{
+.commonly-beta {
   //position: relative;
   //height: 100%;
   .img-btn {

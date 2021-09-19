@@ -51,6 +51,13 @@
       :goods-list="goodsList"
       @change="choose_goods"
     />
+    <van-popup v-model="isShowChooseColor" position="bottom" :style="{ height: '30%' }">
+      <div style="margin:10px 10px; display: flex; flex-direction: row; flex-wrap: wrap;">
+        <van-button style="margin: 10px 10px" v-for="(item, index) in currentGoods.color_hash" :key="index" type="default" @click="onClick_chooseColor(item)">
+          {{ index }}
+        </van-button>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -112,7 +119,8 @@ export default {
       goodsModal: false,
       currentGoods: {},
       is_beta: false,
-      goodsList: []
+      goodsList: [],
+      isShowChooseColor: false
     }
   },
   computed: {
@@ -169,18 +177,40 @@ export default {
     window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', onOrientationChange, false)
   },
   methods: {
+    onClick_chooseColor(item) {
+      this.currentGoods.currentSku = item;
+      console.log(item, '当前选中的颜色')
+      this.handleGenerate()
+    },
     showGoods() {
       this.goodsModal = true
     },
     choose_goods($item) {
       const { sku_list } = $item
+      const _color_hash = {}
       try {
         $item.skuList = JSON.parse(sku_list)
+        for (const sku of $item.skuList) {
+          for (const skus of sku.skus) {
+            if (skus.k == '颜色') {
+              if (!_color_hash[skus.v]) {
+                _color_hash[skus.v] = sku
+              }
+            }
+          }
+        }
+        console.log(_color_hash, '_color_hash')
+        $item.color_hash = _color_hash
         this.currentGoods = $item
+        if (Object.keys(_color_hash).length == 0) {
+          this.currentGoods.currentSku = $item.skuList[0]
+          this.handleGenerate()
+        } else {
+          this.isShowChooseColor = true
+        }
       } catch (e) {
 
       }
-      this.handleGenerate()
     },
     // 获取产品列表
     getGoodsList() {
