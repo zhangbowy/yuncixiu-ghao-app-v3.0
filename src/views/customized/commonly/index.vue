@@ -213,14 +213,32 @@
         <div class="footer-button">
           <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="onUploadImgConfirm">{{ $t(`确定`) }}</van-button>
         </div>
-        <div v-if="patternPicture.length" class="footer-button">
-          <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">{{ $t(`去除背景`) }}</van-button>
+        <div class="footer-button">
           <div class="footer-button_message">
             <van-icon name="info-o" />
-            <span>{{ $t(`仅限白色背景`) }}</span>
+            <span>渐变色图片一般定制不能处理，请转由特殊定制流程处理。</span>
           </div>
+          <!-- <div class="footer-button_message">
+            <van-icon name="info-o" />
+            <span>2、 小字母高度小于 4mm、中文字体高度小于 7mm 以及字体库以外字体均不处理</span>
+          </div> -->
+      </div>
+      <div class="footer-button">
+        <span style="font-size: 14px;">错误示例</span>
+        <div class="footer-button_message">
+          <img width="70px" style="margin: 2px" src="https://dss2.bdstatic.com/8_V1bjqh_Q23odCf/pacific/1992720858.png" alt="">
+          <img width="70px" style="margin: 2px" src="https://dss2.bdstatic.com/8_V1bjqh_Q23odCf/pacific/1992720858.png" alt="">
+          <img width="70px" style="margin: 2px" src="https://dss2.bdstatic.com/8_V1bjqh_Q23odCf/pacific/1992720858.png" alt="">
+        </div>
+    </div>
+      <div v-if="patternPicture.length" class="footer-button">
+        <van-button size="small" round color="linear-gradient(to right, #ff6034,#ee0a24)" @click="removeBG">{{ $t(`去除背景`) }}</van-button>
+        <div class="footer-button_message">
+          <van-icon name="info-o" />
+          <span>{{ $t(`仅限白色背景`) }}</span>
         </div>
       </div>
+    </div>
     </van-popup>
 
     <!-- 花样库 -->
@@ -1875,14 +1893,14 @@ export default {
         display: flex;
         align-items: center;
         color: #8a8a8a;
-        margin-top: 6px;
+        margin: 6px 10px 0px;
         i {
           font-size: 14px;
         }
         & > span {
           padding-top: 2px;
           font-size: 12px;
-          line-height: 12px;
+          line-height: 16px;
           margin-left: 4px;
         }
       }
