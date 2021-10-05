@@ -1498,7 +1498,7 @@ export default {
       store.dispatch('order/setCartList', JSON.stringify(goodsInfo)).then(() => {
         this.$router.push({ path: '/orderConfirm', query: {
           is_wilcom: this.is_wilcom,
-          is_beta: this.is_beta
+          is_beta: this.is_beta ? 1 : 0
         }})
       })
     },
