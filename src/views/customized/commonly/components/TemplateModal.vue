@@ -40,5 +40,9 @@ export default {
 </script>
 
 <style>
-
+    .modal-title{
+      font-size: 16px;
+      padding: 18px;
+      border-bottom: 1px solid #f5f5f5;
+    }
 </style>
