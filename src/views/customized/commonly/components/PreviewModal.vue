@@ -143,7 +143,7 @@ export default {
     onShareBtnClick() {
       this.showShare = true
       this.showBtns = false
-      // this.wxShare()
+      this.wxShare()
     },
     onShareSheetCancel() {
       this.showShare = false
