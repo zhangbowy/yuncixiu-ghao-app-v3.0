@@ -131,8 +131,10 @@ export default {
           has_preview: true
         }
         wechatInterface(shareInfo, 'share', success => {
+          consol.log(success, '-----');
           // Toast(`${this.$t('请点击右上角分享定制')}!`)
         }, fail => {
+          consol.log(fail, '-----fail');
         })
       })
     },
