@@ -234,7 +234,13 @@ export default {
         })
         .then((res) => {
           this.submitLaoding = false
-          this.orderPay(res.data.order_no)
+          // 支付成功回调
+          Toast('订单创建成功')
+          setTimeout(() => {
+            store.dispatch('order/resetState')
+            this.$router.replace({ path: '/orderList' })
+          }, 500)
+          // this.orderPay(res.data.order_no)
         })
         .catch(() => {
           this.submitLaoding = false
