@@ -45,7 +45,8 @@ module.exports = {
   devServer: {
     proxy: {
       '/api/wx': {
-        target: 'http://cxgh.tecqm.club',
+        // target: 'http://cxgh.tecqm.club',
+        target: 'http://ningbo.yuneshow.com',
         changeOrigin: true,
         pathRewrite: {
           // '^/bs': '',

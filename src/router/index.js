@@ -7,6 +7,7 @@ const constantRoutes = [
   {
     path: '/',
     name: 'Index',
+    redirect:'/beta',
     component: () => import('@/views/index'),
     meta: { title: '首页', keepAlive: true, showTabbar: true }
   }, {

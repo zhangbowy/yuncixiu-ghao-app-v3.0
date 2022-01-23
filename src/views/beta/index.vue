@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="title">刺绣展示</div>
+    <div class="title">刺绣花样库</div>
 
     <div class="first-page-show">
       <div class="sample-box">
