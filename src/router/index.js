@@ -144,7 +144,7 @@ const constantRoutes = [
     path: '/beta',
     name: 'beta1',
     component: () => import('@/views/beta/index'),
-    meta: { title: '体验系统' }
+    meta: { title: '宁波测试v0.1' }
   },
   {
     path: '/404',
