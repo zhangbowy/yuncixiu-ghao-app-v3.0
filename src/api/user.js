@@ -45,6 +45,15 @@ export function aboutUs(params) {
     params
   })
 }
+
+export function loginAccount(data) {
+  return request({
+    url: '/user/loginAccount',
+    method: 'post',
+    data
+  })
+}
+
 // 地址管理
 export const addressApi = {
   // 地址列表

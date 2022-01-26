@@ -37,18 +37,18 @@ export default {
           normalImg: require('../../assets/tabbar/home.png'),
           activeImg: require('../../assets/tabbar/home-active.png')
         },
-        {
-          txt: '分类',
-          page: '/classify',
-          normalImg: require('../../assets/tabbar/fenlei.png'),
-          activeImg: require('../../assets/tabbar/fenlei-active.png')
-        },
-        {
-          txt: '购物车',
-          page: '/cart',
-          normalImg: require('../../assets/tabbar/cart.png'),
-          activeImg: require('../../assets/tabbar/cart-active.png')
-        },
+        // {
+        //   txt: '分类',
+        //   page: '/classify',
+        //   normalImg: require('../../assets/tabbar/fenlei.png'),
+        //   activeImg: require('../../assets/tabbar/fenlei-active.png')
+        // },
+        // {
+        //   txt: '购物车',
+        //   page: '/cart',
+        //   normalImg: require('../../assets/tabbar/cart.png'),
+        //   activeImg: require('../../assets/tabbar/cart-active.png')
+        // },
         {
           txt: '我的',
           page: '/user',

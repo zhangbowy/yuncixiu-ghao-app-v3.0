@@ -170,7 +170,6 @@ export default {
   created() {
     this.is_wilcom = Number(this.$route?.query.is_wilcom) || 0
     this.is_beta = Number(this.$route?.query.is_beta) || 0
-    debugger
     if (this.is_beta && this.is_beta != 'false') {
       this.actions = [
         { name: `${this.$t('远程下发')}`, type: 1 },

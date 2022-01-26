@@ -1,20 +1,21 @@
 <template>
   <div class="home">
     <div class="title">刺绣花样库</div>
-
-    <div class="first-page-show">
-      <div class="sample-box">
-        <template v-for="(item,index) in figureList">
-          <div :key="index+item.prev_png_path" class="sample-box-item">
-            <img :src="item.prev_png_path" alt="" lazy-load @click="patternDialog(item)">
-            <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
+      <div class="first-page-show">
+        <van-skeleton :row="6" :loading="loading">
+          <div class="sample-box">
+            <template v-for="(item,index) in figureList">
+              <div :key="index+item.prev_png_path" class="sample-box-item">
+                <img :src="item.prev_png_path" alt="" lazy-load @click="patternDialog(item)">
+                <span v-if="item.is_presell==1" class="corner-mark">{{ '预售' }}</span>
+              </div>
+            </template>
           </div>
-        </template>
+          <div v-if="figureList.length==0">
+            <no-data :text="`${$t('暂无花样')}`" icon="no-data" :font-size="64" />
+          </div>
+        </van-skeleton>
       </div>
-      <div v-if="figureList.length==0">
-        <no-data :text="`${$t('暂无花样')}`" icon="no-data" :font-size="64" />
-      </div>
-    </div>
     <div class="div-content">
       <div style="display:flex">
         <van-button
@@ -44,6 +45,7 @@
 
 <script>
 import { designApi } from '@/api/design'
+
 export default {
   name: 'Home',
   components: {
@@ -60,12 +62,12 @@ export default {
       req_num: 0,
       pngs: [],
       figureList: [],
-      first: 0
+      first: 0,
+      loading: true
     }
   },
 
   created: function() {
-    debugger
     if (this.first == 0) {
       // window.location.reload()
      this.first = 1;
@@ -77,6 +79,9 @@ export default {
     // const me = this
     window.addEventListener('popState', this.go_back, false)
     // this.$refs.waterfall.waterfallOver(); // 取消下拉加载
+    setTimeout(() => {
+      this.loading = false
+    }, 800)
   },
   destroyed() {
     window.removeEventListener('popState', this.go_back, false)
@@ -121,7 +126,6 @@ export default {
           file: value.file
         }
       })
-      debugger
       event.preventDefault()
     },
 
@@ -141,7 +145,7 @@ export default {
   min-height: 100vh;
 }
 .first-page-show {
-  flex: 1;
+  /* flex: 1; */
 }
 .div-content {
   margin: 10px;
@@ -176,7 +180,8 @@ export default {
   text-align: center;
 }
 .first-page-show {
-  height: 57vh;
+  /* height: 57vh; */
+  overflow: auto;
 }
 
 .design-pngs {
@@ -192,7 +197,7 @@ export default {
 }
 
 .sample-box{
-  height: 80vh;
+  height: 74vh;
   overflow: auto;
   display: flex;
   flex-flow: wrap;
@@ -227,4 +232,20 @@ export default {
     }
   }
 }
+
+.van-skeleton__content {
+  display: flex;
+  flex-wrap: wrap;
+  .van-skeleton__row {
+    width: 40% !important;;
+    height: 170px;
+    /* border: 1px solid #f5f5f5; */
+    /* box-shadow: 0px 10px 20px #f3f3f3; */
+    margin: 0 5% 15px;
+    border-radius: 6px;
+    box-sizing: border-box;
+    padding: 10px;
+  }
+}
+
 </style>

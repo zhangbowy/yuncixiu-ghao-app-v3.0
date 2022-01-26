@@ -1035,7 +1035,6 @@ export default {
       })
     },
     async fontSizeChange(value) {
-      debugger
       if (this.topWrapperFocus === true) {
         this.form.topText.fontSize = value
         this.getFontTop()
@@ -1427,7 +1426,6 @@ export default {
           this.loading = false
         })
       }).catch((e) => {
-        debugger
         this.loading = false
         Toast(`${this.$t('定制图案生成失败')}!`)
       })

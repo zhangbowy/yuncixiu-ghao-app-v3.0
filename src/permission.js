@@ -14,6 +14,9 @@ NProgress.configure({
 }) // NProgress配置
 
 router.beforeEach(async(to, from, next) => {
+  if (to.path === '/login') {
+    return next()
+  }
   // 开始进度条
   NProgress.start()
   // 设置页面标题
@@ -45,14 +48,15 @@ router.beforeEach(async(to, from, next) => {
   } else {
     await store.dispatch('user/checkLogin').then((res) => {
       if (!res) {
+        next({ path: '/login' })
         if (isWeiXin() || process.env.NODE_ENV === 'production') {
           // 生产环境
-          store.dispatch('user/login')
+          // store.dispatch('user/login')
         } else {
           // 开发环境
-          store.dispatch('user/loginDev').then(res => {
-            next(`${to.path}`)
-          })
+          // store.dispatch('user/loginDev').then(res => {
+          //   next(`${to.path}`)
+          // })
         }
         // store.dispatch('user/loginDev').then(res => {
         //   next(`${to.path}`)

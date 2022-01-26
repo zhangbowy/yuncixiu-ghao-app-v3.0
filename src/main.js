@@ -12,7 +12,9 @@ import store from './store'
 import vueEsign from 'vue-esign'
 import '@/permission' // 鉴权
 import VueSignaturePad from '@/components/VueSign/vue-signature-pad.esm'
+import { Skeleton } from 'vant'
 
+Vue.use(Skeleton)
 Vue.use(VueSignaturePad)
 // main.js
 import Directive from './directive'
