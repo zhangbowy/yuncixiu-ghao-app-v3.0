@@ -40,6 +40,7 @@
         <cell-item icon-name="site-icon" :left-text="`${$t('地址管理')}`" path="/addressList" />
         <cell-item icon-name="language" :left-text="`${$t('语言')}`" @click.native="onLanguageBtnClick" />
         <cell-item icon-name="about" :left-text="`${$t('关于我们')}`" path="/about" />
+        <cell-item icon-name="about" :left-text="`${$t('退出登陆')}`" @click.native="onClick_logOut" />
       </div>
     </div>
     <van-dialog v-model="show" :title="`${$t('切换语言')}`" :show-confirm-button="false" :close-on-click-overlay="true">
@@ -89,6 +90,15 @@ export default {
     onLanguageBtnClick() {
       this.show = true
       console.log()
+    },
+    // 退出登陆的方法
+    onClick_logOut() {
+      this.$store.dispatch('user/logout').then(res => {
+        this.$toast.success(`退出成功!`)
+        setTimeout(() => {
+        this.$router.push({ path: '/login'})
+        }, 500)
+      })
     },
     toOrderList(type) {
       if (type) {
