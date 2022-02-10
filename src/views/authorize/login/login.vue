@@ -30,13 +30,13 @@
               <div class="login-item">
                 <div class="label">
                   <text
-                    class="iconfont icon-yonghuming1"
                     v-if="type"
-                  ></text>
+                    class="iconfont icon-yonghuming1"
+                  />
                   <text
-                    class="iconfont  icon-shoujihao3"
                     v-else
-                  ></text>
+                    class="iconfont  icon-shoujihao3"
+                  />
                 </div>
                 <div class="item-center">
                   <!-- start 这里解决在谷歌浏览器上自动填充问题 -->
@@ -47,19 +47,19 @@
                   > -->
                   <!--end 这里解决在谷歌浏览器上自动填充问题 -->
                   <input
-                    type="text"
                     v-model="name"
+                    type="text"
                     placeholder="请输入您的手机号码"
                     class="input"
-                  />
+                  >
                 </div>
               </div>
               <div
-                class="login-item"
                 v-if="type"
+                class="login-item"
               >
                 <div class="label">
-                  <text class="iconfont icon-mima1"></text>
+                  <text class="iconfont icon-mima1" />
                 </div>
                 <div class="item-center">
                   <!-- start 这里解决在谷歌浏览器上自动填充问题 -->
@@ -71,18 +71,18 @@
                   <!--end 这里解决在谷歌浏览器上自动填充问题 -->
                   <input
                     v-if="title == 'password'"
-                    type="password"
                     v-model="pass"
+                    type="password"
                     placeholder="请输入密码"
                     class="input"
-                  />
+                  >
                   <input
                     v-else
-                    type="text"
                     v-model="pass"
+                    type="text"
                     placeholder="请输入密码"
                     class="input"
-                  />
+                  >
                 </div>
                 <!-- <div class="item-right typePassword">
                   <text
@@ -98,11 +98,11 @@
                 </div> -->
               </div>
               <div
-                class="login-item"
                 v-if="isCode && type"
+                class="login-item"
               >
                 <div class="label">
-                  <text class="iconfont icon-yanzhengma1"></text>
+                  <text class="iconfont icon-yanzhengma1" />
                 </div>
                 <div class="item-center">
                   <!-- start 这里解决在谷歌浏览器上自动填充问题 -->
@@ -113,11 +113,11 @@
                   > -->
                   <!--end 这里解决在谷歌浏览器上自动填充问题 -->
                   <input
-                    type="text"
                     v-model="code"
+                    type="text"
                     placeholder="请输入图形验证码"
                     class="input"
-                  />
+                  >
                 </div>
                 <div
                   class="item-right item-right-getcode"
@@ -128,55 +128,55 @@
                     alt=""
                     class="form-img"
                     :lazy-load="true"
-                  />
+                  >
                 </div>
               </div>
               <div
-                class="login-item"
                 v-if="!type"
+                class="login-item"
               >
                 <div class="label">
-                  <text class="iconfont icon-duanxinyanzheng"></text>
+                  <text class="iconfont icon-duanxinyanzheng" />
                 </div>
                 <div class="item-center">
                   <!-- start 这里解决在谷歌浏览器上自动填充问题 -->
-                  <input style="opacity: 0;position: absolute;">
+                  <!-- <input style="opacity: 0;position: absolute;">
                   <input
                     type="text"
                     style="opacity: 0;position: absolute;"
-                  >
+                  > -->
                   <!--end 这里解决在谷歌浏览器上自动填充问题 -->
                   <input
-                    type="text"
                     v-model="code"
+                    type="text"
                     placeholder="请输入您的手机验证码"
                     class="input"
-                  />
+                  >
                 </div>
                 <div class="item-right item-right-getcode">
                   <div
+                    v-show="timeout == '获取验证码'"
                     class="getCode"
                     @click="sendCodeWithLogin"
-                    v-show="timeout == '获取验证码'"
                   >
                     发送验证码
                   </div>
                   <div
-                    class="getCode"
                     v-show="timeout != '获取验证码'"
+                    class="getCode"
                   >
-                    {{timeout}}s
+                    {{ timeout }}s
                   </div>
                 </div>
               </div>
             </div>
             <div class="forget">
               <ul>
-                <li></li>
+                <li />
                 <li @click="changeType">
                   <a
-                    href="javascript:0;"
                     v-if="type"
+                    href="javascript:0;"
                   >短信验证码登录</a>
                   <a
                     v-else
@@ -199,125 +199,125 @@
 </template>
 
 <script>
-  import {loginAccount} from '@/api/user'
-  export default {
-    name: "login",
-    data() {
-      return {
-        showLoading: true,
-        loading: false,
-        title: 'password',
-        obj: '',
-        name: '',
-        pass: '',
-        text: 0,
-        codeImg: '', // 验证码
-        code: '',
-        isCode: false,
-        type: 1,
-        timeout: "获取验证码",
-        bgColor: "background:#f8f8f8;padding-left:10px;"
-        // img:true
-      };
-    },
-    created() {
-      // this.MyNode();
-      this.$nextTick(() => {
-        // this.$refs.loading.open();
-      });
-      // this.CodeImg();
-    },
-    methods: {
-      changeType() {
-        this.type = !this.type;
-        this.code = '';
-      },
-      receiveItem(e, type) {
-        this[type] = e.detail;
-      },
-      sendCodeWithLogin() {
-        this.$http.get(this.$api.sendCodeWithLogin, { mobile: this.name }).then(res => {
-          if (res.status == 1) {
-            this.timeout = "60";
-            const it = setInterval(() => {
-              this.timeout = (Number.parseInt(this.timeout) - 1).toString();
-              if (this.timeout === "0") {
-                clearInterval(it);
-                this.timeout = "获取验证码";
-              }
-            }, 1000);
-          } else {
-            this.tooltip(res.msg);
-          }
-        });
-      },
-      MyNode() {
-        this.$http.post(this.$api.MyNode, {}).then(res => {
-          if (res.status == 1) {
-            this.obj = res.data.logo;
-            this.showLoading = false;
-            // if(!res.data.logo){
-            //     this.img=false
-            // }
-          } else {
-            this.tooltip(res.msg);
-          }
-        });
-      },
-      Login() {
-        let params;
-        if (this.type) {
-          params = {
-            phone: Number(this.name),
-            password: this.pass,
-            code: this.code,
-            login_type: 1, // 1 密码登录
-          };
-        } else {
-          params = {
-            phone: Number(this.name),
-            password: "",
-            code: this.code,
-            login_type: 2, // 2 验证码登录
-          };
-        }
-        loginAccount(params).then(res => {
-          if (res.code === 0) {
-            this.$toast.success('登陆成功')
-            this.$router.push({
-              path: '/'
-            })
-          } else {
-            this.$toast.fail(res.msg[0])
-            this.isCode = res.data.isCode;
-            this.tooltip(res.msg);
-            if (this.isCode == true) { // 控制验证码显示
-              this.tooltip(res.msg[0]);
-              // this.title = document.querySelector("#center-bottom")
-              // this.title.style.display = "block"
-              this.CodeImg(); // 调用验证码
-            }
-          }
-        });
-      },
-      CodeImg() {
-        this.codeImg = this.$http.baseURL + this.$api.CodeImg + '?' + new Date().getTime();
-      },
-      onClick(type) {
-        if (type == 1) {
-          this.title = "text";
-        } else {
-          this.title = "password";
-        }
-      },
-      onClick1() { // 登陆
-        this.Login();
-      },
-      onClick2() { // 更新验证码
-        this.CodeImg();
-      }
+import { loginAccount, sendLoginCode } from '@/api/user'
+export default {
+  name: 'Login',
+  data() {
+    return {
+      showLoading: true,
+      loading: false,
+      title: 'password',
+      obj: '',
+      name: '',
+      pass: '',
+      text: 0,
+      codeImg: '', // 验证码
+      code: '',
+      isCode: false,
+      type: 1,
+      timeout: '获取验证码',
+      bgColor: 'background:#f8f8f8;padding-left:10px;'
+      // img:true
     }
-  };
+  },
+  created() {
+    // this.MyNode();
+    this.$nextTick(() => {
+      // this.$refs.loading.open();
+    })
+    // this.CodeImg();
+  },
+  methods: {
+    changeType() {
+      this.type = !this.type
+      this.code = ''
+    },
+    receiveItem(e, type) {
+      this[type] = e.detail
+    },
+    sendCodeWithLogin() {
+      sendLoginCode( { phone: this.name }).then(res => {
+        if (res.code == 0) {
+          this.timeout = '60'
+          const it = setInterval(() => {
+            this.timeout = (Number.parseInt(this.timeout) - 1).toString()
+            if (this.timeout === '0') {
+              clearInterval(it)
+              this.timeout = '获取验证码'
+            }
+          }, 1000)
+        } else {
+          this.$toast.fail(res.msg)
+        }
+      })
+    },
+    MyNode() {
+      this.$http.post(this.$api.MyNode, {}).then(res => {
+        if (res.status == 1) {
+          this.obj = res.data.logo
+          this.showLoading = false
+          // if(!res.data.logo){
+          //     this.img=false
+          // }
+        } else {
+          this.tooltip(res.msg)
+        }
+      })
+    },
+    Login() {
+      let params
+      if (this.type) {
+        params = {
+          phone: Number(this.name),
+          password: this.pass,
+          code: this.code,
+          login_type: 1 // 1 密码登录
+        }
+      } else {
+        params = {
+          phone: Number(this.name),
+          password: '',
+          code: this.code,
+          login_type: 2 // 2 验证码登录
+        }
+      }
+      loginAccount(params).then(res => {
+        if (res.code === 0) {
+          this.$toast.success('登陆成功')
+          this.$router.push({
+            path: '/'
+          })
+        } else {
+          this.$toast.fail(res.msg[0])
+          this.isCode = res.data.isCode
+          this.tooltip(res.msg)
+          if (this.isCode == true) { // 控制验证码显示
+            this.tooltip(res.msg[0])
+            // this.title = document.querySelector("#center-bottom")
+            // this.title.style.display = "block"
+            this.CodeImg() // 调用验证码
+          }
+        }
+      })
+    },
+    CodeImg() {
+      this.codeImg = this.$http.baseURL + this.$api.CodeImg + '?' + new Date().getTime()
+    },
+    onClick(type) {
+      if (type == 1) {
+        this.title = 'text'
+      } else {
+        this.title = 'password'
+      }
+    },
+    onClick1() { // 登陆
+      this.Login()
+    },
+    onClick2() { // 更新验证码
+      this.CodeImg()
+    }
+  }
+}
 </script>
 <style lang="scss">
   .plp-bg {
@@ -493,6 +493,4 @@
     color: #999999;
   }
 </style>
-
-
 

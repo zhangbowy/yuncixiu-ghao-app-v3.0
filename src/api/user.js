@@ -54,6 +54,14 @@ export function loginAccount(data) {
   })
 }
 
+export function sendLoginCode(data) {
+  return request({
+    url: '/user/sendSms',
+    method: 'post',
+    data
+  })
+}
+
 // 地址管理
 export const addressApi = {
   // 地址列表
