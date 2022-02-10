@@ -40,7 +40,7 @@
         <cell-item icon-name="site-icon" :left-text="`${$t('地址管理')}`" path="/addressList" />
         <cell-item icon-name="language" :left-text="`${$t('语言')}`" @click.native="onLanguageBtnClick" />
         <cell-item icon-name="about" :left-text="`${$t('关于我们')}`" path="/about" />
-        <cell-item icon-name="wx-login" :left-text="`${$t('退出登陆')}`" @click.native="onClick_logOut" />
+        <cell-item icon-name="log-out" :left-text="`${$t('退出登陆')}`" @click.native="onClick_logOut" />
       </div>
     </div>
     <van-dialog v-model="show" :title="`${$t('切换语言')}`" :show-confirm-button="false" :close-on-click-overlay="true">
@@ -50,7 +50,7 @@
     </van-dialog>
   </div>
 </template>
-
+······
 <script>
 import SvgIcon from '@/components/SvgIcon'
 import CellItem from '@/components/Cell/CellItem'
