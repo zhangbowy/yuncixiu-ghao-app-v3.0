@@ -17,23 +17,30 @@
         </van-skeleton>
       </div>
     <div class="div-content">
-      <div style="display:flex">
-        <van-button
+      <div style="display:flex; justify-content: space-between;">
+          <van-popover
           :block="true"
-          type="primary"
-          @click="to_design"
+          v-model="showPopover"
+          trigger="click"
+          :actions="actions"
+          @select="onSelect"
+          placement="top"
         >
-          logo刺绣
-        </van-button>
+          <template #reference>
+            <van-button
+            type="primary"
+          >
+            刺绣设计
+          </van-button>
+          </template>
+        </van-popover>
         <van-button
-          :block="true"
           type="warning"
           @click="to_pencil"
         >
           手绘刺绣
         </van-button>
         <van-button
-          :block="true"
           type="danger"
           @click="to_letter"
         >文字刺绣
@@ -63,7 +70,10 @@ export default {
       pngs: [],
       figureList: [],
       first: 0,
-      loading: true
+      loading: true,
+      showPopover: false,
+      // 通过 actions 属性来定义菜单选项
+      actions: [{ text: '一般定制' }, { text: '特殊定制' }],
     }
   },
 
@@ -88,6 +98,14 @@ export default {
   },
 
   methods: {
+    onSelect(action, index) {
+      console.log(action, index)
+      if (index === 0) {
+        this.to_design()
+      } else {
+        this.to_special()
+      }
+    },
     patternDialog($item) {
       this.$router.push(`/customized/commonly-beta?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=${$item.design_id}&beta=1&template_id=2`)
     },
@@ -101,6 +119,9 @@ export default {
       })
     },
     onclick_qrCode() {
+    },
+    to_special() {
+      this.$router.push('/customized/special?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1&template_id=2')
     },
     to_design: function() {
       this.$router.push('/customized/commonly?goods_id=100&sku_id=qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id&design_id=&beta=1&template_id=2')

@@ -164,12 +164,13 @@ export default {
       Toast(`${this.$t('表单信息不完整')}`)
     },
     submit(values) {
+      debugger
       console.log(values)
       if (this.result.length === 0) {
         Toast(`${this.$t('请勾选刺绣种类')}`)
         return false
       }
-      var goodsInfo = JSON.parse(this.design.goodsInfo)
+      var goodsInfo = JSON.parse(this.design.goodsInfo) || [{}]
       goodsInfo[0].shopping_type = 3
       goodsInfo[0].design_info = {
         custom_template_id: this.result,

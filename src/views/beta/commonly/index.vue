@@ -94,100 +94,105 @@
           :style="designImgStyle"
           alt=""
         >
-        <!-- 设计区域 -->
-        <div ref="designBox" class="design-box" :style="designBoxStyle">
-          <!-- 上输入框  -->
-          <div
-            v-if="currentTemplate.emb_template_id!==2 && showTopText"
-            class="top-input"
-            :class="{'focus':topWrapperFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}"
-          >
+        <div class="design_wrap">
+          <!-- 设计区域 -->
+          <div ref="designBox" class="design-box" :style="designBoxStyle">
+            <!-- 上输入框  -->
             <div
-              v-if="!topWrapperFocus"
-              class="top-img-list"
-              :style="{ textAlign: form.topText.align,fontSize: `${getFontSize(form.topText.fontSize)}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
-              @click.stop="inputWrapperFocus(1)"
+              v-if="currentTemplate.emb_template_id!==2 && showTopText"
+              class="top-input"
+              :class="{'focus':topWrapperFocus==true, 'middle':currentTemplate.emb_template_id==1, 'topBottom': currentTemplate.emb_template_id==3}"
             >
-              <span v-if="topFocus==false && topImg.length === 0 && topTextList.length === 0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
-              <div v-else class="top-img-content">
-                <span v-if="form.topText.inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
-                  <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="getFontSize(form.topText.fontSize)" :src="item" alt="">
-                </span>
-                <span v-if="form.topText.inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
-                  <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
-                </span>
-              </div>
-            </div>
-            <div v-if="topWrapperFocus" class="input-box">
-              <input
-                ref="topInput"
-                v-model="form.topText.content"
-                :placeholder="`${$t('点击输入文字')}`"
-                type="text"
+              <div
+                v-if="!topWrapperFocus"
+                class="top-img-list"
                 :style="{ textAlign: form.topText.align,fontSize: `${getFontSize(form.topText.fontSize)}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
-                @blur="inputBlur(1, $event)"
-                @focus="inputFocus(1)"
+                @click.stop="inputWrapperFocus(1)"
               >
-            </div>
-          </div>
-          <!-- 中间图片 -->
-          <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
-            <img
-              v-if="patternPicture[0] || form.middleImg.prev_png_path"
-              :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path"
-              alt=""
-              :style="{
-                width: '100%'
-                // maxWidth: `${form.middleImg.width*design_box.design_scale || 300}px`,
-                // height: `${Math.min(form.middleImg.height*design_box.design_scale, customInfo.custom_info.design_height *design_box.design_scale)}px`
-              }"
-              @click.stop="showMiddleMemu()"
-            >
-          </div>
-          <!-- <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
-            <img
-              src="https://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/design/15/7/2020-05-28-17:15:33/Car2.PNG"
-              alt=""
-              width="100"
-              @click.stop="showMiddleMemu()"
-            >
-          </div> -->
-          <!-- 下输入框 -->
-          <div
-            v-if="currentTemplate.emb_template_id==3 && showBottomText"
-            class="bottom-input"
-            :class="{'focus':bottomWrapperFocus==true,'topBottom': currentTemplate.emb_template_id==3}"
-          >
-            <div
-              v-if="bottomWrapperFocus==false"
-              class="bottom-img-list"
-              :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font_b'}"
-              @click.stop="inputWrapperFocus(2)"
-            >
-              <span
-                v-if="bottomFocus==false && bottomImg.length==0"
-              >{{ form.bottomText.content? form.bottomText.content: $t('双击开始编辑') }}</span>
-              <div v-else class="bottom-img-content">
-                <span ref="bottomImgContent" :class="openArc && 'arc'">
-                  <img v-for="(item,index) in bottomImg" :key="index" :height="getFontSize(form.bottomText.fontSize)" :src="item">
-                </span>
+                <span v-if="topFocus==false && topImg.length === 0 && topTextList.length === 0">{{ form.topText.content ? form.topText.content : $t('双击开始编辑') }}</span>
+                <div v-else class="top-img-content">
+                  <span v-if="form.topText.inputMode === 'en'" id="img" ref="topImgContent" :class="openArc && 'arc'">
+                    <img v-for="(item,index) in topImg" ref="topImg" :key="`${index}${openArc}`" :height="getFontSize(form.topText.fontSize)" :src="item" alt="">
+                  </span>
+                  <span v-if="form.topText.inputMode === 'zh'" id="text" ref="topImgContent" :class="openArc && 'arc'">
+                    <span v-for="(item,index) in topTextList" ref="topImg" :key="`${index}${openArc}`">{{ item }}</span>
+                  </span>
+                </div>
+              </div>
+              <div v-if="topWrapperFocus" class="input-box">
+                <input
+                  ref="topInput"
+                  v-model="form.topText.content"
+                  :placeholder="`${$t('点击输入文字')}`"
+                  type="text"
+                  :style="{ textAlign: form.topText.align,fontSize: `${getFontSize(form.topText.fontSize)}px`,color: `${form.topText.fontColor}`, fontFamily: 'font'}"
+                  @blur="inputBlur(1, $event)"
+                  @focus="inputFocus(1)"
+                >
               </div>
             </div>
-            <div v-if="bottomWrapperFocus" class="input-box">
-              <input
-                ref="bottomInput"
-                v-model="form.bottomText.content"
-                :placeholder="`${$t('点击输入文字')}`"
-                type="text"
-                :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font_b'}"
-                @input="getFontBottom()"
-                @blur="inputBlur(2, $event)"
-                @focus="inputFocus(2)"
+            <!-- 中间图片 -->
+            <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
+              <img
+                v-if="patternPicture[0] || form.middleImg.prev_png_path"
+                :src="patternPicture[0]?patternPicture[0].content: form.middleImg.prev_png_path"
+                alt=""
+                :style="{
+                  width: '100%'
+                  // maxWidth: `${form.middleImg.width*design_box.design_scale || 300}px`,
+                  // height: `${Math.min(form.middleImg.height*design_box.design_scale, customInfo.custom_info.design_height *design_box.design_scale)}px`
+                }"
+                @click.stop="showMiddleMemu()"
               >
             </div>
+            <!-- <div v-if="currentTemplate.emb_template_id!==1" class="middle-img">
+              <img
+                src="https://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/design/15/7/2020-05-28-17:15:33/Car2.PNG"
+                alt=""
+                width="100"
+                @click.stop="showMiddleMemu()"
+              >
+            </div> -->
+            <!-- 下输入框 -->
+            <div
+              v-if="currentTemplate.emb_template_id==3 && showBottomText"
+              class="bottom-input"
+              :class="{'focus':bottomWrapperFocus==true,'topBottom': currentTemplate.emb_template_id==3}"
+            >
+              <div
+                v-if="bottomWrapperFocus==false"
+                class="bottom-img-list"
+                :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font_b'}"
+                @click.stop="inputWrapperFocus(2)"
+              >
+                <span
+                  v-if="bottomFocus==false && bottomImg.length==0"
+                >{{ form.bottomText.content? form.bottomText.content: $t('双击开始编辑') }}</span>
+                <div v-else class="bottom-img-content">
+                  <span ref="bottomImgContent" :class="openArc && 'arc'">
+                    <img v-for="(item,index) in bottomImg" :key="index" :height="getFontSize(form.bottomText.fontSize)" :src="item">
+                  </span>
+                </div>
+              </div>
+              <div v-if="bottomWrapperFocus" class="input-box">
+                <input
+                  ref="bottomInput"
+                  v-model="form.bottomText.content"
+                  :placeholder="`${$t('点击输入文字')}`"
+                  type="text"
+                  :style="{textAlign: form.bottomText.align,fontSize: `${getFontSize(form.bottomText.fontSize)}px`,color: `${form.bottomText.fontColor}`, fontFamily: 'font_b'}"
+                  @input="getFontBottom()"
+                  @blur="inputBlur(2, $event)"
+                  @focus="inputFocus(2)"
+                >
+              </div>
+            </div>
+          </div>
+          <!-- 设计区域结束 -->
+          <div>
+            <!-- 11 -->
           </div>
         </div>
-        <!-- 设计区域结束 -->
       </div>
     </div>
     <div class="design_info_wrap">
@@ -1066,7 +1071,6 @@ export default {
       })
     },
     async fontSizeChange(value) {
-      debugger
       if (this.topWrapperFocus === true) {
         this.form.topText.fontSize = value
         this.getFontTop()
@@ -1459,7 +1463,6 @@ export default {
           this.loading = false
         })
       }).catch((e) => {
-        debugger
         this.loading = false
         Toast(`${this.$t('定制图案生成失败')}!`)
       })
@@ -1721,6 +1724,12 @@ export default {
         line-height: 42px;
       }
     }
+    .design_wrap {
+      display: flex;
+      align-items: center;
+      margin:0.8rem auto 0;
+      justify-content: center;
+    }
     .design-box{
       // position: absolute;
       width: 200px;
@@ -1733,7 +1742,7 @@ export default {
       flex-direction: column;
       align-items: center;
       justify-content: space-around;
-      margin: 30px auto 0;
+      /* margin: 30px auto 0; */
       // box-sizing: border-box;
       // padding: 4px;
       .top-input,.bottom-input{

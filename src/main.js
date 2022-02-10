@@ -13,7 +13,8 @@ import vueEsign from 'vue-esign'
 import '@/permission' // 鉴权
 import VueSignaturePad from '@/components/VueSign/vue-signature-pad.esm'
 import { Skeleton } from 'vant'
-
+import { Popover } from 'vant'
+Vue.use(Popover)
 Vue.use(Skeleton)
 Vue.use(VueSignaturePad)
 // main.js
