@@ -148,8 +148,8 @@ export default {
       is_wilcom: 0,
       active: 1,
       actions: [
-        { name: `${this.$t('远程下发刺绣')}`, type: 1 },
-        { name: `${this.$t('门店扫码刺绣')}`, type: 2 }
+        { name: `${this.$t('远程联机刺绣')}`, type: 1 },
+        { name: `${this.$t('手机扫码刺绣')}`, type: 2 }
       ],
       orderType: {
         name: `${this.$t('快递发货')}`,
@@ -205,7 +205,7 @@ export default {
           logistics_type: this.orderType.type
         })
         .then((res) => {
-          this.loading = false
+          this.loading = false         
           this.orderInfo = res.data
         })
         .catch((error) => {

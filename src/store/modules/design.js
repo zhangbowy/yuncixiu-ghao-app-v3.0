@@ -1,5 +1,15 @@
+import { js_getDPI } from "@/utils"
+
 const state = {
-  goodsInfo: localStorage.getItem('design_goods_info')
+  // goodsInfo: localStorage.getItem('design_goods_info')
+  goodsInfo: JSON.stringify([
+    {
+      buy_num: 1,
+      item_id: 100,
+      shopping_type: 2,
+      sku_id: 'qnlgkkmf9o00_id-peth0svajnc0_id_jcr3at6cmf40_id-lc3iko62alg0_id'
+    }
+  ])
 }
 
 const mutations = {
