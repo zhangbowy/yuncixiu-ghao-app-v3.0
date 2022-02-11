@@ -171,10 +171,10 @@ export default {
     this.is_wilcom = Number(this.$route?.query.is_wilcom) || 0
     this.is_beta = Number(this.$route?.query.is_beta) || 0
     if (this.is_beta && this.is_beta != 'false') {
-      this.actions = [
-        { name: `${this.$t('远程下发')}`, type: 1 },
-        { name: `${this.$t('手机扫码')}`, type: 2 }
-      ]
+      // this.actions = [
+      //   { name: `${this.$t('远程下发')}`, type: 1 },
+      //   { name: `${this.$t('手机扫码')}`, type: 2 }
+      // ]
     }
     if (this.$route.query.address_id) {
       this.address_id = this.$route.query.address_id
