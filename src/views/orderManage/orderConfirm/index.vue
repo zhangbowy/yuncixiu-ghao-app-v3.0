@@ -17,7 +17,7 @@
       </van-tabs>
       <!-- <van-action-sheet v-model="show" :actions="actions" @select="onSelect" /> -->
     </div>
-    <div
+    <!-- <div
       v-if="orderType.type == 1 && orderInfo.address.phone && !is_beta"
       class="order-address"
       @click="toAddress"
@@ -52,7 +52,7 @@
       <span class="right-arrow">
         <svg-icon icon-class="right-arrow" />
       </span>
-    </div>
+    </div> -->
     <div class="good-info">
       <div
         v-for="(item, index) in orderInfo.item_list"
@@ -97,11 +97,11 @@
         :title="`${$t('小计')}`"
         :value="`${$t('￥')}${orderInfo.item_price ? orderInfo.item_price : 0.0}`"
       />
-      <van-cell
+      <!-- <van-cell
         v-if="orderType.type == 1"
         :title="`${$t('运费')}`"
         :value="`${$t('￥')}${orderInfo.express_amount ? orderInfo.express_amount : 0.0}`"
-      />
+      /> -->
     </div>
     <div class="order-mask">
       <van-field
@@ -148,8 +148,8 @@ export default {
       is_wilcom: 0,
       active: 1,
       actions: [
-        { name: `${this.$t('快递发货')}`, type: 1 },
-        { name: `${this.$t('门店自提')}`, type: 2 }
+        { name: `${this.$t('远程下发刺绣')}`, type: 1 },
+        { name: `${this.$t('门店扫码刺绣')}`, type: 2 }
       ],
       orderType: {
         name: `${this.$t('快递发货')}`,
