@@ -92,12 +92,14 @@ export default {
         name: `${this.$t('待支付')}`,
         type: 1
       }, {
-        name: `${this.$t('待发货')}`,
-        type: '2,7,8,9,10'
-      }, {
-        name: `${this.$t('待收货')}`,
-        type: '3'
-      }, {
+        name: `${this.$t('待刺绣')}`,
+        type: '2,7,8,9,10,3'
+      },
+      //  {
+      //   name: `${this.$t('待收货')}`,
+      //   type: '3'
+      // },
+       {
         name: `${this.$t('已完成')}`,
         type: 4
       }, {

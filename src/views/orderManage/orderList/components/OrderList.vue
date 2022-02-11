@@ -5,7 +5,7 @@
         <div class="order-number">{{ `${$t('订单号')}${$t('：')}` }}<span>{{ item.order_no }}</span></div>
         <div class="order-status">
           <!-- {{ item._status }} -->
-          {{ item.status==1?$t('待支付'): item.status==2||item.status==7||item.status==8||item.status==9||item.status==10?$t('待发货'):item.status==3?$t('待收货'):item.status==4?$t('已完成'):item.status==5?$t('待回复'):item.status==6?$t('已回复'):item.status==-2?$t('已取消'):'' }}
+          {{ item.status==1?$t('待支付'): item.status==2||item.status==7||item.status==8||item.status==9||item.status==10?$t('待刺绣'):item.status==3?$t('待刺绣'):item.status==4?$t('已完成'):item.status==5?$t('待回复'):item.status==6?$t('已回复'):item.status==-2?$t('已取消'):'' }}
         </div>
       </div>
       <div class="goods-info" @click="toDetail(item.order_no)">
@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="statistics">
-        <span class="logistics-type">{{ $t(item._logistics_type) }}</span> <span>{{ $t('共计') }}{{ item.order_item.length }}{{ $t('件商品') }} {{ $t('合计') }}:{{ $t('￥') }}</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span v-if="item.logistics_type==1">({{ $t('含运费') }}{{ $t('￥') }}{{ item.express_amount.toFixed(2) }})</span>
+        <span class="logistics-type">{{ item.logistics_type === 1 ? '远程联机': '手机扫码' }}</span> <span>{{ $t('共计') }}{{ item.order_item.length }}{{ $t('件商品') }} {{ $t('合计') }}:{{ $t('￥') }}</span><span class="pay-amound">{{ item.pay_amount.toFixed(2) }}</span> <span v-if="item.logistics_type==1">({{ $t('含运费') }}{{ $t('￥') }}{{ item.express_amount.toFixed(2) }})</span>
       </div>
       <div class="list-operation">
         <div class="button-box">

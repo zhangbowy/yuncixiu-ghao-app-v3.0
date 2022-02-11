@@ -152,7 +152,7 @@ export default {
         { name: `${this.$t('手机扫码刺绣')}`, type: 2 }
       ],
       orderType: {
-        name: `${this.$t('快递发货')}`,
+        name: `${this.$t('远程联机')}`,
         type: 1
       },
       orderInfo: {
@@ -173,7 +173,7 @@ export default {
     if (this.is_beta && this.is_beta != 'false') {
       this.actions = [
         { name: `${this.$t('远程下发')}`, type: 1 },
-        { name: `${this.$t('门店自提')}`, type: 2 }
+        { name: `${this.$t('手机扫码')}`, type: 2 }
       ]
     }
     if (this.$route.query.address_id) {
