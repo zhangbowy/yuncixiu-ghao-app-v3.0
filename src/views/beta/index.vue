@@ -218,7 +218,7 @@ export default {
 }
 
 .sample-box{
-  height: 74vh;
+  height: 72vh;
   overflow: auto;
   display: flex;
   flex-flow: wrap;
