@@ -45,7 +45,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api/wx': {
-        target: 'http://localhost:8001',
+        target: 'http://localhost:9001',
         // target: 'http://ningbo.yuneshow.com',
         changeOrigin: true,
         pathRewrite: {

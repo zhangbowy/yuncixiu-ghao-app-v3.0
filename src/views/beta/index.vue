@@ -170,6 +170,11 @@ export default {
 }
 .div-content {
   margin: 10px;
+
+}
+.div-content>div {
+  position: fixed;
+  bottom: 80px;
 }
 .title {
   text-align: center;
