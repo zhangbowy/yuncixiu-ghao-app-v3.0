@@ -174,7 +174,7 @@ export default {
 }
 .div-content>div {
   position: fixed;
-  bottom: 80px;
+  bottom: 60px;
 }
 .title {
   text-align: center;
@@ -272,6 +272,9 @@ export default {
     box-sizing: border-box;
     padding: 10px;
   }
+}
+.van-popover__wrapper {
+  display: flex;
 }
 
 </style>
