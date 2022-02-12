@@ -327,7 +327,7 @@ export default {
     width: 100%;
   }
   .login {
-    background: url("http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/design/13/33/2021-03-15-21:52:31/43de060c-14a9-4588-aad9-a303d6d47e13.PNG")
+    background: url("http://cos-cx-n1-1257124629.cos.ap-guangzhou.myqcloud.com/gallary/13/2022-02-12/399d98ca-81ea-4440-afa8-2a3c0ff9a5f2.jpeg")
       center center no-repeat;
     background-size: cover;
   }
@@ -356,6 +356,7 @@ export default {
       background-size: 100% 100%;
       border-radius: 30px;
       padding: 30px;
+      opacity: .78;
       .register-sec {
         display: flex;
         padding-bottom: 10px;
