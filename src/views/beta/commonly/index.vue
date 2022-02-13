@@ -307,7 +307,7 @@
               width="100%"
               :value="form.middleImg.height"
               :label="`${$t('图片高度')}`"
-              :max="middleImgMaxHeght || middleImgHeight"
+              :max="middleImgMaxHeght"
               :min="middleImgMinHeight"
               :placeholder="`${$t('请输入高度')}`"
               unit="mm"
@@ -1352,7 +1352,7 @@ export default {
         this.form.middleImg.prev_png_path = res.data
       })
       this.form.middleImg.width = this.middleImgWidth
-      this.form.middleImg.height = this.middleImgMaxHeght
+      this.form.middleImg.height = this.currentBestHeight
       this.patternModal = false
       this.middleVisible = true
       this.loading = false
@@ -1360,7 +1360,9 @@ export default {
     // 重置花样最大最小高
     setFigureItemSizeRange(item) {
       this.currentBestHeight = item.best_height
-      this.middleImgMaxHeght = Math.min(this.middleImgHeight, item.max_height || item.best_height || this.middleImgHeight)
+      this.middleImgMaxHeght = item.max_height;
+      this.form.middleImg.height = item.best_height;
+      // this.middleImgMaxHeght = Math.max(this.middleImgHeight, item.max_height || item.best_height || this.middleImgHeight)
       this.middleImgMinHeight = item.min_height
     },
     // checked定制模板
