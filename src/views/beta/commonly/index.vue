@@ -1559,6 +1559,7 @@ export default {
       this.goodsModal = true
     },
     choose_goods($item) {
+      console.log($item)
       const { sku_list } = $item
       const _color_hash = {}
       try {
@@ -1577,6 +1578,11 @@ export default {
         this.currentGoods = $item
         if (Object.keys(_color_hash).length == 0) {
           this.currentGoods.currentSku = $item.skuList[0]
+          store.dispatch('design/setGoodsInfo', JSON.stringify({
+            ...$item.skuList[0],
+            item_id: item.id
+          })).then(res => {
+          })
           this.complete()
         } else {
           this.isShowChooseColor = true
@@ -1597,6 +1603,13 @@ export default {
     onClick_chooseColor(item) {
       this.currentGoods.currentSku = item;
       console.log(item, '当前选中的颜色')
+      store.dispatch('design/setGoodsInfo', JSON.stringify([{
+            item_id: this.currentGoods.id,
+            ...item,
+            buy_num: 1,
+            shopping_type: 2,
+          }])).then(res => {
+          })
       this.complete()
     }
   }
@@ -1710,13 +1723,13 @@ export default {
     .commonly-bg-box{
       // padding-top: 46px;
       width: 100%;
-      height: 250px;
-      max-height: 250px;
-      overflow: hidden;
+      /* height: 250px; */
+      /* max-height: 250px; */
+      /* overflow: hidden; */
       // position: absolute;
       // top: 43%;
       // transform: translateY(-50%);
-      background: rgba(211, 211, 211, 0.8);
+      /* background: rgba(211, 211, 211, 0.8); */
       .design_info {
         font-size: 20px;
         margin-left: 40px;
@@ -1732,10 +1745,10 @@ export default {
     }
     .design-box{
       // position: absolute;
-      width: 200px;
-      height: 200px;
-      background: rgba(0, 0, 0, 0.5);
-      border: 5px solid rgba(192, 192, 192, 0.5);
+      /* width: 200px; */
+      /* height: 200px; */
+      /* background: rgba(0, 0, 0, 0.5); */
+      /* border: 5px solid rgba(192, 192, 192, 0.5); */
       box-sizing: border-box;
       z-index: 999;
       display: flex;

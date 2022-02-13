@@ -180,6 +180,13 @@ export default {
     onClick_chooseColor(item) {
       this.currentGoods.currentSku = item;
       console.log(item, '当前选中的颜色')
+      store.dispatch('design/setGoodsInfo', JSON.stringify([{
+            item_id: this.currentGoods.id,
+            ...item,
+            buy_num: 1,
+            shopping_type: 2,
+          }])).then(res => {
+          })
       this.handleGenerate()
     },
     showGoods() {
